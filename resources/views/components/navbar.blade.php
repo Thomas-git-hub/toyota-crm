@@ -58,7 +58,7 @@
                                 </div>
                                 <div class="flex-grow-1">
                                     <span class="fw-medium d-block">{{ Auth::user()->first_name . ' ' . Auth::user()->last_name }}</span>
-                                    <small class="text-muted"> {{Auth::user()->usertype->name ?  Auth::user()->usertype->name  : 'No Assigned Access'}}</small>
+                                    <small class="text-muted"> </small>
                                 </div>
                             </div>
                         </a>

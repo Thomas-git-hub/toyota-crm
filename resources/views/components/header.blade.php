@@ -61,5 +61,8 @@
     <!-- Sneat CSS -->
     {{-- <link rel="stylesheet" href="path/to/sneat/css/styles.css"> --}}
 
+    <!-- Custom Style -->
+    <link rel="stylesheet" href="assets/css/system_color.css">
+    <link rel="stylesheet" href="assets/css/table.css">
 
   </head>

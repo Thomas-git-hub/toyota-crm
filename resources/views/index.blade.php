@@ -158,7 +158,6 @@
         <!-- /Login -->
       </div>
     </div>
-
     <!-- / Content -->
 
     <!-- Core JS -->
@@ -173,9 +172,6 @@
     <script src="../../assets/vendor/libs/typeahead-js/typeahead.js"></script>
     <script src="../../assets/vendor/js/menu.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-
-
-
     <!-- endbuild -->
 
     <!-- Vendors JS -->
@@ -188,5 +184,6 @@
 
     <!-- Page JS -->
     <script src="../../assets/js/pages-auth.js"></script>
+    @include('js.login')
   </body>
 </html>
