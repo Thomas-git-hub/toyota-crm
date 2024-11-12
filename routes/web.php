@@ -16,5 +16,12 @@ Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard
 
 //LEADS
 Route::get('/leads', [LeadController::class, 'index'])->name('leads');;
+Route::post('/leads', [LeadController::class, 'store'])->name('leads.store');
+Route::get('/leads/list', [LeadController::class, 'list'])->name('leads.list');
+Route::post('/leads/processing', [LeadController::class, 'processing'])->name('leads.processing');
+Route::delete('/leads/destroy', [LeadController::class, 'destroy'])->name('leads.destroy');
+Route::get('/getProvince', [LeadController::class, 'getProvince'])->name('leads.getProvince');
+Route::get('/getUnit', [LeadController::class, 'getUnit'])->name('leads.getUnit');
+Route::get('/leads/get-variants-and-colors', [LeadController::class, 'getVariantsAndColors'])->name('leads.getVariantsAndColors');
 
 

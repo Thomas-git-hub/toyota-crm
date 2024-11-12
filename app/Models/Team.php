@@ -8,10 +8,8 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Notifications\Notifiable;
 
-class Usertype extends Model
+class Team extends Model
 {
     use HasFactory, Notifiable, SoftDeletes;
-    
-    protected $table = 'usertypes';
-
+    protected $table = 'team';
 }

@@ -18,11 +18,14 @@ return new class extends Migration
             $table->string('email')->unique();
             $table->string('status')->default('Active');
             $table->unsignedBigInteger('usertype_id')->nullable();
+            $table->unsignedBigInteger('team_id')->nullable();
             $table->string('password');
             $table->rememberToken();
             $table->timestamps();
+            $table->softDeletes();
 
             $table->foreign('usertype_id')->references('id')->on('usertypes');
+            $table->foreign('team_id')->references('id')->on('team');
         });
 
         Schema::create('password_reset_tokens', function (Blueprint $table) {
