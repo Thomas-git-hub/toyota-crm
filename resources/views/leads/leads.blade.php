@@ -2,6 +2,8 @@
 
 @section('content')
 
+
+{{-- EDIT MODAL --}}
 <div class="modal fade" id="editInquiryFormModal" tabindex="-1" aria-labelledby="largeModalLabel" aria-hidden="true">
   <div class="modal-dialog modal-lg">
     <div class="modal-content">
@@ -14,20 +16,21 @@
             <div class="mb-4">
                 <div class="row mb-2">
                     <div class="col-md">
+                        <input type="hidden" class="form-control" id="edit_id" name="id" />
                         <label for="first_name" class="form-label required">First Name</label>
-                        <input type="text" class="form-control" id="first_name" name="first_name" placeholder="" />
+                        <input type="text" class="form-control" id="edit_first_name" name="first_name" placeholder="" />
                         <small class="text-danger" id="validateFirstname">Enter Customer First Name</small>
                     </div>
                     <div class="col-md">
                         <label for="last_name" class="form-label required">Last Name</label>
-                        <input type="text" class="form-control" id="last_name" name="last_name" placeholder="" />
+                        <input type="text" class="form-control" id="edit_last_name" name="last_name" placeholder="" />
                         <small class="text-danger" id="validateLastname">Enter Customer Last Name</small>
                     </div>
                 </div>
                 <div class="row mb-2">
                     <div class="col-md">
                         <label for="gender" class="form-label required">Gender</label>
-                        <select class="form-control" id="gender" name="gender">
+                        <select class="form-control" id="edit_gender" name="gender">
                             <option value="">Select Gender</option>
                             <option value="Female">Female</option>
                             <option value="Male">Male</option>
@@ -36,19 +39,19 @@
                     </div>
                     <div class="col-md">
                         <label for="age" class="form-label required">Age</label>
-                        <input type="number" class="form-control" id="age" name="age" placeholder="" />
+                        <input type="number" class="form-control" id="edit_age" name="age" placeholder="" />
                         <small class="text-danger" id="validateLastname">Enter Customer Age</small>
                     </div>
                     <div class="col-md">
                         <label for="mobile_number" class="form-label required">Mobile Number</label>
-                        <input type="text" class="form-control" id="mobile_number" name="mobile_number" placeholder="09" />
+                        <input type="text" class="form-control" id="edit_mobile_number" name="mobile_number" placeholder="09" />
                         <small class="text-danger" id="validateMobileNumber">Enter Valid Mobile Number</small>
                     </div>
                 </div>
                 <div class="row">
                     <div class="col-md">
                     <label for="province" class="form-label required">Province</label>
-                    <select class="form-control" id="province" name="province">
+                    <select class="form-control" id="edit_province" name="province">
                         <option value="">Select Province</option>
                     </select>
                     <small class="text-danger" id="validateProvince">Please Select a Province</small>
@@ -59,21 +62,21 @@
                 <div class="row mb-2">
                     <div class="col-md">
                         <label for="car_unit" class="form-label required">Unit</label>
-                        <select class="form-control" id="car_unit" name="car_unit">
+                        <select class="form-control" id="edit_car_unit" name="car_unit">
                             <option value="">Select Unit</option>
                         </select>
                         <small class="text-danger" id="validateUnit">Please Select Unit</small>
                     </div>
                     <div class="col-md">
                         <label for="car_variant" class="form-label required">Variants</label>
-                        <select class="form-control" id="car_variant" name="car_variant">
+                        <select class="form-control" id="edit_car_variant" name="car_variant">
                             <option value="">Select Variants</option>
                         </select>
                         <small class="text-danger" id="validateVariant required">Please Select Variant</small>
                     </div>
                     <div class="col-md">
                         <label for="car_color" class="form-label required">Color</label>
-                        <select class="form-control" id="car_color" name="car_color">
+                        <select class="form-control" id="edit_car_color" name="car_color">
                             <option value="">Select Color</option>
                         </select>
                         <small class="text-danger" id="validateColor">Please Select Color</small>
@@ -83,7 +86,7 @@
             <div class="row mb-4">
                 <div class="col-md">
                     <label for="transaction" class="form-label required">Transactions</label>
-                    <select class="form-control" id="transaction" name="transaction">
+                    <select class="form-control" id="edit_transaction" name="transaction">
                         <option value="">Select Transactions</option>
                         <option value="cash">Cash</option>
                         <option value="po">PO</option>
@@ -93,7 +96,7 @@
                 </div>
                 <div class="col-md">
                     <label for="source" class="form-label required">Source</label>
-                    <select class="form-control" id="source" name="source" >
+                    <select class="form-control" id="edit_source" name="source" >
                         <option value="">Select Source</option>
                         <option value="Social-Media">Social-Media</option>
                         <option value="Referal">Referal</option>
@@ -107,7 +110,7 @@
             <div class="row mb-2">
                 <div class="col-md">
                     <label for="additional_info" class="form-label">Remarks</label>
-                    <textarea class="form-control" placeholder="Message" id="remarks" name="additional_info" rows="3"></textarea>
+                    <textarea class="form-control" placeholder="Message" id="edit_remarks" name="additional_info" rows="3"></textarea>
                 </div>
             </div>
             <div class="row">
@@ -123,11 +126,14 @@
 </div>
 
 
+{{-- TITLE --}}
 <div class="card bg-dark shadow-none mb-4">
     <div class="card-body">
         <h4 class="text-white"><i class='bx bxs-layer-plus'>&nbsp;</i>Leads</h4>
     </div>
 </div>
+
+{{-- ADD FORM --}}
 
 <div class="row mb-2">
     <div class="col-md">
@@ -248,24 +254,23 @@
     </div>
 </div>
 
- <div class="row mb-2">
+{{-- BUTTON TO TIGGER ADD FORM --}}
+<div class="row mb-2">
     <div class="col-md d-flex justify-content-end">
         <button class="btn btn-primary" id="addNewInquiryButton">Add New Inquiry</button>
     </div>
- </div>
+</div>
 
+{{-- DATATABLES --}}
 <div class="row mb-2">
     <div class="col">
         <div class="card custom-card">
             <div class="card-body">
                 <div class="row">
                     <div class="d-flex w-50 gap-2">
-                        <div class="col-md">
-                            <label for="dateRangePicker" class="form-label">Date Range</label>
-                                <div class="input-group input-daterange" id="bs-datepicker-daterange">
-                                <input id="dateRangePicker" type="text" placeholder="MM/DD/YYYY" class="form-control" />
-                                <span class="input-group-text">to</span>
-                                <input type="text" placeholder="MM/DD/YYYY" class="form-control" />
+                        <div class="mb-3">
+                            <div class="input-group">
+                                <input type="text" id="date-range-picker" class="form-control" placeholder="Select date range">
                             </div>
                         </div>
                     </div>
@@ -285,8 +290,55 @@
 
 @section('components.specific_page_scripts')
 <script>
+   
+    //Date filter
+    flatpickr("#date-range-picker", {
+        mode: "range",
+        dateFormat: "m/d/Y",
+        onChange: function(selectedDates, dateStr, instance) {
+            // Check if both start and end dates are selected
+            if (selectedDates.length === 2) {
+                // Check if the end date is earlier than or equal to the start date
+                if (selectedDates[1] <= selectedDates[0]) {
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'Warning!',
+                        text: 'Please select a valid date range.',
+                    });
+                } else {
+                    // Reload the tables if a valid range is selected
+                    inquiryTable.ajax.reload(null, false);
+                }
+            }
+        },
+        // Add clear button
+        onReady: function(selectedDates, dateStr, instance) {
+            // Create a "Clear" button
+            const clearButton = document.createElement("button");
+            clearButton.innerHTML = "Clear";
+            clearButton.classList.add("clear-btn");
 
+            // Create a "Close" button
+            const closeButton = document.createElement("button");
+            closeButton.innerHTML = "Close";
+            closeButton.classList.add("close-btn");
 
+            // Append the buttons to the flatpickr calendar
+            instance.calendarContainer.appendChild(clearButton);
+            instance.calendarContainer.appendChild(closeButton);
+
+            // Add event listener to clear the date and reload the tables
+            clearButton.addEventListener("click", function() {
+                instance.clear(); // Clear the date range
+                inquiryTable.ajax.reload(null, false); // Reload the tables
+            });
+
+            // Add event listener to close the calendar
+            closeButton.addEventListener("click", function() {
+                instance.close(); // Close the flatpickr calendar
+            });
+        }
+    });
 
     // DataTable initialization
     const inquiryTable = $('#inquiryTable').DataTable({
@@ -294,10 +346,10 @@
             serverSide: true,
             ajax: {
                 url: '{{ route("leads.list") }}',
-                data: function (d) {
-                    d.start_date = $('#start_date').val();
-                    d.end_date = $('#end_date').val();
-                }
+                data: function(d) {
+                    // Include the date range in the AJAX request
+                    d.date_range = $('#date-range-picker').val();
+                },
             },
             pageLength: 10,
             paging: true,
@@ -330,7 +382,7 @@
                 render: function(data) {
                     return `
                         <div class="d-flex">
-                            <button type="button" class="btn btn-icon me-2 btn-success" data-bs-toggle="modal" data-bs-target="#editInquiryFormModal">
+                            <button type="button" class="btn btn-icon me-2 btn-success edit-btn" data-bs-toggle="modal" data-bs-target="#editInquiryFormModal" data-id="${data}">
                                 <span class="tf-icons bx bx-pencil bx-22px"></span>
                             </button>
                             <button type="button" class="btn btn-icon me-2 btn-primary processing-btn" data-id="${data}">
@@ -354,15 +406,16 @@
 
     });
 
+
     // Inquiry Form Validation
     $(document).ready(function () {
-        //Load Province
+        // Load Province
         $.ajax({
             url: '{{ route('leads.getProvince') }}',
             type: 'GET',
             dataType: 'json',
             success: function(data) {
-                let provinceSelect = $('#province');
+                let provinceSelect = $('#province , #edit_province');
                 provinceSelect.empty();
                 provinceSelect.append('<option value="">Select Province...</option>');
                 data.forEach(function(item) {
@@ -379,7 +432,7 @@
             type: 'GET',
             dataType: 'json',
             success: function(data) {
-                let unitSelect = $('#car_unit');
+                let unitSelect = $('#car_unit, #edit_car_unit');
                 unitSelect.empty();
                 unitSelect.append('<option value="">Select Unit...</option>');
                 data.forEach(function(item) {
@@ -392,25 +445,22 @@
         });
 
          // Load variants and colors based on selected unit
-        $('#car_unit').on('change', function() {
+        $('#car_unit, #edit_car_unit').on('change', function() {
             const selectedUnit = $(this).val();
-            console.log(selectedUnit);
             if (selectedUnit) {
                 $.ajax({
-                    url: '{{ route("leads.getVariantsAndColors") }}', // New route
+                    url: '{{ route("leads.getVariantsAndColors") }}', 
                     type: 'GET',
                     data: { unit: selectedUnit },
                     dataType: 'json',
                     success: function(data) {
                         // Populate the car_variant and car_color selects
-                        let variantSelect = $('#car_variant');
-                        let colorSelect = $('#car_color');
+                        let variantSelect = $('#car_variant, #edit_car_variant');
+                        let colorSelect = $('#car_color, #edit_car_color');
                         variantSelect.empty();
                         colorSelect.empty();
                         variantSelect.append('<option value="">Select Variants...</option>');
                         colorSelect.append('<option value="">Select Color...</option>');
-                        console.log(data.variants);
-                        console.log(data.colors);
 
                         // Check if data.variants is an array or a single value
                         if (Array.isArray(data.variants)) {
@@ -441,6 +491,7 @@
                 $('#car_color').empty().append('<option value="">Select Color...</option>');
             }
         });
+
         // Hide warning messages initially
         $("small").hide();
 
@@ -532,6 +583,82 @@
             }
         });
 
+        // Validate form on submit
+        $("#editInquiryFormData").on("submit", function (e) {
+            e.preventDefault();
+            let isValid = true;
+
+             // Validate required fields
+            isValid = validateField('#edit_first_name', 'Enter Customer First Name') && isValid;
+            isValid = validateField('#edit_last_name', 'Enter Customer Last Name') && isValid;
+            isValid = validateField('#edit_age', 'Enter Customer Age') && isValid;
+            isValid = validateField('#edit_mobile_number', 'Enter Valid Mobile Number') && isValid;
+            isValid = validateField('#edit_car_unit', 'Please Select Unit') && isValid;
+            isValid = validateField('#edit_car_variant', 'Please Select Variant') && isValid;
+            isValid = validateField('#edit_car_color', 'Please Select Color') && isValid;
+            isValid = validateField('#edit_transaction', 'Please Select Transaction') && isValid;
+            isValid = validateField('#edit_source', 'Please Select Source') && isValid;
+            isValid = validateField('#edit_gender', 'Please Select Gender') && isValid;
+            isValid = validateField('#edit_car_variant', 'Please Select a Variant') && isValid;
+            isValid = validateField('#edit_province', 'Please Select a Province') && isValid;
+
+            // Special validation for mobile number
+            const mobileNumber = $('#edit_mobile_number').val();
+            if (mobileNumber && !mobileNumber.match(/^09\d{9}$/)) {
+                $('#edit_mobile_number').addClass('is-invalid border-danger');
+                $('#validateMobileNumber').show();
+                isValid = false;
+            }
+
+            // Restore original values on invalid fields
+            if (!isValid) {
+                $('#edit_id').val(originalValues.id);
+                $('#edit_first_name').val(originalValues.firstName);
+                $('#edit_last_name').val(originalValues.lastName);
+                $('#edit_age').val(originalValues.age);
+                $('#edit_car_unit').val(originalValues.carUnit);
+                $('#edit_car_variant').val(originalValues.carVariant);
+                $('#edit_car_color').val(originalValues.carColor);
+                $('#edit_transaction').val(originalValues.transaction);
+                $('#edit_source').val(originalValues.source);
+                $('#edit_gender').val(originalValues.gender);
+                $('#edit_province').val(originalValues.province);
+            }
+
+            if (isValid) {
+                const formData = $(this).serialize();
+                const inquiryId = originalValues.id; // Assuming you set data-id on the form
+
+                $.ajax({
+                    url: `{{ url('leads/update') }}/${inquiryId}`,
+                    type: 'POST',
+                    data: formData,
+                    headers: {
+                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                    },
+                    success: function(response) {
+                        if (response.success) {
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Success',
+                                text: response.message,
+                            });
+                            // Reload the DataTable or update the UI as needed
+                            inquiryTable.ajax.reload();
+                            $('#editInquiryFormModal').modal('hide'); // Hide the modal
+                        }
+                    },
+                    error: function(xhr) {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: xhr.responseJSON?.message || 'Something went wrong!'
+                        });
+                    }
+                });
+            }
+        });
+
         $('#leadFormData input, #leadFormData select').on('input change', function() {
             validateField(this);
         });
@@ -540,8 +667,85 @@
         $("input[type='text']").on("input", function () {
             $(this).val(capitalizeWords($(this).val()));
         });
+
+
     });
 
+    let originalValues = {};0
+
+    // Add this inside your <script> tag in the Blade file
+    $(document).on('click', '.edit-btn', function() {
+        const inquiryId = $(this).data('id');
+        $.ajax({
+            url: `{{ url('leads/edit') }}/${inquiryId}`,
+            type: 'GET',
+            success: function(data) {
+                // Populate the form fields with the inquiry data
+                $('#edit_id').val(data.id);
+                $('#edit_first_name').val(data.customer_first_name);
+                $('#edit_last_name').val(data.customer_last_name);
+                $('#edit_gender').val(data.gender);
+                $('#edit_age').val(data.age);
+                $('#edit_mobile_number').val(data.contact_number);
+                $('#edit_province').val(data.province_id);
+                $('#edit_car_unit').val(data.unit).trigger('change');
+
+                
+
+                    // Get variants and colors based on the selected unit
+                    $.ajax({
+                        url: '{{ route("leads.getVariantsAndColors") }}',
+                        type: 'GET',
+                        data: { unit: data.unit },
+                        dataType: 'json',
+                        success: function(variantsData) {
+                            $('#edit_car_variant').val(data.variant);
+                            $('#edit_car_color').val(data.color);
+                        },
+                        error: function(xhr) {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Error',
+                                text: 'Could not fetch variants and colors.'
+                            });
+                        }
+                    });
+
+                    $('#edit_transaction').val(data.transaction);
+                    $('#edit_source').val(data.source);
+                    $('#edit_remarks').val(data.remarks);
+
+
+                    // Store original values
+                    originalValues = {
+                        id: data.id,
+                        firstName: data.customer_first_name,
+                        lastName: data.customer_last_name,
+                        gender: data.gender,
+                        age: data.age,
+                        mobileNumber: data.contact_number,
+                        province: data.province_id,
+                        carUnit: data.unit,
+                        carVariant: data.variant,
+                        carColor: data.color,
+                        transaction: data.transaction,
+                        source: data.source,
+                        remarks: data.remarks
+                    };
+                    $('#editInquiryFormModal').modal('show');
+
+                    
+                },
+                error: function(xhr) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: 'Could not fetch inquiry data.'
+                    });
+                }
+            });
+    });
+  
 
     // display form
     $(document).ready(function () {
@@ -566,6 +770,7 @@
             });
     });
 
+    //Process Data
     $(document).on('click', '.processing-btn', function() {
         const leadId = $(this).data('id');
 
@@ -610,6 +815,7 @@
         });
     });
 
+    //Delete data
     $(document).on('click', '.delete-btn', function() {
         const leadId = $(this).data('id');
 
@@ -652,7 +858,7 @@
         });
     });
 
-    $("#bs-datepicker-daterange").datepicker();
+    
 
 </script>
 

@@ -11,4 +11,5 @@ class Application extends Model
     use HasFactory, SoftDeletes;
     
     protected $table = 'application';
+    
 }

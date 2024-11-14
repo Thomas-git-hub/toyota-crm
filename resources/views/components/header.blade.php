@@ -47,6 +47,8 @@
     <link rel="stylesheet" href="assets/vendor/libs/datatables-responsive-bs5/responsive.bootstrap5.css" />
     <link rel="stylesheet" href="assets/vendor/libs/select2/select2.css" />
     <link rel="stylesheet" href="assets/vendor/libs/toastr/toastr.css" />
+    <link rel="stylesheet" href="assets/vendor/libs/bootstrap-datepicker/bootstrap-datepicker.css" />
+
 
     <!-- Page CSS -->
 

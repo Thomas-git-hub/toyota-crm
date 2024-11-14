@@ -19,6 +19,7 @@ class DatabaseSeeder extends Seeder
             TeamSeeder::class,
             ProvinceSeeder::class,
             VehicleSeeder::class,
+            StatusSeeder::class,
             UserSeeder::class,
            
         ]);

@@ -28,6 +28,7 @@ return new class extends Migration
             $table->longText('remarks')->nullable();
             $table->string('date')->nullable(); //monthname day
             $table->string('transactional_status')->default('pending');
+            $table->unsignedBigInteger('created_by');
             $table->unsignedBigInteger('updated_by');
             $table->timestamps();
             $table->softDeletes();
