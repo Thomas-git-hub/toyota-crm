@@ -2,7 +2,134 @@
 
 @section('content')
 
-<div class="row mb-4">
+<div class="modal fade" id="editInquiryFormModal" tabindex="-1" aria-labelledby="largeModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="largeModalLabel">Large Modal</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form id="editInquiryFormData">
+            <div class="mb-4">
+                <div class="row mb-2">
+                    <div class="col-md">
+                        <label for="first_name" class="form-label required">First Name</label>
+                        <input type="text" class="form-control" id="first_name" name="first_name" placeholder="" />
+                        <small class="text-danger" id="validateFirstname">Enter Customer First Name</small>
+                    </div>
+                    <div class="col-md">
+                        <label for="last_name" class="form-label required">Last Name</label>
+                        <input type="text" class="form-control" id="last_name" name="last_name" placeholder="" />
+                        <small class="text-danger" id="validateLastname">Enter Customer Last Name</small>
+                    </div>
+                </div>
+                <div class="row mb-2">
+                    <div class="col-md">
+                        <label for="gender" class="form-label required">Gender</label>
+                        <select class="form-control" id="gender" name="gender">
+                            <option value="">Select Gender</option>
+                            <option value="Female">Female</option>
+                            <option value="Male">Male</option>
+                        </select>
+                        <small class="text-danger" id="validateGender">Please Select Gender</small>
+                    </div>
+                    <div class="col-md">
+                        <label for="age" class="form-label required">Age</label>
+                        <input type="number" class="form-control" id="age" name="age" placeholder="" />
+                        <small class="text-danger" id="validateLastname">Enter Customer Age</small>
+                    </div>
+                    <div class="col-md">
+                        <label for="mobile_number" class="form-label required">Mobile Number</label>
+                        <input type="text" class="form-control" id="mobile_number" name="mobile_number" placeholder="09" />
+                        <small class="text-danger" id="validateMobileNumber">Enter Valid Mobile Number</small>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md">
+                    <label for="province" class="form-label required">Province</label>
+                    <select class="form-control" id="province" name="province">
+                        <option value="">Select Province</option>
+                    </select>
+                    <small class="text-danger" id="validateProvince">Please Select a Province</small>
+                </div>
+                </div>
+            </div>
+            <div class="mb-4">
+                <div class="row mb-2">
+                    <div class="col-md">
+                        <label for="car_unit" class="form-label required">Unit</label>
+                        <select class="form-control" id="car_unit" name="car_unit">
+                            <option value="">Select Unit</option>
+                        </select>
+                        <small class="text-danger" id="validateUnit">Please Select Unit</small>
+                    </div>
+                    <div class="col-md">
+                        <label for="car_variant" class="form-label required">Variants</label>
+                        <select class="form-control" id="car_variant" name="car_variant">
+                            <option value="">Select Variants</option>
+                        </select>
+                        <small class="text-danger" id="validateVariant required">Please Select Variant</small>
+                    </div>
+                    <div class="col-md">
+                        <label for="car_color" class="form-label required">Color</label>
+                        <select class="form-control" id="car_color" name="car_color">
+                            <option value="">Select Color</option>
+                        </select>
+                        <small class="text-danger" id="validateColor">Please Select Color</small>
+                    </div>
+                </div>
+            </div>
+            <div class="row mb-4">
+                <div class="col-md">
+                    <label for="transaction" class="form-label required">Transactions</label>
+                    <select class="form-control" id="transaction" name="transaction">
+                        <option value="">Select Transactions</option>
+                        <option value="cash">Cash</option>
+                        <option value="po">PO</option>
+                        <option value="financing">Financing</option>
+                    </select>
+                    <small class="text-danger" id="validateTransaction">Please Select Transaction</small>
+                </div>
+                <div class="col-md">
+                    <label for="source" class="form-label required">Source</label>
+                    <select class="form-control" id="source" name="source" >
+                        <option value="">Select Source</option>
+                        <option value="Social-Media">Social-Media</option>
+                        <option value="Referal">Referal</option>
+                        <option value="Mall Duty">Mall Duty</option>
+                        <option value="Show Room">Show Room</option>
+                        <option value="Saturation">Saturation</option>
+                    </select>
+                    <small class="text-danger" id="validateSource">Please Select Source</small>
+                </div>
+            </div>
+            <div class="row mb-2">
+                <div class="col-md">
+                    <label for="additional_info" class="form-label">Remarks</label>
+                    <textarea class="form-control" placeholder="Message" id="remarks" name="additional_info" rows="3"></textarea>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md d-flex justify-content-end gap-2">
+                    <button type="button" class="btn btn-label-danger" id="cancelEditInquiryFormButton">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Save Changes</button>
+                </div>
+            </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<div class="card bg-dark shadow-none mb-4">
+    <div class="card-body">
+        <h4 class="text-white"><i class='bx bxs-layer-plus'>&nbsp;</i>Leads</h4>
+    </div>
+</div>
+
+<div class="row mb-2">
     <div class="col-md">
         <div class="card" id="inquiryFormCard" style="display: none;">
             <div class="card-header">
@@ -43,8 +170,15 @@
                                 <input type="text" class="form-control" id="mobile_number" name="mobile_number" placeholder="09" />
                                 <small class="text-danger" id="validateMobileNumber">Enter Valid Mobile Number</small>
                             </div>
-
-                            
+                        </div>
+                        <div class="row">
+                            <div class="col-md">
+                            <label for="province" class="form-label required">Province</label>
+                            <select class="form-control" id="province" name="province">
+                                <option value="">Select Province</option>
+                            </select>
+                            <small class="text-danger" id="validateProvince">Please Select a Province</small>
+                        </div>
                         </div>
                     </div>
                     <div class="mb-4">
@@ -73,13 +207,6 @@
                         </div>
                     </div>
                     <div class="row mb-4">
-                        <div class="col-md">
-                            <label for="province" class="form-label required">Province</label>
-                            <select class="form-control" id="province" name="province">
-                                <option value="">Select Province</option>
-                            </select>
-                            <small class="text-danger" id="validateProvince">Please Select a Province</small>
-                        </div>
                         <div class="col-md">
                             <label for="transaction" class="form-label required">Transactions</label>
                             <select class="form-control" id="transaction" name="transaction">
@@ -127,19 +254,19 @@
     </div>
  </div>
 
- <div class="row mb-2">
+<div class="row mb-2">
     <div class="col">
         <div class="card custom-card">
             <div class="card-body">
                 <div class="row">
                     <div class="d-flex w-50 gap-2">
-                        <div class="col-md-6">
-                            <label for="start_date" class="form-label">Start Date</label>
-                            <input type="date" id="start_date" class="form-control form-control-sm" />
-                        </div>
-                        <div class="col-md-6">
-                            <label for="end_date" class="form-label">End Date</label>
-                            <input type="date" id="end_date" class="form-control form-control-sm" />
+                        <div class="col-md">
+                            <label for="dateRangePicker" class="form-label">Date Range</label>
+                                <div class="input-group input-daterange" id="bs-datepicker-daterange">
+                                <input id="dateRangePicker" type="text" placeholder="MM/DD/YYYY" class="form-control" />
+                                <span class="input-group-text">to</span>
+                                <input type="text" placeholder="MM/DD/YYYY" class="form-control" />
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -165,10 +292,16 @@
     const inquiryTable = $('#inquiryTable').DataTable({
             processing: true,
             serverSide: true,
-            ajax: '{{ route("leads.list") }}',
+            ajax: {
+                url: '{{ route("leads.list") }}',
+                data: function (d) {
+                    d.start_date = $('#start_date').val();
+                    d.end_date = $('#end_date').val();
+                }
+            },
             pageLength: 10,
             paging: true,
-            responsive: false,
+            responsive: true,
             dom: '<"top"lf>rt<"bottom"ip>',
             language: {
                 search: "",
@@ -197,13 +330,13 @@
                 render: function(data) {
                     return `
                         <div class="d-flex">
-                            <button type="button" class="btn btn-icon me-2 btn-label-success" data-bs-toggle="modal" data-bs-target="#editThesisEntiresModal">
+                            <button type="button" class="btn btn-icon me-2 btn-success" data-bs-toggle="modal" data-bs-target="#editInquiryFormModal">
                                 <span class="tf-icons bx bx-pencil bx-22px"></span>
                             </button>
-                            <button type="button" class="btn btn-icon me-2 btn-label-primary processing-btn" data-id="${data}">
+                            <button type="button" class="btn btn-icon me-2 btn-primary processing-btn" data-id="${data}">
                                 <span class="tf-icons bx bxs-check-circle bx-22px"></span>
                             </button>
-                            <button type="button" class="btn btn-icon me-2 btn-label-danger delete-btn" data-id="${data}">
+                            <button type="button" class="btn btn-icon me-2 btn-danger delete-btn" data-id="${data}">
                                 <span class="tf-icons bx bxs-x-circle bx-22px"></span>
                             </button>
                         </div>
@@ -218,24 +351,7 @@
                 targets: [0, 1] // Apply date sorting to date_received and date_on_hold columns
             }
         ],
-      
-        // data: [{ // Sample data row
-        //     id: 1,
-        //     team: 'Sales Team',
-        //     agent: 'John Doe',
-        //     customer_name: 'Jane Smith',
-        //     contact_no: '123-456-7890',
-        //     unit: 'Unit 1',
-        //     variant: 'Variant A',
-        //     color: 'Red',
-        //     transaction: 'Purchase',
-        //     gender: 'Female',
-        //     age: '25',
-        //     source: 'Website',
-        //     province: 'California',
-        //     remarks: 'No remarks',
-        //     date: '2024-01-10 09:00:00'
-        // }]
+
     });
 
     // Inquiry Form Validation
@@ -339,13 +455,13 @@
         function validateField(field, message) {
             const $field = $(field);
             const $errorMsg = $field.siblings('small');
-            
+
             if (!$field.val()) {
                 $field.addClass('is-invalid border-danger');
                 $errorMsg.show();
                 return false;
             }
-            
+
             $field.removeClass('is-invalid border-danger');
             $errorMsg.hide();
             return true;
@@ -398,11 +514,11 @@
                             $("#leadFormData")[0].reset();
                             $("#inquiryFormCard").hide();
                             $("#addNewInquiryButton").show();
-                           
+
                             // Clear all validation states
                             $(".text-danger").hide();
                             $("input, select").removeClass("is-invalid border-danger");
-                            inquiryTable.ajax.reload();   
+                            inquiryTable.ajax.reload();
                         }
                     },
                     error: function(xhr) {
@@ -446,13 +562,13 @@
                 $("#inquiryFormCard select").val("");
                 // Clear validation messages
                 $(".text-danger").hide();
-                $("input, select").removeClass("is-invalid border-danger"); 
+                $("input, select").removeClass("is-invalid border-danger");
             });
     });
 
     $(document).on('click', '.processing-btn', function() {
         const leadId = $(this).data('id');
-        
+
         Swal.fire({
             title: 'Are you sure?',
             text: "Do you want to mark this lead as processing?",
@@ -536,7 +652,8 @@
         });
     });
 
-   
+    $("#bs-datepicker-daterange").datepicker();
+
 </script>
 
 

@@ -60,7 +60,7 @@ class LeadController extends Controller
             $inquiry->save();
 
             // Add the inquiry_id to the transactions table
-            $transaction = new Transactions(); 
+            $transaction = new Transactions();
             $transaction->inquiry_id = $inquiry->id; // Set the inquiry_id
             $transaction->save(); // Save the transaction
 
@@ -77,9 +77,11 @@ class LeadController extends Controller
     }
 
     public function list(Request $request){
+
+        // dd($request->start_date);
         $query = Inquiry::with(['province', 'user'])
                         ->whereNull('deleted_at')
-                        ->where('transactional_status', 'pending')
+                        // ->where('transactional_status', 'pending')
                         ->get();
 
         return DataTables::of($query)
@@ -106,7 +108,7 @@ class LeadController extends Controller
         ->editColumn('created_at', function($data) {
             return $data->created_at->format('m/d/Y');
         })
-      
+
         ->make(true);
     }
 
@@ -124,7 +126,7 @@ class LeadController extends Controller
 
         } catch (\Exception $e) {
             return response()->json([
-                'success' => false, 
+                'success' => false,
                 'message' => 'Error updating lead status: ' . $e->getMessage()
             ], 500);
         }
@@ -152,7 +154,7 @@ class LeadController extends Controller
 
     public function getProvince(){
         $data = Province::all();
-        
+
         return response()->json($data);
     }
 
@@ -161,8 +163,8 @@ class LeadController extends Controller
         ->whereNull('deleted_at')
         ->groupBy('unit')
         ->get();
-    
-        
+
+
         return response()->json($data);
     }
 
@@ -174,10 +176,18 @@ class LeadController extends Controller
 
         $variants = $vehicles->pluck('variant')->unique()->values()->toArray();
         $colors = $vehicles->pluck('color')->unique();
-    
+
         return response()->json([
             'variants' => $variants,
             'colors' => $colors,
         ]);
+    }
+
+    public function edit($id)
+    {
+        // Fetch the inquiry data by ID
+        $inquiry = Inquiry::findOrFail($id);
+
+        return response()->json($inquiry);
     }
 }

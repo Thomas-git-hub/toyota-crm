@@ -33,8 +33,8 @@
               <div class="text-truncate" data-i18n="Page 2">Leads</div>
             </a>
         </li>
-        <li class="menu-item {{ request()->is('') ? 'active' : '' }}">
-            <a href="" class="menu-link">
+        <li class="menu-item {{ request()->is('application') ? 'active' : '' }}">
+            <a href="/application" class="menu-link">
                 <i class='menu-icon tf-icons bx bx-list-plus'></i>
               <div class="text-truncate" data-i18n="Page 2">Application</div>
             </a>
@@ -51,16 +51,6 @@
               <div class="text-truncate" data-i18n="Page 2">Vehicle Releases</div>
             </a>
         </li>
-        <li class="menu-item">
-            <div style="margin-left: 5%; margin-top: 5%; color: #b4b0c4;">Cancelations</div>
-        </li>
-        <li class="menu-item {{ request()->is('') ? 'active' : '' }}">
-            <a href="" class="menu-link">
-                <i class='menu-icon tf-icons bx bxs-x-square'></i>
-              <div class="text-truncate" data-i18n="Page 2">Disputes</div>
-            </a>
-        </li>
-
         <li class="menu-item">
             <div style="margin-left: 5%; margin-top: 5%; color: #b4b0c4;">Cancelations</div>
         </li>

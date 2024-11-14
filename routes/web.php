@@ -4,6 +4,8 @@ use App\Http\Controllers\DashboardController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\LeadController;
+use App\Http\Controllers\ApplicationController;
+
 
 
 //LOGIN
@@ -23,5 +25,8 @@ Route::delete('/leads/destroy', [LeadController::class, 'destroy'])->name('leads
 Route::get('/getProvince', [LeadController::class, 'getProvince'])->name('leads.getProvince');
 Route::get('/getUnit', [LeadController::class, 'getUnit'])->name('leads.getUnit');
 Route::get('/leads/get-variants-and-colors', [LeadController::class, 'getVariantsAndColors'])->name('leads.getVariantsAndColors');
+// EDIT LEADS
 
 
+// APPLICATION
+Route::get('/application', [ApplicationController::class, 'index'])->name('application');
