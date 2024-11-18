@@ -27,6 +27,10 @@ Route::get('/getUnit', [LeadController::class, 'getUnit'])->name('leads.getUnit'
 Route::get('/leads/get-variants-and-colors', [LeadController::class, 'getVariantsAndColors'])->name('leads.getVariantsAndColors');
 Route::get('leads/edit/{id}', [LeadController::class, 'edit'])->name('leads.edit');
 Route::post('/leads/update/{id}', [LeadController::class, 'update'])->name('leads.update');
+
+Route::get('/list/pending', [ApplicationController::class, 'list_pending'])->name('application.pending');
+Route::get('/list/approved', [ApplicationController::class, 'list_approved'])->name('application.approved');
+
 // EDIT LEADS
 
 

@@ -4,9 +4,12 @@ namespace App\Http\Controllers;
 
 use App\Models\Application;
 use App\Models\Status;
+use App\Models\Team;
 use App\Models\Transactions;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Yajra\DataTables\Facades\DataTables;
 
 class ApplicationController extends Controller
 {
@@ -92,49 +95,165 @@ class ApplicationController extends Controller
         }
     }
 
-    // public function list_pending(Request $request){
+    public function list_approved(Request $request){
 
-    //     // dd($request->start_date);
-    //     $query = Application::with(['province', 'user'])
-    //                     ->whereNull('deleted_at');
+        // dd($request->start_date);
+        $status = Status::where('status', 'like', 'approved')->first();
+        $query = Application::with([ 'user', 'customer', 'vehicle', 'trans'])
+                        ->whereNull('deleted_at')
+                        ->where('status_id', $status->id)
+                        ;
 
-    //     if ($request->has('date_range') && !empty($request->date_range)) {
-    //         [$startDate, $endDate] = explode(' to ', $request->date_range);
-    //         $startDate = Carbon::createFromFormat('m/d/Y', $startDate)->startOfDay();
-    //         $endDate = Carbon::createFromFormat('m/d/Y', $endDate)->endOfDay();
+        if ($request->has('date_range') && !empty($request->date_range)) {
+            [$startDate, $endDate] = explode(' to ', $request->date_range);
+            $startDate = Carbon::createFromFormat('m/d/Y', $startDate)->startOfDay();
+            $endDate = Carbon::createFromFormat('m/d/Y', $endDate)->endOfDay();
 
-    //         $query->whereBetween('created_at', [$startDate, $endDate]);
-    //     }
+            $query->whereBetween('created_at', [$startDate, $endDate]);
+        }
 
-    //     $list = $query->get();
+        $list = $query->get();
 
-    //     return DataTables::of($list)
-    //     ->addColumn('id', function($data) {
-    //         return encrypt($data->id);
-    //     })
+        return DataTables::of($list)
+        ->addColumn('id', function($data) {
+            return encrypt($data->id);
+        })
 
-    //     ->addColumn('team', function($data) {
-    //         $team = Team::where('id',  $data->user->team_id)->first();
-    //         return $team->name;
-    //     })
+        ->addColumn('team', function($data) {
+            $team = Team::where('id',  $data->user->team_id)->first();
+            return $team->name;
+        })
 
-    //     ->addColumn('agent', function($data) {
-    //         return $data->user->first_name . ' ' . $data->user->last_name;
-    //     })
+        ->addColumn('agent', function($data) {
+            return $data->user->first_name . ' ' . $data->user->last_name;
+        })
 
-    //     ->addColumn('customer_name', function($data) {
-    //         return $data->customer_first_name . ' ' . $data->customer_last_name;
-    //     })
-    //     ->addColumn('province', function($data) {
-    //         return $data->province->province;
-    //     })
+        ->addColumn('customer_name', function($data) {
+            return $data->customer->customer_first_name . ' ' . $data->customer->customer_last_name;
+        })
 
-    //     ->editColumn('created_at', function($data) {
-    //         return $data->created_at->format('m/d/Y');
-    //     })
+        ->addColumn('age', function($data) {
+            return $data->customer->age;
+        })
 
-    //     ->make(true);
-    // }
+        ->addColumn('gender', function($data) {
+            return $data->customer->gender;
+        })
+
+        ->addColumn('contact_number', function($data) {
+            return $data->customer->contact_number;
+        })
+
+        ->addColumn('address', function($data) {
+            return $data->customer->address;
+        })
+
+        ->addColumn('source', function($data) {
+            return $data->customer->source;
+        })
+
+        ->addColumn('unit', function($data) {
+            return $data->vehicle->unit;
+        })
+
+        ->addColumn('variant', function($data) {
+            return $data->vehicle->variant;
+        })
+
+        ->addColumn('color', function($data) {
+            return $data->vehicle->color;
+        })
+
+        ->addColumn('transaction', function($data) {
+            return $data->transaction;
+        })
+
+        ->editColumn('date', function($data) {
+            return $data->created_at->format('m/d/Y');
+        })
+
+        ->make(true);
+    }
+    
+    public function list_pending(Request $request){
+
+        // dd($request->start_date);
+        $pending_status = Status::where('status', 'like', 'pending')->first();
+        $query = Application::with([ 'user', 'customer', 'vehicle', 'trans'])
+                        ->whereNull('deleted_at')
+                        ->where('status_id',$pending_status->id)
+                        ;
+
+        if ($request->has('date_range') && !empty($request->date_range)) {
+            [$startDate, $endDate] = explode(' to ', $request->date_range);
+            $startDate = Carbon::createFromFormat('m/d/Y', $startDate)->startOfDay();
+            $endDate = Carbon::createFromFormat('m/d/Y', $endDate)->endOfDay();
+
+            $query->whereBetween('created_at', [$startDate, $endDate]);
+        }
+
+        $list = $query->get();
+
+        return DataTables::of($list)
+        ->addColumn('id', function($data) {
+            return encrypt($data->id);
+        })
+
+        ->addColumn('team', function($data) {
+            $team = Team::where('id',  $data->user->team_id)->first();
+            return $team->name;
+        })
+
+        ->addColumn('agent', function($data) {
+            return $data->user->first_name . ' ' . $data->user->last_name;
+        })
+
+        ->addColumn('customer_name', function($data) {
+            return $data->customer->customer_first_name . ' ' . $data->customer->customer_last_name;
+        })
+
+        ->addColumn('age', function($data) {
+            return $data->customer->age;
+        })
+
+        ->addColumn('gender', function($data) {
+            return $data->customer->gender;
+        })
+
+        ->addColumn('contact_number', function($data) {
+            return $data->customer->contact_number;
+        })
+
+        ->addColumn('address', function($data) {
+            return $data->customer->address;
+        })
+
+        ->addColumn('source', function($data) {
+            return $data->customer->source;
+        })
+
+        ->addColumn('unit', function($data) {
+            return $data->vehicle->unit;
+        })
+
+        ->addColumn('variant', function($data) {
+            return $data->vehicle->variant;
+        })
+
+        ->addColumn('color', function($data) {
+            return $data->vehicle->color;
+        })
+
+        ->addColumn('transaction', function($data) {
+            return $data->transaction;
+        })
+
+        ->editColumn('date', function($data) {
+            return $data->created_at->format('m/d/Y');
+        })
+
+        ->make(true);
+    }
 
 
 }

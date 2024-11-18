@@ -581,11 +581,87 @@
         });
 
         // Validate form on submit
+        // $("#editInquiryFormData").on("submit", function (e) {
+        //     e.preventDefault();
+        //     let isValid = true;
+
+        //      // Validate required fields
+        //     isValid = validateField('#edit_first_name', 'Enter Customer First Name') && isValid;
+        //     isValid = validateField('#edit_last_name', 'Enter Customer Last Name') && isValid;
+        //     isValid = validateField('#edit_age', 'Enter Customer Age') && isValid;
+        //     isValid = validateField('#edit_mobile_number', 'Enter Valid Mobile Number') && isValid;
+        //     isValid = validateField('#edit_car_unit', 'Please Select Unit') && isValid;
+        //     isValid = validateField('#edit_car_variant', 'Please Select Variant') && isValid;
+        //     isValid = validateField('#edit_car_color', 'Please Select Color') && isValid;
+        //     isValid = validateField('#edit_transaction', 'Please Select Transaction') && isValid;
+        //     isValid = validateField('#edit_source', 'Please Select Source') && isValid;
+        //     isValid = validateField('#edit_gender', 'Please Select Gender') && isValid;
+        //     isValid = validateField('#edit_car_variant', 'Please Select a Variant') && isValid;
+        //     isValid = validateField('#edit_adress', 'Enter Address') && isValid;
+
+        //     // // Special validation for mobile number
+        //     // const mobileNumber = $('#edit_mobile_number').val();
+        //     if (mobileNumber && !mobileNumber.match(/^09\d{9}$/)) {
+        //         $('#edit_mobile_number').addClass('is-invalid border-danger');
+        //         $('#validateMobileNumber').show();
+        //         isValid = false;
+        //     }
+
+        //     // Restore original values on invalid fields
+        //     if (!isValid) {
+        //         $('#edit_id').val(originalValues.id);
+        //         $('#edit_first_name').val(originalValues.firstName);
+        //         $('#edit_last_name').val(originalValues.lastName);
+        //         $('#edit_age').val(originalValues.age);
+        //         $('#edit_car_unit').val(originalValues.carUnit);
+        //         $('#edit_car_variant').val(originalValues.carVariant);
+        //         $('#edit_car_color').val(originalValues.carColor);
+        //         $('#edit_transaction').val(originalValues.transaction);
+        //         $('#edit_source').val(originalValues.source);
+        //         $('#edit_gender').val(originalValues.gender);
+        //         $('#edit_address').val(originalValues.address);
+        //     }
+
+        //     if (isValid) {
+        //         const formData = $(this).serialize();
+        //         const inquiryId = originalValues.id; // Assuming you set data-id on the form
+
+        //         $.ajax({
+        //             url: `{{ url('leads/update') }}/${inquiryId}`,
+        //             type: 'POST',
+        //             data: formData,
+        //             headers: {
+        //                 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+        //             },
+        //             success: function(response) {
+        //                 if (response.success) {
+        //                     Swal.fire({
+        //                         icon: 'success',
+        //                         title: 'Success',
+        //                         text: response.message,
+        //                     });
+        //                     // Reload the DataTable or update the UI as needed
+        //                     inquiryTable.ajax.reload();
+        //                     $('#editInquiryFormModal').modal('hide'); // Hide the modal
+        //                 }
+        //             },
+        //             error: function(xhr) {
+        //                 Swal.fire({
+        //                     icon: 'error',
+        //                     title: 'Error',
+        //                     text: xhr.responseJSON?.message || 'Something went wrong!'
+        //                 });
+        //             }
+        //         });
+        //     }
+        // });
+
+        // Validate form on submit
         $("#editInquiryFormData").on("submit", function (e) {
             e.preventDefault();
             let isValid = true;
 
-             // Validate required fields
+            // Validate required fields
             isValid = validateField('#edit_first_name', 'Enter Customer First Name') && isValid;
             isValid = validateField('#edit_last_name', 'Enter Customer Last Name') && isValid;
             isValid = validateField('#edit_age', 'Enter Customer Age') && isValid;
@@ -596,15 +672,17 @@
             isValid = validateField('#edit_transaction', 'Please Select Transaction') && isValid;
             isValid = validateField('#edit_source', 'Please Select Source') && isValid;
             isValid = validateField('#edit_gender', 'Please Select Gender') && isValid;
-            isValid = validateField('#edit_car_variant', 'Please Select a Variant') && isValid;
-            isValid = validateField('#edit_adress', 'Enter Address') && isValid;
+            isValid = validateField('#edit_address', 'Enter Address') && isValid;
 
             // Special validation for mobile number
             const mobileNumber = $('#edit_mobile_number').val();
             if (mobileNumber && !mobileNumber.match(/^09\d{9}$/)) {
                 $('#edit_mobile_number').addClass('is-invalid border-danger');
-                $('#validateMobileNumber').show();
+                $('#validateMobileNumber').text('Invalid Mobile Number').show();
                 isValid = false;
+            } else {
+                $('#edit_mobile_number').removeClass('is-invalid border-danger');
+                $('#validateMobileNumber').hide();
             }
 
             // Restore original values on invalid fields
@@ -620,41 +698,42 @@
                 $('#edit_source').val(originalValues.source);
                 $('#edit_gender').val(originalValues.gender);
                 $('#edit_address').val(originalValues.address);
+                return; // Stop execution if validation fails
             }
 
-            if (isValid) {
-                const formData = $(this).serialize();
-                const inquiryId = originalValues.id; // Assuming you set data-id on the form
+            // Proceed with AJAX request if the form is valid
+            const formData = $(this).serialize();
+            const inquiryId = originalValues.id; // Assuming you set data-id on the form
 
-                $.ajax({
-                    url: `{{ url('leads/update') }}/${inquiryId}`,
-                    type: 'POST',
-                    data: formData,
-                    headers: {
-                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                    },
-                    success: function(response) {
-                        if (response.success) {
-                            Swal.fire({
-                                icon: 'success',
-                                title: 'Success',
-                                text: response.message,
-                            });
-                            // Reload the DataTable or update the UI as needed
-                            inquiryTable.ajax.reload();
-                            $('#editInquiryFormModal').modal('hide'); // Hide the modal
-                        }
-                    },
-                    error: function(xhr) {
+            $.ajax({
+                url: `/leads/update/${inquiryId}`, // Adjust URL as needed
+                type: 'POST',
+                data: formData,
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                },
+                success: function (response) {
+                    if (response.success) {
                         Swal.fire({
-                            icon: 'error',
-                            title: 'Error',
-                            text: xhr.responseJSON?.message || 'Something went wrong!'
+                            icon: 'success',
+                            title: 'Success',
+                            text: response.message,
                         });
+                        // Reload the DataTable or update the UI as needed
+                        inquiryTable.ajax.reload();
+                        $('#editInquiryFormModal').modal('hide'); // Hide the modal
                     }
-                });
-            }
+                },
+                error: function (xhr) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: xhr.responseJSON?.message || 'Something went wrong!'
+                    });
+                }
+            });
         });
+
 
         $('#leadFormData input, #leadFormData select').on('input change', function() {
             validateField(this);
@@ -688,9 +767,9 @@
             $(this).val(value);
         });
 
-    // Form submission event to check final validation
+        // Form submission event to check final validation
         $("#leadFormData, #editInquiryFormData").on("submit", function (event) {
-            const mobileNumber = $("#mobile_number").val();
+            const mobileNumber = $("#mobile_number, #edit_mobile_number").val();
             if (mobileNumber.length !== 11) {
                 event.preventDefault();
                 $("#validateMobileNumber").show().text("Mobile number must be exactly 11 digits.");
@@ -725,6 +804,7 @@
                         data: { unit: data.unit },
                         dataType: 'json',
                         success: function(variantsData) {
+                            console.log(data.vehicle.variant);
                             $('#edit_car_variant').val(data.vehicle.variant);
                             $('#edit_car_color').val(data.vehicle.color);
                         },

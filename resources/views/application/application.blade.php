@@ -147,12 +147,11 @@
                 </div>
                 <div class="row">
                     <div class="col-md">
-                        {{-- <label for="" class="form-label">Tabs</label> --}}
                         <div class="btn-group w-100" role="group" aria-label="Basic example">
-                            <button type="button" class="btn btn-label-dark active">Pending</button>
-                            <button type="button" class="btn btn-label-dark">Approved</button>
-                            <button type="button" class="btn btn-label-dark">Denied/Canceled</button>
-                            <button type="button" class="btn btn-label-dark">Cash</button>
+                            <button type="button" class="btn btn-label-dark active" data-status="pending">Pending</button>
+                            <button type="button" class="btn btn-label-dark" data-status="approved">Approved</button>
+                            <button type="button" class="btn btn-label-dark" data-status="denied">Denied/Canceled</button>
+                            <button type="button" class="btn btn-label-dark" data-status="cash">Cash</button>
                         </div>
                     </div>
                 </div>
@@ -190,7 +189,7 @@
                     });
                 } else {
                     // Reload the tables if a valid range is selected
-                    // applicationTable.ajax.reload(null, false);
+                    applicationTable.ajax.reload(null, false);
                 }
             }
         },
@@ -213,7 +212,7 @@
             // Add event listener to clear the date and reload the tables
             clearButton.addEventListener("click", function() {
                 instance.clear(); // Clear the date range
-                inquiryTable.ajax.reload(null, false); // Reload the tables
+                applicationTable.ajax.reload(null, false); // Reload the tables
             });
 
             // Add event listener to close the calendar
@@ -222,25 +221,26 @@
             });
         }
     });
+
     // DataTable initialization
     const applicationTable = $('#applicationTable').DataTable({
-            processing: true,
-            serverSide: true,
-            ajax: {
-                url: '{{ route("leads.list") }}',
-                data: function(d) {
-                    // Include the date range in the AJAX request
-                    d.date_range = $('#date-range-picker').val();
-                },
+        processing: true,
+        serverSide: true,
+        ajax: {
+            url: '{{ route("application.pending") }}',
+            data: function(d) {
+                d.date_range = $('#date-range-picker').val();
+                d.status = $('.btn-group .btn.active').data('status'); // Get the current status
             },
-            pageLength: 10,
-            paging: true,
-            responsive: true,
-            dom: '<"top"lf>rt<"bottom"ip>',
-            language: {
-                search: "",
-                searchPlaceholder: "Search..."
-            },
+        },
+        pageLength: 10,
+        paging: true,
+        responsive: true,
+        dom: '<"top"lf>rt<"bottom"ip>',
+        language: {
+            search: "",
+            searchPlaceholder: "Search..."
+        },
         columns: [
             { data: 'team', name: 'team', title: 'Team' },
             { data: 'agent', name: 'agent', title: 'Agent' },
@@ -253,7 +253,7 @@
             { data: 'gender', name: 'gender', title: 'Gender' },
             { data: 'age', name: 'age', title: 'Age' },
             { data: 'source', name: 'source', title: 'Source' },
-            { data: 'province', name: 'province', title: 'Province' },
+            { data: 'address', name: 'address', title: 'Address' },
             { data: 'date', name: 'date', title: 'Date' },
             {
                 data: 'remarks',
@@ -292,7 +292,22 @@
                 targets: [0, 1] // Apply date sorting to date_received and date_on_hold columns
             }
         ],
+    });
 
+    // Change DataTable route based on button click
+    $('.btn-group .btn').on('click', function() {
+        $('.btn-group .btn').removeClass('active');
+        $(this).addClass('active');
+        
+        const status = $(this).data('status');
+        const routeMap = {
+            pending: '{{ route("application.pending") }}',
+            approved: '{{ route("application.approved") }}',
+            denied: '{{ route("application.pending") }}',
+            cash: '{{ route("application.pending") }}'
+        };
+
+        applicationTable.ajax.url(routeMap[status]).load();
     });
 
     // Inquiry Form Validation
@@ -594,70 +609,7 @@
     });
 
 
-    // $(document).ready(function () {
-    //     $("#applicationFormData").on("submit", function (event) {
-    //         event.preventDefault(); // Prevent form submission
-    //         let isValid = true;
-
-    //         // Clear previous error messages
-    //         $("small.text-danger").hide().text("");
-
-    //         // Helper function to show errors
-    //         function showError(selector, message) {
-    //             $(selector).show().text(message);
-    //             isValid = false;
-    //         }
-
-    //         // 1. Validate if each input word starts with an uppercase letter
-    //         function validateCapitalization(fieldId, errorId) {
-    //             const value = $(fieldId).val().trim();
-    //             const words = value.split(" ");
-    //             const capitalized = words.every(word => /^[A-Z]/.test(word)); // Check each word starts with uppercase
-    //             if (!capitalized) {
-    //                 showError(errorId, "Each word must start with an uppercase letter.");
-    //             }
-    //         }
-
-    //         validateCapitalization("#first_name", "#validateFirstname");
-    //         validateCapitalization("#last_name", "#validateLastname");
-
-    //             // // 2. Validate Philippines phone number (must start with 09 and be exactly 11 digits)
-    //             // $("#mobile_number").on("input", function () {
-    //             //     const value = $(this).val();
-    //             //     if (!/^09\d*$/.test(value)) {
-    //             //         // If input doesn't start with "09" or contains non-numeric characters, remove the last input
-    //             //         $(this).val(value.slice(0, -1));
-    //             //     }
-    //             // });
-
-    //         // 3. Validate required fields
-    //         const requiredFields = [
-    //             { id: "#first_name", errorId: "#validateFirstname", message: "Enter Customer First Name" },
-    //             { id: "#last_name", errorId: "#validateLastname", message: "Enter Customer Last Name" },
-    //             { id: "#gender", errorId: "#validateGender", message: "Please Select Gender" },
-    //             { id: "#age", errorId: "#validateLastname", message: "Enter Customer Age" },
-    //             { id: "#mobile_number", errorId: "#validateMobileNumber", message: "Enter Valid Mobile Number" },
-    //             { id: "#province", errorId: "#validateProvince", message: "Please Select a Province" },
-    //             { id: "#car_unit", errorId: "#validateUnit", message: "Please Select Unit" },
-    //             { id: "#car_variant", errorId: "#validateVariant", message: "Please Select Variant" },
-    //             { id: "#car_color", errorId: "#validateColor", message: "Please Select Color" },
-    //             { id: "#transaction", errorId: "#validateTransaction", message: "Please Select Transaction" },
-    //             { id: "#source", errorId: "#validateSource", message: "Please Select Source" }
-    //         ];
-
-    //         requiredFields.forEach(field => {
-    //             const value = $(field.id).val().trim();
-    //             if (value === "") {
-    //                 showError(field.errorId, field.message);
-    //             }
-    //         });
-
-    //         // If all validations pass, submit the form
-    //         if (isValid) {
-    //             this.submit();
-    //         }
-    //     });
-    // });
+   
 
 $(document).ready(function () {
     $("#mobile_number").on("input", function () {
