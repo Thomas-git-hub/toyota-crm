@@ -175,6 +175,164 @@ class ApplicationController extends Controller
         ->make(true);
     }
     
+    public function list_cancel(Request $request){
+
+        // dd($request->start_date);
+        $statusIds = Status::whereIn('status', ['Denied', 'Cancel'])->pluck('id')->toArray();
+        $query = Application::with(['user', 'customer', 'vehicle', 'trans'])
+                        ->whereNull('deleted_at')
+                        ->whereIn('status_id', $statusIds);
+
+        if ($request->has('date_range') && !empty($request->date_range)) {
+            [$startDate, $endDate] = explode(' to ', $request->date_range);
+            $startDate = Carbon::createFromFormat('m/d/Y', $startDate)->startOfDay();
+            $endDate = Carbon::createFromFormat('m/d/Y', $endDate)->endOfDay();
+
+            $query->whereBetween('created_at', [$startDate, $endDate]);
+        }
+
+        $list = $query->get();
+
+        return DataTables::of($list)
+        ->addColumn('id', function($data) {
+            return encrypt($data->id);
+        })
+
+        ->addColumn('team', function($data) {
+            $team = Team::where('id',  $data->user->team_id)->first();
+            return $team->name;
+        })
+
+        ->addColumn('agent', function($data) {
+            return $data->user->first_name . ' ' . $data->user->last_name;
+        })
+
+        ->addColumn('customer_name', function($data) {
+            return $data->customer->customer_first_name . ' ' . $data->customer->customer_last_name;
+        })
+
+        ->addColumn('age', function($data) {
+            return $data->customer->age;
+        })
+
+        ->addColumn('gender', function($data) {
+            return $data->customer->gender;
+        })
+
+        ->addColumn('contact_number', function($data) {
+            return $data->customer->contact_number;
+        })
+
+        ->addColumn('address', function($data) {
+            return $data->customer->address;
+        })
+
+        ->addColumn('source', function($data) {
+            return $data->customer->source;
+        })
+
+        ->addColumn('unit', function($data) {
+            return $data->vehicle->unit;
+        })
+
+        ->addColumn('variant', function($data) {
+            return $data->vehicle->variant;
+        })
+
+        ->addColumn('color', function($data) {
+            return $data->vehicle->color;
+        })
+
+        ->addColumn('transaction', function($data) {
+            return $data->transaction;
+        })
+
+        ->editColumn('date', function($data) {
+            return $data->created_at->format('m/d/Y');
+        })
+
+        ->make(true);
+    }
+
+    public function list_cash(Request $request){
+
+        // dd($request->start_date);
+        $query = Application::with([ 'user', 'customer', 'vehicle', 'trans'])
+                        ->whereNull('deleted_at')
+                        ->where('transact')
+                        ;
+
+        if ($request->has('date_range') && !empty($request->date_range)) {
+            [$startDate, $endDate] = explode(' to ', $request->date_range);
+            $startDate = Carbon::createFromFormat('m/d/Y', $startDate)->startOfDay();
+            $endDate = Carbon::createFromFormat('m/d/Y', $endDate)->endOfDay();
+
+            $query->whereBetween('created_at', [$startDate, $endDate]);
+        }
+
+        $list = $query->get();
+
+        return DataTables::of($list)
+        ->addColumn('id', function($data) {
+            return encrypt($data->id);
+        })
+
+        ->addColumn('team', function($data) {
+            $team = Team::where('id',  $data->user->team_id)->first();
+            return $team->name;
+        })
+
+        ->addColumn('agent', function($data) {
+            return $data->user->first_name . ' ' . $data->user->last_name;
+        })
+
+        ->addColumn('customer_name', function($data) {
+            return $data->customer->customer_first_name . ' ' . $data->customer->customer_last_name;
+        })
+
+        ->addColumn('age', function($data) {
+            return $data->customer->age;
+        })
+
+        ->addColumn('gender', function($data) {
+            return $data->customer->gender;
+        })
+
+        ->addColumn('contact_number', function($data) {
+            return $data->customer->contact_number;
+        })
+
+        ->addColumn('address', function($data) {
+            return $data->customer->address;
+        })
+
+        ->addColumn('source', function($data) {
+            return $data->customer->source;
+        })
+
+        ->addColumn('unit', function($data) {
+            return $data->vehicle->unit;
+        })
+
+        ->addColumn('variant', function($data) {
+            return $data->vehicle->variant;
+        })
+
+        ->addColumn('color', function($data) {
+            return $data->vehicle->color;
+        })
+
+        ->addColumn('transaction', function($data) {
+            return $data->transaction;
+        })
+
+        ->editColumn('date', function($data) {
+            return $data->created_at->format('m/d/Y');
+        })
+
+        ->make(true);
+    }
+
     public function list_pending(Request $request){
 
         // dd($request->start_date);

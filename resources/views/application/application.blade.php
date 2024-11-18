@@ -303,8 +303,8 @@
         const routeMap = {
             pending: '{{ route("application.pending") }}',
             approved: '{{ route("application.approved") }}',
-            denied: '{{ route("application.pending") }}',
-            cash: '{{ route("application.pending") }}'
+            denied: '{{ route("application.cancel") }}',
+            cash: '{{ route("application.cash") }}'
         };
 
         applicationTable.ajax.url(routeMap[status]).load();

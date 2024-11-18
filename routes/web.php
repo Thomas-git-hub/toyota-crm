@@ -30,6 +30,8 @@ Route::post('/leads/update/{id}', [LeadController::class, 'update'])->name('lead
 
 Route::get('/list/pending', [ApplicationController::class, 'list_pending'])->name('application.pending');
 Route::get('/list/approved', [ApplicationController::class, 'list_approved'])->name('application.approved');
+Route::get('/list/cancel', [ApplicationController::class, 'list_cancel'])->name('application.cancel');
+Route::get('/list/cash', [ApplicationController::class, 'list_cash'])->name('application.cash');
 
 // EDIT LEADS
 
