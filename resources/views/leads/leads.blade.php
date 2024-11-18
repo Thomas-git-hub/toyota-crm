@@ -446,19 +446,14 @@
             const selectedUnit = $(this).val();
             if (selectedUnit) {
                 $.ajax({
-                    url: '{{ route("leads.getVariantsAndColors") }}',
+                    url: '{{ route("leads.getVariants") }}',
                     type: 'GET',
                     data: { unit: selectedUnit },
                     dataType: 'json',
                     success: function(data) {
-                        // Populate the car_variant and car_color selects
                         let variantSelect = $('#car_variant, #edit_car_variant');
-                        let colorSelect = $('#car_color, #edit_car_color');
                         variantSelect.empty();
-                        colorSelect.empty();
                         variantSelect.append('<option value="">Select Variants...</option>');
-                        colorSelect.append('<option value="">Select Color...</option>');
-
                         // Check if data.variants is an array or a single value
                         if (Array.isArray(data.variants)) {
                             data.variants.forEach(function(variant) {
@@ -467,7 +462,31 @@
                         } else {
                             variantSelect.append(`<option value="${data.variants}">${data.variants}</option>`);
                         }
+                    },
+                    error: function(error) {
+                        console.error('Error loading variants and colors:', error);
+                    }
+                });
+            } else {
+                console.log('here');
+                // Clear the selects if no unit is selected
+                $('#car_variant').empty().append('<option value="">Select Variants...</option>');
+            }
+        });
 
+        $('#car_variant, #edit_car_variant').on('change', function() {
+            const selectedVariant = $(this).val();
+            if (selectedVariant) {
+                $.ajax({
+                    url: '{{ route("leads.getColor") }}',
+                    type: 'GET',
+                    data: { variant: selectedVariant },
+                    dataType: 'json',
+                    success: function(data) {
+                       
+                        let colorSelect = $('#car_color, #edit_car_color');
+                        colorSelect.empty();
+                        colorSelect.append('<option value="">Select Color...</option>');
                         // Check if data.colors is an array or a single value
                         if (Array.isArray(data.colors)) {
                             data.colors.forEach(function(color) {
@@ -484,7 +503,6 @@
             } else {
                 console.log('here');
                 // Clear the selects if no unit is selected
-                $('#car_variant').empty().append('<option value="">Select Variants...</option>');
                 $('#car_color').empty().append('<option value="">Select Color...</option>');
             }
         });
@@ -799,20 +817,36 @@
 
                     // Get variants and colors based on the selected unit
                     $.ajax({
-                        url: '{{ route("leads.getVariantsAndColors") }}',
+                        url: '{{ route("leads.getVariants") }}',
                         type: 'GET',
-                        data: { unit: data.unit },
+                        data: { unit: data.vehicle.unit },
                         dataType: 'json',
                         success: function(variantsData) {
                             console.log(data.vehicle.variant);
                             $('#edit_car_variant').val(data.vehicle.variant);
+                        },
+                        error: function(xhr) {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Error',
+                                text: 'Could not fetch variants.'
+                            });
+                        }
+                    });
+                    $.ajax({
+                        url: '{{ route("leads.getColor") }}',
+                        type: 'GET',
+                        data: { variant: data.vehicle.variant },
+                        dataType: 'json',
+                        success: function(variantsData) {
+                            console.log(data.vehicle.color);
                             $('#edit_car_color').val(data.vehicle.color);
                         },
                         error: function(xhr) {
                             Swal.fire({
                                 icon: 'error',
                                 title: 'Error',
-                                text: 'Could not fetch variants and colors.'
+                                text: 'Could not fetch colors.'
                             });
                         }
                     });

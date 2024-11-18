@@ -25,6 +25,8 @@ Route::delete('/leads/destroy', [LeadController::class, 'destroy'])->name('leads
 Route::get('/getProvince', [LeadController::class, 'getProvince'])->name('leads.getProvince');
 Route::get('/getUnit', [LeadController::class, 'getUnit'])->name('leads.getUnit');
 Route::get('/leads/get-variants-and-colors', [LeadController::class, 'getVariantsAndColors'])->name('leads.getVariantsAndColors');
+Route::get('/leads/get-variants', [LeadController::class, 'getVariants'])->name('leads.getVariants');
+Route::get('/leads/get-colors', [LeadController::class, 'getColor'])->name('leads.getColor');
 Route::get('leads/edit/{id}', [LeadController::class, 'edit'])->name('leads.edit');
 Route::post('/leads/update/{id}', [LeadController::class, 'update'])->name('leads.update');
 
