@@ -50,11 +50,9 @@
                 </div>
                 <div class="row">
                     <div class="col-md">
-                    <label for="province" class="form-label required">Province</label>
-                    <select class="form-control" id="edit_province" name="province">
-                        <option value="">Select Province</option>
-                    </select>
-                    <small class="text-danger" id="validateProvince">Please Select a Province</small>
+                    <label for="edit_address" class="form-label required">Address</label>
+                    <input type="text" class="form-control" id="edit_address" name="address" placeholder="" />
+                    <small class="text-danger" id="validateAddress">Enter <Address></Address></small>
                 </div>
                 </div>
             </div>
@@ -179,11 +177,9 @@
                         </div>
                         <div class="row">
                             <div class="col-md">
-                            <label for="province" class="form-label required">Province</label>
-                            <select class="form-control" id="province" name="province">
-                                <option value="">Select Province</option>
-                            </select>
-                            <small class="text-danger" id="validateProvince">Please Select a Province</small>
+                            <label for="address" class="form-label required">Address</label>
+                            <input type="text" class="form-control" id="address" name="address" placeholder="" />
+                            <small class="text-danger" id="validateAddress">Enter <Address></Address></small>
                         </div>
                         </div>
                     </div>
@@ -290,7 +286,7 @@
 
 @section('components.specific_page_scripts')
 <script>
-   
+
     //Date filter
     flatpickr("#date-range-picker", {
         mode: "range",
@@ -371,7 +367,8 @@
             { data: 'gender', name: 'gender', title: 'Gender' },
             { data: 'age', name: 'age', title: 'Age' },
             { data: 'source', name: 'source', title: 'Source' },
-            { data: 'province', name: 'province', title: 'Province' },
+            { data: 'address', name: 'address', title: 'Address' },
+            { data: 'transactional_status', name: 'transactional_status', title: 'Status', render: function(data) { return data.charAt(0).toUpperCase() + data.slice(1); } },
             { data: 'remarks', name: 'remarks', title: 'Remarks' },
             { data: 'date', name: 'date', title: 'Date' },
             {
@@ -410,22 +407,22 @@
     // Inquiry Form Validation
     $(document).ready(function () {
         // Load Province
-        $.ajax({
-            url: '{{ route('leads.getProvince') }}',
-            type: 'GET',
-            dataType: 'json',
-            success: function(data) {
-                let provinceSelect = $('#province , #edit_province');
-                provinceSelect.empty();
-                provinceSelect.append('<option value="">Select Province...</option>');
-                data.forEach(function(item) {
-                    provinceSelect.append(`<option value="${item.id}">${item.province}</option>`);
-                });
-            },
-            error: function(error) {
-                console.error('Error loading provinces:', error);
-            }
-        });
+        // $.ajax({
+        //     url: '{{ route('leads.getProvince') }}',
+        //     type: 'GET',
+        //     dataType: 'json',
+        //     success: function(data) {
+        //         let provinceSelect = $('#province , #edit_province');
+        //         provinceSelect.empty();
+        //         provinceSelect.append('<option value="">Select Province...</option>');
+        //         data.forEach(function(item) {
+        //             provinceSelect.append(`<option value="${item.id}">${item.province}</option>`);
+        //         });
+        //     },
+        //     error: function(error) {
+        //         console.error('Error loading provinces:', error);
+        //     }
+        // });
 
         $.ajax({
             url: '{{ route('leads.getUnit') }}',
@@ -449,7 +446,7 @@
             const selectedUnit = $(this).val();
             if (selectedUnit) {
                 $.ajax({
-                    url: '{{ route("leads.getVariantsAndColors") }}', 
+                    url: '{{ route("leads.getVariantsAndColors") }}',
                     type: 'GET',
                     data: { unit: selectedUnit },
                     dataType: 'json',
@@ -535,7 +532,7 @@
             isValid = validateField('#source', 'Please Select Source') && isValid;
             isValid = validateField('#gender', 'Please Select Gender') && isValid;
             isValid = validateField('#car_variant', 'Please Select a Variant') && isValid;
-            isValid = validateField('#province', 'Please Select a Province') && isValid;
+            isValid = validateField('#address', 'Enter Address') && isValid;
 
             // Special validation for mobile number
             const mobileNumber = $('#mobile_number').val();
@@ -600,7 +597,7 @@
             isValid = validateField('#edit_source', 'Please Select Source') && isValid;
             isValid = validateField('#edit_gender', 'Please Select Gender') && isValid;
             isValid = validateField('#edit_car_variant', 'Please Select a Variant') && isValid;
-            isValid = validateField('#edit_province', 'Please Select a Province') && isValid;
+            isValid = validateField('#edit_adress', 'Enter Address') && isValid;
 
             // Special validation for mobile number
             const mobileNumber = $('#edit_mobile_number').val();
@@ -622,7 +619,7 @@
                 $('#edit_transaction').val(originalValues.transaction);
                 $('#edit_source').val(originalValues.source);
                 $('#edit_gender').val(originalValues.gender);
-                $('#edit_province').val(originalValues.province);
+                $('#edit_address').val(originalValues.address);
             }
 
             if (isValid) {
@@ -671,6 +668,36 @@
 
     });
 
+    $(document).ready(function () {
+        $("#mobile_number, #edit_mobile_number").on("input", function () {
+            let value = $(this).val();
+
+            // Enforce the number to start with "09" and allow only digits
+            if (!/^09/.test(value)) {
+                value = "09"; // If it doesn't start with "09", reset to "09"
+            } else {
+                value = value.replace(/[^0-9]/g, ""); // Remove any non-numeric characters
+            }
+
+            // Limit to exactly 11 digits
+            if (value.length > 11) {
+                value = value.slice(0, 11); // Truncate to 11 characters if exceeded
+            }
+
+            // Update the input field with the sanitized value
+            $(this).val(value);
+        });
+
+    // Form submission event to check final validation
+        $("#leadFormData, #editInquiryFormData").on("submit", function (event) {
+            const mobileNumber = $("#mobile_number").val();
+            if (mobileNumber.length !== 11) {
+                event.preventDefault();
+                $("#validateMobileNumber").show().text("Mobile number must be exactly 11 digits.");
+            }
+        });
+    });
+
     let originalValues = {};0
 
     // Add this inside your <script> tag in the Blade file
@@ -680,17 +707,16 @@
             url: `{{ url('leads/edit') }}/${inquiryId}`,
             type: 'GET',
             success: function(data) {
+                console.log(data);
                 // Populate the form fields with the inquiry data
                 $('#edit_id').val(data.id);
-                $('#edit_first_name').val(data.customer_first_name);
-                $('#edit_last_name').val(data.customer_last_name);
-                $('#edit_gender').val(data.gender);
-                $('#edit_age').val(data.age);
-                $('#edit_mobile_number').val(data.contact_number);
-                $('#edit_province').val(data.province_id);
-                $('#edit_car_unit').val(data.unit).trigger('change');
-
-                
+                $('#edit_first_name').val(data.customer.customer_first_name);
+                $('#edit_last_name').val(data.customer.customer_last_name);
+                $('#edit_gender').val(data.customer.gender);
+                $('#edit_age').val(data.customer.age);
+                $('#edit_mobile_number').val(data.customer.contact_number);
+                $('#edit_address').val(data.customer.address);
+                $('#edit_car_unit').val(data.vehicle.unit).trigger('change');
 
                     // Get variants and colors based on the selected unit
                     $.ajax({
@@ -699,8 +725,8 @@
                         data: { unit: data.unit },
                         dataType: 'json',
                         success: function(variantsData) {
-                            $('#edit_car_variant').val(data.variant);
-                            $('#edit_car_color').val(data.color);
+                            $('#edit_car_variant').val(data.vehicle.variant);
+                            $('#edit_car_color').val(data.vehicle.color);
                         },
                         error: function(xhr) {
                             Swal.fire({
@@ -712,29 +738,29 @@
                     });
 
                     $('#edit_transaction').val(data.transaction);
-                    $('#edit_source').val(data.source);
+                    $('#edit_source').val(data.customer.source);
                     $('#edit_remarks').val(data.remarks);
 
 
                     // Store original values
                     originalValues = {
                         id: data.id,
-                        firstName: data.customer_first_name,
-                        lastName: data.customer_last_name,
-                        gender: data.gender,
-                        age: data.age,
-                        mobileNumber: data.contact_number,
-                        province: data.province_id,
-                        carUnit: data.unit,
-                        carVariant: data.variant,
-                        carColor: data.color,
+                        firstName: data.customer.customer_first_name,
+                        lastName: data.customer.customer_last_name,
+                        gender: data.customer.gender,
+                        age: data.customer.age,
+                        mobileNumber: data.customer.contact_number,
+                        address: data.customer.address,
+                        carUnit: data.vehicle.unit,
+                        carVariant: data.vehicle.variant,
+                        carColor: data.vehicle.color,
                         transaction: data.transaction,
-                        source: data.source,
+                        source: data.customer.source,
                         remarks: data.remarks
                     };
                     $('#editInquiryFormModal').modal('show');
 
-                    
+
                 },
                 error: function(xhr) {
                     Swal.fire({
@@ -745,7 +771,7 @@
                 }
             });
     });
-  
+
 
     // display form
     $(document).ready(function () {
@@ -858,7 +884,7 @@
         });
     });
 
-    
+
 
 </script>
 

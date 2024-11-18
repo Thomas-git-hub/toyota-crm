@@ -13,6 +13,8 @@ return new class extends Migration
     {
         Schema::create('application', function (Blueprint $table) {
             $table->id();
+            $table->unsignedBigInteger('customer_id');
+            $table->unsignedBigInteger('vehicle_id');
             $table->unsignedBigInteger('transaction_id');
             $table->unsignedBigInteger('status_id');
             $table->unsignedBigInteger('bank_id')->nullable();

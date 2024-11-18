@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Application;
+use App\Models\Customer;
 use App\Models\Inquiry;
 use App\Models\Province;
 use App\Models\Status;
@@ -40,22 +41,32 @@ class LeadController extends Controller
                 'source' => 'required|string',
                 'additional_info' => 'nullable|string',
                 'gender' => 'required|string',
-                'province' => 'required',
+                'address' => 'required',
             ]);
+
+            $customer = new Customer();
+            $customer->customer_first_name = $validated['first_name'];
+            $customer->customer_last_name = $validated['last_name'];
+            $customer->contact_number = $validated['mobile_number'];
+            $customer->gender = $validated['gender'];
+            $customer->address = $validated['address'];
+            $customer->age = $validated['age'];
+            $customer->source = $validated['source'];
+            $customer->created_by = Auth::id();
+            $customer->updated_by = Auth::id();
+            $customer->save();
+
+            $vehicle = Vehicle::where('unit', $validated['car_unit'])
+            ->where('variant', $validated['car_variant'])
+            ->where('color',$validated['car_color'])
+            ->first();
 
             $inquiry = new Inquiry();
             $inquiry->users_id = Auth::id();
-            $inquiry->customer_first_name = $validated['first_name'];
-            $inquiry->customer_last_name = $validated['last_name'];
-            $inquiry->contact_number = $validated['mobile_number'];
-            $inquiry->gender = $validated['gender'];
-            $inquiry->province_id = $validated['province'];
-            $inquiry->unit = $validated['car_unit'];
-            $inquiry->variant = $validated['car_variant'];
-            $inquiry->color = $validated['car_color'];
+            $inquiry->customer_id = $customer->id;
+            $inquiry->customer_id = $customer->id;
+            $inquiry->vehicle_id = $vehicle->id;
             $inquiry->transaction = $validated['transaction'];
-            $inquiry->age = $validated['age'];
-            $inquiry->source = $validated['source'];
             $inquiry->remarks = $validated['additional_info'];
             $inquiry->date = now()->format('F d'); // Month name day
             $inquiry->created_by = Auth::id();
@@ -63,25 +74,30 @@ class LeadController extends Controller
             $inquiry->transactional_status = in_array($validated['transaction'], ['cash', 'po']) ? 'approved' : 'pending';
             $inquiry->save();
 
-            // Add the inquiry_id to the transactions table
-            $transaction = new Transactions();
-            $transaction->inquiry_id = $inquiry->id; // Set the inquiry_id
-            $transaction->status = Status::where('status', 'like', 'pending')->first()->id;
-            $transaction->save(); // Save the transaction
 
-            if (in_array($inquiry->transaction, ['cash', 'po'])) {
-                $pending_status = Status::where('status', 'like', 'approve')->first();
-                $application = new Application();
-                $application->transaction_id = $transaction->id;
-                $application->status_id = $pending_status->id;
-                $application->created_by = Auth::id();
-                $application->updated_by = Auth::id();
-                $application->save();
+            if($inquiry->transactional_status === 'approved'){
+                // Add the inquiry_id to the transactions table
+                $transaction = new Transactions();
+                $transaction->inquiry_id = $inquiry->id; // Set the inquiry_id
+                $transaction->status = Status::where('status', 'like', 'pending')->first()->id;
+                $transaction->save(); // Save the transaction
 
-                // Update the transaction table's application_id with the latest inserted application's id
-                $transaction->application_id = $application->id;
-                $transaction->status = Status::where('status', 'like', 'approve')->first()->id;
-                $transaction->save();
+                if (in_array($inquiry->transaction, ['cash', 'po'])) {
+
+                    $approved_status = Status::where('status', 'like', 'approved')->first();
+                    $application = new Application();
+                    $application->transaction_id = $transaction->id;
+                    $application->status_id = $approved_status->id;
+                    $application->created_by = Auth::id();
+                    $application->updated_by = Auth::id();
+                    $application->save();
+
+                    // Update the transaction table's application_id with the latest inserted application's id
+                    $transaction->application_id = $application->id;
+                    $transaction->status = Status::where('status', 'like', 'approved')->first()->id;
+                    $transaction->save();
+                }
+
             }
 
             return response()->json([
@@ -99,9 +115,9 @@ class LeadController extends Controller
     public function list(Request $request){
 
         // dd($request->start_date);
-        $query = Inquiry::with(['province', 'user'])
+        $query = Inquiry::with([ 'user', 'customer', 'vehicle'])
                         ->whereNull('deleted_at');
-                        
+
         if ($request->has('date_range') && !empty($request->date_range)) {
             [$startDate, $endDate] = explode(' to ', $request->date_range);
             $startDate = Carbon::createFromFormat('m/d/Y', $startDate)->startOfDay();
@@ -127,11 +143,42 @@ class LeadController extends Controller
         })
 
         ->addColumn('customer_name', function($data) {
-            return $data->customer_first_name . ' ' . $data->customer_last_name;
+            return $data->customer->customer_first_name . ' ' . $data->customer->customer_last_name;
         })
-        ->addColumn('province', function($data) {
-            return $data->province->province;
+
+        ->addColumn('age', function($data) {
+            return $data->customer->age;
         })
+
+        ->addColumn('gender', function($data) {
+            return $data->customer->gender;
+        })
+
+        ->addColumn('contact_number', function($data) {
+            return $data->customer->contact_number;
+        })
+
+        ->addColumn('address', function($data) {
+            return $data->customer->address;
+        })
+
+        ->addColumn('source', function($data) {
+            return $data->customer->source;
+        })
+
+        ->addColumn('unit', function($data) {
+            return $data->vehicle->unit;
+        })
+
+        ->addColumn('variant', function($data) {
+            return $data->vehicle->variant;
+        })
+
+        ->addColumn('color', function($data) {
+            return $data->vehicle->color;
+        })
+
+
 
         ->editColumn('created_at', function($data) {
             return $data->created_at->format('m/d/Y');
@@ -143,10 +190,30 @@ class LeadController extends Controller
     public function processing(Request $request){
         try {
             $inquiry = Inquiry::findOrFail(decrypt($request->id));
-            $inquiry->transactional_status = 'approve';
+            $inquiry->transactional_status = 'approved';
             $inquiry->updated_by = Auth::user()->id;
             $inquiry->save();
 
+             // Add the inquiry_id to the transactions table
+             $transaction = new Transactions();
+             $transaction->inquiry_id = $inquiry->id; // Set the inquiry_id
+             $transaction->status = Status::where('status', 'like', 'pending')->first()->id;
+             $transaction->save(); // Save the transaction
+
+             if (in_array($inquiry->transaction, ['cash', 'po'])) {
+                 $pending_status = Status::where('status', 'like', 'approved')->first();
+                 $application = new Application();
+                 $application->transaction_id = $transaction->id;
+                 $application->status_id = $pending_status->id;
+                 $application->created_by = Auth::id();
+                 $application->updated_by = Auth::id();
+                 $application->save();
+
+                 // Update the transaction table's application_id with the latest inserted application's id
+                 $transaction->application_id = $application->id;
+                 $transaction->status = Status::where('status', 'like', 'approved')->first()->id;
+                 $transaction->save();
+             }
 
 
             return response()->json([
@@ -205,7 +272,7 @@ class LeadController extends Controller
         ->get();
 
         $variants = $vehicles->pluck('variant')->unique()->values()->toArray();
-        $colors = $vehicles->pluck('color')->unique();
+        $colors = $vehicles->pluck('color')->unique()->values()->toArray();
 
         return response()->json([
             'variants' => $variants,
@@ -217,7 +284,7 @@ class LeadController extends Controller
     {
         // Fetch the inquiry data by ID
        $decryptedId = decrypt($id);
-       $data = Inquiry::where('id', $decryptedId)->first();
+       $data = Inquiry::with([ 'user', 'customer', 'vehicle'])->where('id', $decryptedId)->first();
         return response()->json($data);
     }
 

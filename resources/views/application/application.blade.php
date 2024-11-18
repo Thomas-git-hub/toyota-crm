@@ -137,13 +137,12 @@
         <div class="card custom-card">
             <div class="card-body">
                 <div class="row mb-2">
-                    <div class="col-md">
-                        <label for="dateRangePicker" class="form-label">Date Range</label>
-                        <div class="input-group input-daterange w-50" id="bs-datepicker-daterange">
-                            <input id="dateRangePicker" type="text" placeholder="MM/DD/YYYY" class="form-control" />
-                            <span class="input-group-text">to</span>
-                            <input type="text" placeholder="MM/DD/YYYY" class="form-control" />
-                          </div>
+                    <div class="d-flex w-50 gap-2">
+                        <div class="mb-3">
+                            <div class="input-group">
+                                <input type="text" id="date-range-picker" class="form-control" placeholder="Select date range">
+                            </div>
+                        </div>
                     </div>
                 </div>
                 <div class="row">
@@ -174,39 +173,87 @@
 @section('components.specific_page_scripts')
 
 <script>
+
+    //Date filter
+    flatpickr("#date-range-picker", {
+        mode: "range",
+        dateFormat: "m/d/Y",
+        onChange: function(selectedDates, dateStr, instance) {
+            // Check if both start and end dates are selected
+            if (selectedDates.length === 2) {
+                // Check if the end date is earlier than or equal to the start date
+                if (selectedDates[1] <= selectedDates[0]) {
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'Warning!',
+                        text: 'Please select a valid date range.',
+                    });
+                } else {
+                    // Reload the tables if a valid range is selected
+                    // applicationTable.ajax.reload(null, false);
+                }
+            }
+        },
+        // Add clear button
+        onReady: function(selectedDates, dateStr, instance) {
+            // Create a "Clear" button
+            const clearButton = document.createElement("button");
+            clearButton.innerHTML = "Clear";
+            clearButton.classList.add("clear-btn");
+
+            // Create a "Close" button
+            const closeButton = document.createElement("button");
+            closeButton.innerHTML = "Close";
+            closeButton.classList.add("close-btn");
+
+            // Append the buttons to the flatpickr calendar
+            instance.calendarContainer.appendChild(clearButton);
+            instance.calendarContainer.appendChild(closeButton);
+
+            // Add event listener to clear the date and reload the tables
+            clearButton.addEventListener("click", function() {
+                instance.clear(); // Clear the date range
+                inquiryTable.ajax.reload(null, false); // Reload the tables
+            });
+
+            // Add event listener to close the calendar
+            closeButton.addEventListener("click", function() {
+                instance.close(); // Close the flatpickr calendar
+            });
+        }
+    });
     // DataTable initialization
     const applicationTable = $('#applicationTable').DataTable({
-        // responsive: true,
-        data: [
-            {
-                "team": "Team A",
-                "agent": "John Doe",
-                "customer_name": "Jane Smith",
-                "unit": "Toyota Corolla",
-                "variant": "1.8L",
-                "transaction": "Cash",
-                "gender": "Female",
-                "age": "25",
-                "source": "Social-Media",
-                "province": "Metro Manila",
-                "remarks": "No remarks",
-                "status": "Approved",
-                "date": "2022-01-01",
-                "id": "1"
-            }
-        ],
+            processing: true,
+            serverSide: true,
+            ajax: {
+                url: '{{ route("leads.list") }}',
+                data: function(d) {
+                    // Include the date range in the AJAX request
+                    d.date_range = $('#date-range-picker').val();
+                },
+            },
+            pageLength: 10,
+            paging: true,
+            responsive: true,
+            dom: '<"top"lf>rt<"bottom"ip>',
+            language: {
+                search: "",
+                searchPlaceholder: "Search..."
+            },
         columns: [
             { data: 'team', name: 'team', title: 'Team' },
             { data: 'agent', name: 'agent', title: 'Agent' },
             { data: 'customer_name', name: 'customer_name', title: 'Customer Name' },
+            { data: 'contact_number', name: 'contact_number', title: 'Contact No.' },
             { data: 'unit', name: 'unit', title: 'Unit' },
             { data: 'variant', name: 'variant', title: 'Variant' },
+            { data: 'color', name: 'color', title: 'Color' },
             { data: 'transaction', name: 'transaction', title: 'Transaction' },
             { data: 'gender', name: 'gender', title: 'Gender' },
             { data: 'age', name: 'age', title: 'Age' },
             { data: 'source', name: 'source', title: 'Source' },
             { data: 'province', name: 'province', title: 'Province' },
-            { data: 'status', name: 'status', title: 'Status' },
             { data: 'date', name: 'date', title: 'Date' },
             {
                 data: 'remarks',
@@ -237,10 +284,284 @@
                     `;
                 }
             }
-        ]
+        ],
+        order: [[0, 'desc']],  // Sort by date created by default
+        columnDefs: [
+            {
+                type: 'created_at',
+                targets: [0, 1] // Apply date sorting to date_received and date_on_hold columns
+            }
+        ],
+
     });
 
+    // Inquiry Form Validation
+    $(document).ready(function () {
+        // Load Province
+        $.ajax({
+            url: '{{ route('leads.getProvince') }}',
+            type: 'GET',
+            dataType: 'json',
+            success: function(data) {
+                let provinceSelect = $('#province , #edit_province');
+                provinceSelect.empty();
+                provinceSelect.append('<option value="">Select Province...</option>');
+                data.forEach(function(item) {
+                    provinceSelect.append(`<option value="${item.id}">${item.province}</option>`);
+                });
+            },
+            error: function(error) {
+                console.error('Error loading provinces:', error);
+            }
+        });
+
+        $.ajax({
+            url: '{{ route('leads.getUnit') }}',
+            type: 'GET',
+            dataType: 'json',
+            success: function(data) {
+                let unitSelect = $('#car_unit, #edit_car_unit');
+                unitSelect.empty();
+                unitSelect.append('<option value="">Select Unit...</option>');
+                data.forEach(function(item) {
+                    unitSelect.append(`<option value="${item.unit}">${item.unit}</option>`);
+                });
+            },
+            error: function(error) {
+                console.error('Error loading unit:', error);
+            }
+        });
+
+         // Load variants and colors based on selected unit
+        $('#car_unit, #edit_car_unit').on('change', function() {
+            const selectedUnit = $(this).val();
+            if (selectedUnit) {
+                $.ajax({
+                    url: '{{ route("leads.getVariantsAndColors") }}',
+                    type: 'GET',
+                    data: { unit: selectedUnit },
+                    dataType: 'json',
+                    success: function(data) {
+                        // Populate the car_variant and car_color selects
+                        let variantSelect = $('#car_variant, #edit_car_variant');
+                        let colorSelect = $('#car_color, #edit_car_color');
+                        variantSelect.empty();
+                        colorSelect.empty();
+                        variantSelect.append('<option value="">Select Variants...</option>');
+                        colorSelect.append('<option value="">Select Color...</option>');
+
+                        // Check if data.variants is an array or a single value
+                        if (Array.isArray(data.variants)) {
+                            data.variants.forEach(function(variant) {
+                                variantSelect.append(`<option value="${variant}">${variant}</option>`);
+                            });
+                        } else {
+                            variantSelect.append(`<option value="${data.variants}">${data.variants}</option>`);
+                        }
+
+                        // Check if data.colors is an array or a single value
+                        if (Array.isArray(data.colors)) {
+                            data.colors.forEach(function(color) {
+                                colorSelect.append(`<option value="${color}">${color}</option>`);
+                            });
+                        } else {
+                            colorSelect.append(`<option value="${data.colors}">${data.colors}</option>`);
+                        }
+                    },
+                    error: function(error) {
+                        console.error('Error loading variants and colors:', error);
+                    }
+                });
+            } else {
+                console.log('here');
+                // Clear the selects if no unit is selected
+                $('#car_variant').empty().append('<option value="">Select Variants...</option>');
+                $('#car_color').empty().append('<option value="">Select Color...</option>');
+            }
+        });
+
+        // Hide warning messages initially
+        $("small").hide();
+
+        // Helper function to capitalize first letter of each word
+        function capitalizeWords(str) {
+            return str.replace(/\b\w/g, function (txt) {
+                return txt.toUpperCase();
+            });
+        }
+
+        // Validation function
+        function validateField(field, message) {
+            const $field = $(field);
+            const $errorMsg = $field.siblings('small');
+
+            if (!$field.val()) {
+                $field.addClass('is-invalid border-danger');
+                $errorMsg.show();
+                return false;
+            }
+
+            $field.removeClass('is-invalid border-danger');
+            $errorMsg.hide();
+            return true;
+        }
+
+        // // Validate form on submit
+        $("#applicationFormData").on("submit", function (e) {
+            e.preventDefault();
+            let isValid = true;
+
+             // Validate required fields
+            isValid = validateField('#first_name', 'Enter Customer First Name') && isValid;
+            isValid = validateField('#last_name', 'Enter Customer Last Name') && isValid;
+            isValid = validateField('#age', 'Enter Customer Age') && isValid;
+            isValid = validateField('#mobile_number', 'Enter Valid Mobile Number') && isValid;
+            isValid = validateField('#car_unit', 'Please Select Unit') && isValid;
+            isValid = validateField('#car_variant', 'Please Select Variant') && isValid;
+            isValid = validateField('#car_color', 'Please Select Color') && isValid;
+            isValid = validateField('#transaction', 'Please Select Transaction') && isValid;
+            isValid = validateField('#source', 'Please Select Source') && isValid;
+            isValid = validateField('#gender', 'Please Select Gender') && isValid;
+            isValid = validateField('#car_variant', 'Please Select a Variant') && isValid;
+            isValid = validateField('#province', 'Please Select a Province') && isValid;
+
+            // Special validation for mobile number
+            const mobileNumber = $('#mobile_number').val();
+            if (mobileNumber && !mobileNumber.match(/^09\d{9}$/)) {
+                $('#mobile_number').addClass('is-invalid border-danger');
+                $('#validateMobileNumber').show();
+                isValid = false;
+            }
+
+            if (isValid) {
+                const formData = $(this).serialize();
+                $.ajax({
+                    url: '{{ route("leads.store") }}',
+                    type: 'POST',
+                    data: formData,
+                    headers: {
+                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                    },
+                    success: function(response) {
+                        if (response.success) {
+                             Swal.fire({
+                                icon: 'success',
+                                title: 'Success',
+                                text: response.message,
+                            });
+                            // Reset form and hide it
+                            $("#leadFormData")[0].reset();
+                            $("#inquiryFormCard").hide();
+                            $("#addNewInquiryButton").show();
+
+                            // Clear all validation states
+                            $(".text-danger").hide();
+                            $("input, select").removeClass("is-invalid border-danger");
+                            inquiryTable.ajax.reload();
+                        }
+                    },
+                    error: function(xhr) {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: xhr.responseJSON?.message || 'Something went wrong!'
+                        });
+                    }
+                });
+            }
+        });
+
+        // // Validate form on submit
+        // $("#editInquiryFormData").on("submit", function (e) {
+        //     e.preventDefault();
+        //     let isValid = true;
+
+        //      // Validate required fields
+        //     isValid = validateField('#edit_first_name', 'Enter Customer First Name') && isValid;
+        //     isValid = validateField('#edit_last_name', 'Enter Customer Last Name') && isValid;
+        //     isValid = validateField('#edit_age', 'Enter Customer Age') && isValid;
+        //     isValid = validateField('#edit_mobile_number', 'Enter Valid Mobile Number') && isValid;
+        //     isValid = validateField('#edit_car_unit', 'Please Select Unit') && isValid;
+        //     isValid = validateField('#edit_car_variant', 'Please Select Variant') && isValid;
+        //     isValid = validateField('#edit_car_color', 'Please Select Color') && isValid;
+        //     isValid = validateField('#edit_transaction', 'Please Select Transaction') && isValid;
+        //     isValid = validateField('#edit_source', 'Please Select Source') && isValid;
+        //     isValid = validateField('#edit_gender', 'Please Select Gender') && isValid;
+        //     isValid = validateField('#edit_car_variant', 'Please Select a Variant') && isValid;
+        //     isValid = validateField('#edit_province', 'Please Select a Province') && isValid;
+
+        //     // Special validation for mobile number
+        //     const mobileNumber = $('#edit_mobile_number').val();
+        //     if (mobileNumber && !mobileNumber.match(/^09\d{9}$/)) {
+        //         $('#edit_mobile_number').addClass('is-invalid border-danger');
+        //         $('#validateMobileNumber').show();
+        //         isValid = false;
+        //     }
+
+        //     // Restore original values on invalid fields
+        //     if (!isValid) {
+        //         $('#edit_id').val(originalValues.id);
+        //         $('#edit_first_name').val(originalValues.firstName);
+        //         $('#edit_last_name').val(originalValues.lastName);
+        //         $('#edit_age').val(originalValues.age);
+        //         $('#edit_car_unit').val(originalValues.carUnit);
+        //         $('#edit_car_variant').val(originalValues.carVariant);
+        //         $('#edit_car_color').val(originalValues.carColor);
+        //         $('#edit_transaction').val(originalValues.transaction);
+        //         $('#edit_source').val(originalValues.source);
+        //         $('#edit_gender').val(originalValues.gender);
+        //         $('#edit_province').val(originalValues.province);
+        //     }
+
+        //     if (isValid) {
+        //         const formData = $(this).serialize();
+        //         const inquiryId = originalValues.id; // Assuming you set data-id on the form
+
+        //         $.ajax({
+        //             url: `{{ url('leads/update') }}/${inquiryId}`,
+        //             type: 'POST',
+        //             data: formData,
+        //             headers: {
+        //                 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+        //             },
+        //             success: function(response) {
+        //                 if (response.success) {
+        //                     Swal.fire({
+        //                         icon: 'success',
+        //                         title: 'Success',
+        //                         text: response.message,
+        //                     });
+        //                     // Reload the DataTable or update the UI as needed
+        //                     inquiryTable.ajax.reload();
+        //                     $('#editInquiryFormModal').modal('hide'); // Hide the modal
+        //                 }
+        //             },
+        //             error: function(xhr) {
+        //                 Swal.fire({
+        //                     icon: 'error',
+        //                     title: 'Error',
+        //                     text: xhr.responseJSON?.message || 'Something went wrong!'
+        //                 });
+        //             }
+        //         });
+        //     }
+        // });
+
+        $('#applicationFormData input, #leadFormData select').on('input change', function() {
+            validateField(this);
+        });
+
+        // Real-time Capitalization
+        $("input[type='text']").on("input", function () {
+            $(this).val(capitalizeWords($(this).val()));
+        });
+
+
+    });
+
+
     $(document).ready(function() {
+
         $('.btn-group .btn').on('click', function() {
             // Remove 'active' class from all buttons in the group
             $('.btn-group .btn').removeClass('active');
@@ -273,70 +594,70 @@
     });
 
 
-    $(document).ready(function () {
-    $("#applicationFormData").on("submit", function (event) {
-        event.preventDefault(); // Prevent form submission
-        let isValid = true;
+    // $(document).ready(function () {
+    //     $("#applicationFormData").on("submit", function (event) {
+    //         event.preventDefault(); // Prevent form submission
+    //         let isValid = true;
 
-        // Clear previous error messages
-        $("small.text-danger").hide().text("");
+    //         // Clear previous error messages
+    //         $("small.text-danger").hide().text("");
 
-        // Helper function to show errors
-        function showError(selector, message) {
-            $(selector).show().text(message);
-            isValid = false;
-        }
+    //         // Helper function to show errors
+    //         function showError(selector, message) {
+    //             $(selector).show().text(message);
+    //             isValid = false;
+    //         }
 
-        // 1. Validate if each input word starts with an uppercase letter
-        function validateCapitalization(fieldId, errorId) {
-            const value = $(fieldId).val().trim();
-            const words = value.split(" ");
-            const capitalized = words.every(word => /^[A-Z]/.test(word)); // Check each word starts with uppercase
-            if (!capitalized) {
-                showError(errorId, "Each word must start with an uppercase letter.");
-            }
-        }
+    //         // 1. Validate if each input word starts with an uppercase letter
+    //         function validateCapitalization(fieldId, errorId) {
+    //             const value = $(fieldId).val().trim();
+    //             const words = value.split(" ");
+    //             const capitalized = words.every(word => /^[A-Z]/.test(word)); // Check each word starts with uppercase
+    //             if (!capitalized) {
+    //                 showError(errorId, "Each word must start with an uppercase letter.");
+    //             }
+    //         }
 
-        validateCapitalization("#first_name", "#validateFirstname");
-        validateCapitalization("#last_name", "#validateLastname");
+    //         validateCapitalization("#first_name", "#validateFirstname");
+    //         validateCapitalization("#last_name", "#validateLastname");
 
-            // // 2. Validate Philippines phone number (must start with 09 and be exactly 11 digits)
-            // $("#mobile_number").on("input", function () {
-            //     const value = $(this).val();
-            //     if (!/^09\d*$/.test(value)) {
-            //         // If input doesn't start with "09" or contains non-numeric characters, remove the last input
-            //         $(this).val(value.slice(0, -1));
-            //     }
-            // });
+    //             // // 2. Validate Philippines phone number (must start with 09 and be exactly 11 digits)
+    //             // $("#mobile_number").on("input", function () {
+    //             //     const value = $(this).val();
+    //             //     if (!/^09\d*$/.test(value)) {
+    //             //         // If input doesn't start with "09" or contains non-numeric characters, remove the last input
+    //             //         $(this).val(value.slice(0, -1));
+    //             //     }
+    //             // });
 
-        // 3. Validate required fields
-        const requiredFields = [
-            { id: "#first_name", errorId: "#validateFirstname", message: "Enter Customer First Name" },
-            { id: "#last_name", errorId: "#validateLastname", message: "Enter Customer Last Name" },
-            { id: "#gender", errorId: "#validateGender", message: "Please Select Gender" },
-            { id: "#age", errorId: "#validateLastname", message: "Enter Customer Age" },
-            { id: "#mobile_number", errorId: "#validateMobileNumber", message: "Enter Valid Mobile Number" },
-            { id: "#province", errorId: "#validateProvince", message: "Please Select a Province" },
-            { id: "#car_unit", errorId: "#validateUnit", message: "Please Select Unit" },
-            { id: "#car_variant", errorId: "#validateVariant", message: "Please Select Variant" },
-            { id: "#car_color", errorId: "#validateColor", message: "Please Select Color" },
-            { id: "#transaction", errorId: "#validateTransaction", message: "Please Select Transaction" },
-            { id: "#source", errorId: "#validateSource", message: "Please Select Source" }
-        ];
+    //         // 3. Validate required fields
+    //         const requiredFields = [
+    //             { id: "#first_name", errorId: "#validateFirstname", message: "Enter Customer First Name" },
+    //             { id: "#last_name", errorId: "#validateLastname", message: "Enter Customer Last Name" },
+    //             { id: "#gender", errorId: "#validateGender", message: "Please Select Gender" },
+    //             { id: "#age", errorId: "#validateLastname", message: "Enter Customer Age" },
+    //             { id: "#mobile_number", errorId: "#validateMobileNumber", message: "Enter Valid Mobile Number" },
+    //             { id: "#province", errorId: "#validateProvince", message: "Please Select a Province" },
+    //             { id: "#car_unit", errorId: "#validateUnit", message: "Please Select Unit" },
+    //             { id: "#car_variant", errorId: "#validateVariant", message: "Please Select Variant" },
+    //             { id: "#car_color", errorId: "#validateColor", message: "Please Select Color" },
+    //             { id: "#transaction", errorId: "#validateTransaction", message: "Please Select Transaction" },
+    //             { id: "#source", errorId: "#validateSource", message: "Please Select Source" }
+    //         ];
 
-        requiredFields.forEach(field => {
-            const value = $(field.id).val().trim();
-            if (value === "") {
-                showError(field.errorId, field.message);
-            }
-        });
+    //         requiredFields.forEach(field => {
+    //             const value = $(field.id).val().trim();
+    //             if (value === "") {
+    //                 showError(field.errorId, field.message);
+    //             }
+    //         });
 
-        // If all validations pass, submit the form
-        if (isValid) {
-            this.submit();
-        }
-    });
-});
+    //         // If all validations pass, submit the form
+    //         if (isValid) {
+    //             this.submit();
+    //         }
+    //     });
+    // });
 
 $(document).ready(function () {
     $("#mobile_number").on("input", function () {

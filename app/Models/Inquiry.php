@@ -21,7 +21,7 @@ class Inquiry extends Model
         'variant',
         'color',
         'gender',
-        'province_id',
+        'address',
         'transaction',
         'age',
         'source',
@@ -31,11 +31,15 @@ class Inquiry extends Model
         'updated_by'
     ];
 
-    public function province(){
-        return $this->belongsTo(Province::class, 'province_id');
-    }
-
     public function user(){
         return $this->belongsTo(User::class, 'users_id', 'id');
+    }
+
+    public function customer(){
+        return $this->belongsTo(Customer::class, 'customer_id', 'id');
+    }
+
+    public function vehicle(){
+        return $this->belongsTo(Vehicle::class, 'vehicle_id', 'id');
     }
 }

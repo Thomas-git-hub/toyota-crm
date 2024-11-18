@@ -21,6 +21,7 @@ return new class extends Migration
             $table->string('invoice_number');
             $table->integer('age');
             $table->string('status');
+            $table->string('CS_number_status')->default('available');
             $table->text('remarks');
             $table->timestamps();
         });
