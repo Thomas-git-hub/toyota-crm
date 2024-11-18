@@ -52,11 +52,9 @@
                         </div>
                         <div class="row">
                             <div class="col-md">
-                                <label for="province" class="form-label required">Province</label>
-                                <select class="form-control" id="province" name="province">
-                                    <option value="">Select Province</option>
-                                </select>
-                                <small class="text-danger" id="validateProvince">Please Select a Province</small>
+                                <label for="address" class="form-label required">Address</label>
+                                <input type="text" class="form-control" id="address" name="address" placeholder="" />
+                                <small class="text-danger" id="validateAddress">Enter <Address></Address></small>
                             </div>
                         </div>
                     </div>
@@ -148,10 +146,10 @@
                 <div class="row">
                     <div class="col-md">
                         <div class="btn-group w-100" role="group" aria-label="Basic example">
-                            <button type="button" class="btn btn-label-dark active" data-status="pending">Pending</button>
-                            <button type="button" class="btn btn-label-dark" data-status="approved">Approved</button>
-                            <button type="button" class="btn btn-label-dark" data-status="denied">Denied/Canceled</button>
-                            <button type="button" class="btn btn-label-dark" data-status="cash">Cash</button>
+                            <button type="button" class="btn btn-label-dark active" data-route="{{ route('application.pending') }}">Pending</button>
+                            <button type="button" class="btn btn-label-dark" data-route="{{ route('application.approved') }}">Approved</button>
+                            <button type="button" class="btn btn-label-dark" data-route="{{ route('application.cancel') }}">Denied/Canceled</button>
+                            <button type="button" class="btn btn-label-dark" data-route="{{ route('application.cash') }}">Cash</button>
                         </div>
                     </div>
                 </div>
@@ -230,7 +228,6 @@
             url: '{{ route("application.pending") }}',
             data: function(d) {
                 d.date_range = $('#date-range-picker').val();
-                d.status = $('.btn-group .btn.active').data('status'); // Get the current status
             },
         },
         pageLength: 10,
@@ -295,41 +292,18 @@
     });
 
     // Change DataTable route based on button click
-    $('.btn-group .btn').on('click', function() {
-        $('.btn-group .btn').removeClass('active');
-        $(this).addClass('active');
-        
-        const status = $(this).data('status');
-        const routeMap = {
-            pending: '{{ route("application.pending") }}',
-            approved: '{{ route("application.approved") }}',
-            denied: '{{ route("application.cancel") }}',
-            cash: '{{ route("application.cash") }}'
-        };
-
-        applicationTable.ajax.url(routeMap[status]).load();
+    $('.btn-group .btn').on('click', function(e) {
+        e.preventDefault();
+          // Clear the date range picker
+        $('#date-range-picker').val(''); // Clear the date range input
+        applicationTable.ajax.reload(null, false); // Reload the table without resetting the paging
+        var route = $(this).data('route'); // Get the route from the clicked button
+        applicationTable.ajax.url(route).load();
     });
 
     // Inquiry Form Validation
     $(document).ready(function () {
-        // Load Province
-        $.ajax({
-            url: '{{ route('leads.getProvince') }}',
-            type: 'GET',
-            dataType: 'json',
-            success: function(data) {
-                let provinceSelect = $('#province , #edit_province');
-                provinceSelect.empty();
-                provinceSelect.append('<option value="">Select Province...</option>');
-                data.forEach(function(item) {
-                    provinceSelect.append(`<option value="${item.id}">${item.province}</option>`);
-                });
-            },
-            error: function(error) {
-                console.error('Error loading provinces:', error);
-            }
-        });
-
+       
         $.ajax({
             url: '{{ route('leads.getUnit') }}',
             type: 'GET',
@@ -438,7 +412,7 @@
             isValid = validateField('#source', 'Please Select Source') && isValid;
             isValid = validateField('#gender', 'Please Select Gender') && isValid;
             isValid = validateField('#car_variant', 'Please Select a Variant') && isValid;
-            isValid = validateField('#province', 'Please Select a Province') && isValid;
+            isValid = validateField('#address', 'Enter Address') && isValid;
 
             // Special validation for mobile number
             const mobileNumber = $('#mobile_number').val();
@@ -451,7 +425,7 @@
             if (isValid) {
                 const formData = $(this).serialize();
                 $.ajax({
-                    url: '{{ route("leads.store") }}',
+                    url: '{{ route("application.store") }}',
                     type: 'POST',
                     data: formData,
                     headers: {
@@ -465,14 +439,14 @@
                                 text: response.message,
                             });
                             // Reset form and hide it
-                            $("#leadFormData")[0].reset();
-                            $("#inquiryFormCard").hide();
-                            $("#addNewInquiryButton").show();
+                            $("#applicationFormData")[0].reset();
+                            $("#applicationFormCard").hide();
+                            $("#addNewApplicationButton").show();
 
                             // Clear all validation states
                             $(".text-danger").hide();
                             $("input, select").removeClass("is-invalid border-danger");
-                            inquiryTable.ajax.reload();
+                            applicationTable.ajax.reload();
                         }
                     },
                     error: function(xhr) {
@@ -486,81 +460,7 @@
             }
         });
 
-        // // Validate form on submit
-        // $("#editInquiryFormData").on("submit", function (e) {
-        //     e.preventDefault();
-        //     let isValid = true;
-
-        //      // Validate required fields
-        //     isValid = validateField('#edit_first_name', 'Enter Customer First Name') && isValid;
-        //     isValid = validateField('#edit_last_name', 'Enter Customer Last Name') && isValid;
-        //     isValid = validateField('#edit_age', 'Enter Customer Age') && isValid;
-        //     isValid = validateField('#edit_mobile_number', 'Enter Valid Mobile Number') && isValid;
-        //     isValid = validateField('#edit_car_unit', 'Please Select Unit') && isValid;
-        //     isValid = validateField('#edit_car_variant', 'Please Select Variant') && isValid;
-        //     isValid = validateField('#edit_car_color', 'Please Select Color') && isValid;
-        //     isValid = validateField('#edit_transaction', 'Please Select Transaction') && isValid;
-        //     isValid = validateField('#edit_source', 'Please Select Source') && isValid;
-        //     isValid = validateField('#edit_gender', 'Please Select Gender') && isValid;
-        //     isValid = validateField('#edit_car_variant', 'Please Select a Variant') && isValid;
-        //     isValid = validateField('#edit_province', 'Please Select a Province') && isValid;
-
-        //     // Special validation for mobile number
-        //     const mobileNumber = $('#edit_mobile_number').val();
-        //     if (mobileNumber && !mobileNumber.match(/^09\d{9}$/)) {
-        //         $('#edit_mobile_number').addClass('is-invalid border-danger');
-        //         $('#validateMobileNumber').show();
-        //         isValid = false;
-        //     }
-
-        //     // Restore original values on invalid fields
-        //     if (!isValid) {
-        //         $('#edit_id').val(originalValues.id);
-        //         $('#edit_first_name').val(originalValues.firstName);
-        //         $('#edit_last_name').val(originalValues.lastName);
-        //         $('#edit_age').val(originalValues.age);
-        //         $('#edit_car_unit').val(originalValues.carUnit);
-        //         $('#edit_car_variant').val(originalValues.carVariant);
-        //         $('#edit_car_color').val(originalValues.carColor);
-        //         $('#edit_transaction').val(originalValues.transaction);
-        //         $('#edit_source').val(originalValues.source);
-        //         $('#edit_gender').val(originalValues.gender);
-        //         $('#edit_province').val(originalValues.province);
-        //     }
-
-        //     if (isValid) {
-        //         const formData = $(this).serialize();
-        //         const inquiryId = originalValues.id; // Assuming you set data-id on the form
-
-        //         $.ajax({
-        //             url: `{{ url('leads/update') }}/${inquiryId}`,
-        //             type: 'POST',
-        //             data: formData,
-        //             headers: {
-        //                 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-        //             },
-        //             success: function(response) {
-        //                 if (response.success) {
-        //                     Swal.fire({
-        //                         icon: 'success',
-        //                         title: 'Success',
-        //                         text: response.message,
-        //                     });
-        //                     // Reload the DataTable or update the UI as needed
-        //                     inquiryTable.ajax.reload();
-        //                     $('#editInquiryFormModal').modal('hide'); // Hide the modal
-        //                 }
-        //             },
-        //             error: function(xhr) {
-        //                 Swal.fire({
-        //                     icon: 'error',
-        //                     title: 'Error',
-        //                     text: xhr.responseJSON?.message || 'Something went wrong!'
-        //                 });
-        //             }
-        //         });
-        //     }
-        // });
+       
 
         $('#applicationFormData input, #leadFormData select').on('input change', function() {
             validateField(this);

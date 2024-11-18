@@ -28,13 +28,11 @@ Route::get('/leads/get-variants-and-colors', [LeadController::class, 'getVariant
 Route::get('leads/edit/{id}', [LeadController::class, 'edit'])->name('leads.edit');
 Route::post('/leads/update/{id}', [LeadController::class, 'update'])->name('leads.update');
 
+
+// APPLICATION
+Route::get('/application', [ApplicationController::class, 'index'])->name('application');
 Route::get('/list/pending', [ApplicationController::class, 'list_pending'])->name('application.pending');
 Route::get('/list/approved', [ApplicationController::class, 'list_approved'])->name('application.approved');
 Route::get('/list/cancel', [ApplicationController::class, 'list_cancel'])->name('application.cancel');
 Route::get('/list/cash', [ApplicationController::class, 'list_cash'])->name('application.cash');
-
-// EDIT LEADS
-
-
-// APPLICATION
-Route::get('/application', [ApplicationController::class, 'index'])->name('application');
+Route::post('/application/store', [ApplicationController::class, 'store'])->name('application.store');

@@ -3,9 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Models\Application;
+use App\Models\Customer;
 use App\Models\Status;
 use App\Models\Team;
 use App\Models\Transactions;
+use App\Models\Vehicle;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -38,50 +40,64 @@ class ApplicationController extends Controller
                 'source' => 'required|string',
                 'additional_info' => 'nullable|string',
                 'gender' => 'required|string',
-                'province' => 'required',
+                'address' => 'required',
             ]);
 
-            // $inquiry = new Inquiry();
-            // $inquiry->users_id = Auth::id();
-            // $inquiry->customer_first_name = $validated['first_name'];
-            // $inquiry->customer_last_name = $validated['last_name'];
-            // $inquiry->contact_number = $validated['mobile_number'];
-            // $inquiry->gender = $validated['gender'];
-            // $inquiry->province_id = $validated['province'];
-            // $inquiry->unit = $validated['car_unit'];
-            // $inquiry->variant = $validated['car_variant'];
-            // $inquiry->color = $validated['car_color'];
-            // $inquiry->transaction = $validated['transaction'];
-            // $inquiry->age = $validated['age'];
-            // $inquiry->source = $validated['source'];
-            // $inquiry->remarks = $validated['additional_info'];
-            // $inquiry->date = now()->format('F d'); // Month name day
-            // $inquiry->created_by = Auth::id();
-            // $inquiry->updated_by = Auth::id();
-            // $inquiry->transactional_status = in_array($validated['transaction'], ['cash', 'po']) ? 'approved' : 'pending';
-            // $inquiry->save();
+            $customer = new Customer();
+            $customer->customer_first_name = $validated['first_name'];
+            $customer->customer_last_name = $validated['last_name'];
+            $customer->contact_number = $validated['mobile_number'];
+            $customer->gender = $validated['gender'];
+            $customer->address = $validated['address'];
+            $customer->age = $validated['age'];
+            $customer->source = $validated['source'];
+            $customer->created_by = Auth::id();
+            $customer->updated_by = Auth::id();
+            $customer->save();
 
-            // Add the inquiry_id to the transactions table
+            $vehicle = Vehicle::where('unit', $validated['car_unit'])
+            ->where('variant', $validated['car_variant'])
+            ->where('color',$validated['car_color'])
+            ->first();
+
             $transaction = new Transactions();
             $transaction->status = Status::where('status', 'like', 'pending')->first()->id;
             $transaction->save(); // Save the transaction
 
+            
 
+            if (in_array($validated['transaction'], ['cash', 'po'])) {
 
-            if (in_array($transaction->transaction, ['cash', 'po'])) {
-                $pending_status = Status::where('status', 'like', 'approve')->first();
+                $approved_status = Status::where('status', 'like', 'approved')->first();
                 $application = new Application();
+                $application->customer_id = $customer->id;
+                $application->vehicle_id = $vehicle->id;
                 $application->transaction_id = $transaction->id;
-                $application->status_id = $pending_status->id;
+                $application->status_id = $approved_status->id;
+                $application->transaction = $validated['transaction'];
                 $application->created_by = Auth::id();
                 $application->updated_by = Auth::id();
                 $application->save();
 
                 // Update the transaction table's application_id with the latest inserted application's id
                 $transaction->application_id = $application->id;
-                $transaction->status = Status::where('status', 'like', 'approve')->first()->id;
+                $transaction->status = Status::where('status', 'like', 'approved')->first()->id;
                 $transaction->save();
+
+            }else{
+                
+                $pending_status = Status::where('status', 'like', 'pending')->first();
+                $application = new Application();
+                $application->customer_id = $customer->id;
+                $application->vehicle_id = $vehicle->id;
+                $application->transaction_id = $transaction->id;
+                $application->status_id = $pending_status->id;
+                $application->transaction = $validated['transaction'];
+                $application->created_by = Auth::id();
+                $application->updated_by = Auth::id();
+                $application->save();
             }
+
 
             return response()->json([
                 'success' => true,
@@ -257,10 +273,11 @@ class ApplicationController extends Controller
     public function list_cash(Request $request){
 
         // dd($request->start_date);
-        $query = Application::with([ 'user', 'customer', 'vehicle', 'trans'])
+        $statusIds = Status::whereIn('status', ['Denied', 'Cancel'])->pluck('id')->toArray();
+        $query = Application::with(['user', 'customer', 'vehicle', 'trans'])
                         ->whereNull('deleted_at')
-                        ->where('transact')
-                        ;
+                        ->whereNotIn('status_id', $statusIds)
+                        ->whereIn('transaction', ['cash', 'po']);
 
         if ($request->has('date_range') && !empty($request->date_range)) {
             [$startDate, $endDate] = explode(' to ', $request->date_range);
