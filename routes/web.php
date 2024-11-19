@@ -38,4 +38,6 @@ Route::get('/list/approved', [ApplicationController::class, 'list_approved'])->n
 Route::get('/list/cancel', [ApplicationController::class, 'list_cancel'])->name('application.cancel');
 Route::get('/list/cash', [ApplicationController::class, 'list_cash'])->name('application.cash');
 Route::post('/application/store', [ApplicationController::class, 'store'])->name('application.store');
-Route::get('application/edit/{id}', [ApplicationController::class, 'edit'])->name('application.edit');
+Route::get('/application/edit/{id}', [ApplicationController::class, 'edit'])->name('application.edit');
+Route::post('/application/update/{id}', [ApplicationController::class, 'update'])->name('application.update');
+

@@ -101,12 +101,12 @@ class ApplicationController extends Controller
 
             return response()->json([
                 'success' => true,
-                'message' => 'Inquiry created successfully'
+                'message' => 'Application created successfully'
             ]);
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Error creating inquiry: ' . $e->getMessage()
+                'message' => 'Error creating application: ' . $e->getMessage()
             ], 500);
         }
     }
@@ -434,8 +434,156 @@ class ApplicationController extends Controller
     {
         // Fetch the Application data by ID
        $decryptedId = decrypt($id);
-       $data = Application::with([ 'user', 'customer', 'vehicle'])->where('id', $decryptedId)->first();
+       $data = Application::with([ 'user', 'customer', 'vehicle', 'trans', 'status'])->where('id', $decryptedId)->first();
         return response()->json($data);
+    }
+
+    // public function update(Request $request, $id)
+    // {
+    //     try {
+    //         $validated = $request->validate([
+    //             'first_name' => 'required|string',
+    //             'last_name' => 'required|string',
+    //             'age' => 'required|integer',
+    //             'mobile_number' => 'required|string',
+    //             'car_unit' => 'required|string',
+    //             'car_variant' => 'required|string',
+    //             'car_color' => 'required|string',
+    //             'transaction' => 'required|string',
+    //             'source' => 'required|string',
+    //             'additional_info' => 'nullable|string',
+    //             'gender' => 'required|string',
+    //             'address' => 'required',
+    //         ]);
+
+    //         // Fetch existing customer
+    //         $customer = Customer::findOrFail($id);
+    //         $customer->customer_first_name = $validated['first_name'];
+    //         $customer->customer_last_name = $validated['last_name'];
+    //         $customer->contact_number = $validated['mobile_number'];
+    //         $customer->gender = $validated['gender'];
+    //         $customer->address = $validated['address'];
+    //         $customer->age = $validated['age'];
+    //         $customer->source = $validated['source'];
+    //         $customer->updated_by = Auth::id();
+    //         $customer->save();
+
+    //         // Fetch vehicle
+    //         $vehicle = Vehicle::where('unit', $validated['car_unit'])
+    //             ->where('variant', $validated['car_variant'])
+    //             ->where('color', $validated['car_color'])
+    //             ->first();
+
+    //         if (!$vehicle) {
+    //             throw new \Exception("Vehicle not found");
+    //         }
+
+    //         // Fetch application and transaction for the customer
+    //         $application = Application::where('customer_id', $id)->firstOrFail();
+    //         $transaction = Transactions::findOrFail($application->transaction_id);
+
+    //         // Update transaction status
+    //         if (in_array($validated['transaction'], ['cash', 'po'])) {
+    //             $approved_status = Status::where('status', 'like', 'approved')->first();
+    //             $transaction->status = $approved_status->id;
+    //         } else {
+    //             $pending_status = Status::where('status', 'like', 'pending')->first();
+    //             $transaction->status = $pending_status->id;
+    //         }
+    //         $transaction->updated_at = now();
+    //         $transaction->save();
+
+    //         // Update application
+    //         $application->vehicle_id = $vehicle->id;
+    //         $application->status_id = $transaction->status;
+    //         $application->transaction = $validated['transaction'];
+    //         $application->updated_by = Auth::id();
+    //         $application->save();
+
+    //         return response()->json([
+    //             'success' => true,
+    //             'message' => 'Application updated successfully'
+    //         ]);
+    //     } catch (\Exception $e) {
+    //         return response()->json([
+    //             'success' => false,
+    //             'message' => 'Error updating application: ' . $e->getMessage()
+    //         ], 500);
+    //     }
+    // }
+
+    public function update(Request $request, $id)
+    {
+        try {
+            $validated = $request->validate([
+                'first_name' => 'required|string',
+                'last_name' => 'required|string',
+                'age' => 'required|integer',
+                'mobile_number' => 'required|string',
+                'car_unit' => 'required|string',
+                'car_variant' => 'required|string',
+                'car_color' => 'required|string',
+                'transaction' => 'required|string',
+                'source' => 'required|string',
+                'additional_info' => 'nullable|string',
+                'gender' => 'required|string',
+                'address' => 'required',
+            ]);
+
+            // Find the inquiry and related customer and vehicle
+            $application = Application::findOrFail($id);
+            $customer = Customer::findOrFail($application->customer_id);
+            $vehicle = Vehicle::where('unit', $validated['car_unit'])
+                ->where('variant', $validated['car_variant'])
+                ->where('color', $validated['car_color'])
+                ->first();
+
+            // Update customer data
+            $customer->customer_first_name = $validated['first_name'];
+            $customer->customer_last_name = $validated['last_name'];
+            $customer->contact_number = $validated['mobile_number'];
+            $customer->gender = $validated['gender'];
+            $customer->address = $validated['address'];
+            $customer->age = $validated['age'];
+            $customer->source = $validated['source'];
+            $customer->updated_by = Auth::id();
+            $customer->save();
+
+            // Update inquiry data
+            $application->vehicle_id = $vehicle->id;
+            $application->transaction = $validated['transaction'];
+            $application->remarks = $validated['additional_info'];
+            $application->updated_by = Auth::id();
+            $application->save();
+
+        
+            if (in_array($application->transaction, ['cash', 'po'])) {
+                $transaction = Transactions::where('application_id', $application->id)->first();
+                $approved_status = Status::where('status', 'like', 'approved')->first();
+
+                $application->status_id = $approved_status->id;
+                $application->transaction = $application->transaction;
+                $application->created_by = Auth::id();
+                $application->updated_by = Auth::id();
+                $application->save();
+
+                $transactions = Transactions::findOrFail($transaction->id);
+                $transactions->status = $approved_status->id;
+                $transactions->save();
+                
+            }
+            
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Application updated successfully'
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Error updating application: ' . $e->getMessage()
+            ], 500);
+        }
     }
 
 }
