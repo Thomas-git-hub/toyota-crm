@@ -361,6 +361,7 @@
             searchPlaceholder: "Search..."
         },
         columns: [
+            { data: 'id', name: 'id', title: 'ID' , visible: false},
             { data: 'team', name: 'team', title: 'Team' },
             { data: 'agent', name: 'agent', title: 'Agent' },
             { data: 'customer_name', name: 'customer_name', title: 'Customer Name' },
@@ -396,7 +397,7 @@
                 render: function(data) {
                     return `
                         <div class="d-flex">
-                            <button type="button" class="btn btn-icon me-2 btn-success edit-btn" data-bs-toggle="modal" data-bs-target="#editApplicationFormModal">
+                            <button type="button" class="btn btn-icon me-2 btn-success edit-btn" data-bs-toggle="modal" data-bs-target="#editApplicationFormModal"  data-id="${data}">
                                 <span class="tf-icons bx bx-pencil bx-22px"></span>
                             </button>
                         </div>
@@ -444,7 +445,7 @@
         });
 
          // Load variants and colors based on selected unit
-         $('#car_unit, #edit_car_unit').on('change', function() {
+        $('#car_unit, #edit_car_unit').on('change', function() {
             const selectedUnit = $(this).val();
             if (selectedUnit) {
                 $.ajax({
@@ -601,9 +602,86 @@
             }
         });
 
+        $("#editApplicationFormData").on("submit", function (e) {
+            e.preventDefault();
+            let isValid = true;
+
+            // Validate required fields
+            isValid = validateField('#edit_first_name', 'Enter Customer First Name') && isValid;
+            isValid = validateField('#edit_last_name', 'Enter Customer Last Name') && isValid;
+            isValid = validateField('#edit_age', 'Enter Customer Age') && isValid;
+            isValid = validateField('#edit_mobile_number', 'Enter Valid Mobile Number') && isValid;
+            isValid = validateField('#edit_car_unit', 'Please Select Unit') && isValid;
+            isValid = validateField('#edit_car_variant', 'Please Select Variant') && isValid;
+            isValid = validateField('#edit_car_color', 'Please Select Color') && isValid;
+            isValid = validateField('#edit_transaction', 'Please Select Transaction') && isValid;
+            isValid = validateField('#edit_source', 'Please Select Source') && isValid;
+            isValid = validateField('#edit_gender', 'Please Select Gender') && isValid;
+            isValid = validateField('#edit_address', 'Enter Address') && isValid;
+
+            // Special validation for mobile number
+            const mobileNumber = $('#edit_mobile_number').val();
+            if (mobileNumber && !mobileNumber.match(/^09\d{9}$/)) {
+                $('#edit_mobile_number').addClass('is-invalid border-danger');
+                $('#validateMobileNumber').text('Invalid Mobile Number').show();
+                isValid = false;
+            } else {
+                $('#edit_mobile_number').removeClass('is-invalid border-danger');
+                $('#validateMobileNumber').hide();
+            }
+
+            // Restore original values on invalid fields
+            if (!isValid) {
+                $('#edit_id').val(originalValues.id);
+                $('#edit_first_name').val(originalValues.firstName);
+                $('#edit_last_name').val(originalValues.lastName);
+                $('#edit_age').val(originalValues.age);
+                $('#edit_car_unit').val(originalValues.carUnit);
+                $('#edit_car_variant').val(originalValues.carVariant);
+                $('#edit_car_color').val(originalValues.carColor);
+                $('#edit_transaction').val(originalValues.transaction);
+                $('#edit_source').val(originalValues.source);
+                $('#edit_gender').val(originalValues.gender);
+                $('#edit_address').val(originalValues.address);
+                $('#edit_mobile_number').val(originalValues.mobileNumber);
+                return; // Stop execution if validation fails
+            }
+
+            // Proceed with AJAX request if the form is valid
+            const formData = $(this).serialize();
+            const applicationId = originalValues.id; // Assuming you set data-id on the form
+
+            $.ajax({
+                url: `/application/update/${applicationId}`, // Adjust URL as needed
+                type: 'POST',
+                data: formData,
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                },
+                success: function (response) {
+                    if (response.success) {
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Success',
+                            text: response.message,
+                        });
+                        // Reload the DataTable or update the UI as needed
+                        applicationTable.ajax.reload();
+                        $('#editApplicationFormModal').modal('hide'); // Hide the modal
+                    }
+                },
+                error: function (xhr) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: xhr.responseJSON?.message || 'Something went wrong!'
+                    });
+                }
+            });
+        });
 
 
-        $('#applicationFormData input, #leadFormData select').on('input change', function() {
+        $('#applicationFormData input, #editApplicationFormData select').on('input change', function() {
             validateField(this);
         });
 
@@ -680,6 +758,8 @@
         });
     });
 
+    let originalValues = {};0
+
     // Add this inside your <script> tag in the Blade file
     $(document).on('click', '.edit-btn', function() {
         const applicationId = $(this).data('id');
@@ -698,32 +778,33 @@
                 $('#edit_address').val(data.customer.address);
                 $('#edit_car_unit').val(data.vehicle.unit).trigger('change');
 
-                    // Get variants and colors based on the selected unit
-                    $.ajax({
-                        url: '{{ route("leads.getVariants") }}',
-                        type: 'GET',
-                        data: { unit: data.vehicle.unit },
-                        dataType: 'json',
-                        success: function(variantsData) {
-                            console.log(data.vehicle.variant);
-                            $('#edit_car_variant').val(data.vehicle.variant);
-                        },
-                        error: function(xhr) {
-                            Swal.fire({
-                                icon: 'error',
-                                title: 'Error',
-                                text: 'Could not fetch variants.'
-                            });
-                        }
-                    });
+                $.ajax({
+                    url: '{{ route("leads.getVariants") }}',
+                    type: 'GET',
+                    data: { unit: data.vehicle.unit },
+                    dataType: 'json',
+                    success: function(variantsData) {
+                        $('#edit_car_variant').val(data.vehicle.variant).trigger('change'); // Trigger change to update colors
+                    },
+                    error: function(xhr) {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: 'Could not fetch variants.'
+                        });
+                    }
+                });
+
+                $('#edit_car_variant').on('change', function() {
+                    const selectedVariant = $(this).val(); // Get the selected variant
+                    // Automatically select the color based on the variant
                     $.ajax({
                         url: '{{ route("leads.getColor") }}',
                         type: 'GET',
                         data: { variant: data.vehicle.variant },
                         dataType: 'json',
-                        success: function(variantsData) {
-                            console.log(data.vehicle.color);
-                            $('#edit_car_color').val(data.vehicle.color);
+                        success: function(colorsData) {
+                            $('#edit_car_color').val(data.vehicle.color); // Automatically select the color
                         },
                         error: function(xhr) {
                             Swal.fire({
@@ -733,6 +814,7 @@
                             });
                         }
                     });
+                })
 
                     $('#edit_transaction').val(data.transaction);
                     $('#edit_source').val(data.customer.source);
@@ -767,6 +849,9 @@
                 }
             });
     });
+
+    
+    
 
 
 
