@@ -402,24 +402,6 @@
 
     // Inquiry Form Validation
     $(document).ready(function () {
-        // Load Province
-        // $.ajax({
-        //     url: '{{ route('leads.getProvince') }}',
-        //     type: 'GET',
-        //     dataType: 'json',
-        //     success: function(data) {
-        //         let provinceSelect = $('#province , #edit_province');
-        //         provinceSelect.empty();
-        //         provinceSelect.append('<option value="">Select Province...</option>');
-        //         data.forEach(function(item) {
-        //             provinceSelect.append(`<option value="${item.id}">${item.province}</option>`);
-        //         });
-        //     },
-        //     error: function(error) {
-        //         console.error('Error loading provinces:', error);
-        //     }
-        // });
-
         $.ajax({
             url: '{{ route('leads.getUnit') }}',
             type: 'GET',
@@ -594,81 +576,6 @@
             }
         });
 
-        // Validate form on submit
-        // $("#editInquiryFormData").on("submit", function (e) {
-        //     e.preventDefault();
-        //     let isValid = true;
-
-        //      // Validate required fields
-        //     isValid = validateField('#edit_first_name', 'Enter Customer First Name') && isValid;
-        //     isValid = validateField('#edit_last_name', 'Enter Customer Last Name') && isValid;
-        //     isValid = validateField('#edit_age', 'Enter Customer Age') && isValid;
-        //     isValid = validateField('#edit_mobile_number', 'Enter Valid Mobile Number') && isValid;
-        //     isValid = validateField('#edit_car_unit', 'Please Select Unit') && isValid;
-        //     isValid = validateField('#edit_car_variant', 'Please Select Variant') && isValid;
-        //     isValid = validateField('#edit_car_color', 'Please Select Color') && isValid;
-        //     isValid = validateField('#edit_transaction', 'Please Select Transaction') && isValid;
-        //     isValid = validateField('#edit_source', 'Please Select Source') && isValid;
-        //     isValid = validateField('#edit_gender', 'Please Select Gender') && isValid;
-        //     isValid = validateField('#edit_car_variant', 'Please Select a Variant') && isValid;
-        //     isValid = validateField('#edit_adress', 'Enter Address') && isValid;
-
-        //     // // Special validation for mobile number
-        //     // const mobileNumber = $('#edit_mobile_number').val();
-        //     if (mobileNumber && !mobileNumber.match(/^09\d{9}$/)) {
-        //         $('#edit_mobile_number').addClass('is-invalid border-danger');
-        //         $('#validateMobileNumber').show();
-        //         isValid = false;
-        //     }
-
-        //     // Restore original values on invalid fields
-        //     if (!isValid) {
-        //         $('#edit_id').val(originalValues.id);
-        //         $('#edit_first_name').val(originalValues.firstName);
-        //         $('#edit_last_name').val(originalValues.lastName);
-        //         $('#edit_age').val(originalValues.age);
-        //         $('#edit_car_unit').val(originalValues.carUnit);
-        //         $('#edit_car_variant').val(originalValues.carVariant);
-        //         $('#edit_car_color').val(originalValues.carColor);
-        //         $('#edit_transaction').val(originalValues.transaction);
-        //         $('#edit_source').val(originalValues.source);
-        //         $('#edit_gender').val(originalValues.gender);
-        //         $('#edit_address').val(originalValues.address);
-        //     }
-
-        //     if (isValid) {
-        //         const formData = $(this).serialize();
-        //         const inquiryId = originalValues.id; // Assuming you set data-id on the form
-
-        //         $.ajax({
-        //             url: `{{ url('leads/update') }}/${inquiryId}`,
-        //             type: 'POST',
-        //             data: formData,
-        //             headers: {
-        //                 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-        //             },
-        //             success: function(response) {
-        //                 if (response.success) {
-        //                     Swal.fire({
-        //                         icon: 'success',
-        //                         title: 'Success',
-        //                         text: response.message,
-        //                     });
-        //                     // Reload the DataTable or update the UI as needed
-        //                     inquiryTable.ajax.reload();
-        //                     $('#editInquiryFormModal').modal('hide'); // Hide the modal
-        //                 }
-        //             },
-        //             error: function(xhr) {
-        //                 Swal.fire({
-        //                     icon: 'error',
-        //                     title: 'Error',
-        //                     text: xhr.responseJSON?.message || 'Something went wrong!'
-        //                 });
-        //             }
-        //         });
-        //     }
-        // });
 
         // Validate form on submit
         $("#editInquiryFormData").on("submit", function (e) {
@@ -801,7 +708,6 @@
             url: `{{ url('leads/edit') }}/${inquiryId}`,
             type: 'GET',
             success: function(data) {
-                console.log(data);
                 // Populate the form fields with the inquiry data
                 $('#edit_id').val(data.id);
                 $('#edit_first_name').val(data.customer.customer_first_name);
@@ -812,75 +718,77 @@
                 $('#edit_address').val(data.customer.address);
                 $('#edit_car_unit').val(data.vehicle.unit).trigger('change');
 
-                    // Get variants and colors based on the selected unit
-                    $.ajax({
-                        url: '{{ route("leads.getVariants") }}',
-                        type: 'GET',
-                        data: { unit: data.vehicle.unit },
-                        dataType: 'json',
-                        success: function(variantsData) {
-                            console.log(data.vehicle.variant);
-                            $('#edit_car_variant').val(data.vehicle.variant);
-                        },
-                        error: function(xhr) {
-                            Swal.fire({
-                                icon: 'error',
-                                title: 'Error',
-                                text: 'Could not fetch variants.'
-                            });
-                        }
-                    });
-                    $.ajax({
-                        url: '{{ route("leads.getColor") }}',
-                        type: 'GET',
-                        data: { variant: data.vehicle.variant },
-                        dataType: 'json',
-                        success: function(variantsData) {
-                            console.log(data.vehicle.color);
-                            $('#edit_car_color').val(data.vehicle.color);
-                        },
-                        error: function(xhr) {
-                            Swal.fire({
-                                icon: 'error',
-                                title: 'Error',
-                                text: 'Could not fetch colors.'
-                            });
-                        }
-                    });
+                // Get variants and colors based on the selected unit
+                $.ajax({
+                    url: '{{ route("leads.getVariants") }}',
+                    type: 'GET',
+                    data: { unit: data.vehicle.unit },
+                    dataType: 'json',
+                    success: function(variantsData) {
+                        $('#edit_car_variant').val(data.vehicle.variant).trigger('change'); // Trigger change to update colors
+                    },
+                    error: function(xhr) {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: 'Could not fetch variants.'
+                        });
+                    }
+                });
 
-                    $('#edit_transaction').val(data.transaction);
-                    $('#edit_source').val(data.customer.source);
-                    $('#edit_remarks').val(data.remarks);
+                $('#edit_car_variant').on('change', function() {
+                    const selectedVariant = $(this).val(); // Get the selected variant
 
+                     // Automatically select the color based on the variant
+                        $.ajax({
+                            url: '{{ route("leads.getColor") }}',
+                            type: 'GET',
+                            data: { variant: data.vehicle.variant },
+                            dataType: 'json',
+                            success: function(colorsData) {
+                                $('#edit_car_color').val(data.vehicle.color); // Automatically select the color
+                            },
+                            error: function(xhr) {
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: 'Error',
+                                    text: 'Could not fetch colors.'
+                                });
+                            }
+                        });
+                    
+                })
+                    
+                $('#edit_transaction').val(data.transaction);
+                $('#edit_source').val(data.customer.source);
+                $('#edit_remarks').val(data.remarks);
 
-                    // Store original values
-                    originalValues = {
-                        id: data.id,
-                        firstName: data.customer.customer_first_name,
-                        lastName: data.customer.customer_last_name,
-                        gender: data.customer.gender,
-                        age: data.customer.age,
-                        mobileNumber: data.customer.contact_number,
-                        address: data.customer.address,
-                        carUnit: data.vehicle.unit,
-                        carVariant: data.vehicle.variant,
-                        carColor: data.vehicle.color,
-                        transaction: data.transaction,
-                        source: data.customer.source,
-                        remarks: data.remarks
-                    };
-                    $('#editInquiryFormModal').modal('show');
-
-
-                },
-                error: function(xhr) {
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Error',
-                        text: 'Could not fetch inquiry data.'
-                    });
-                }
-            });
+                // Store original values
+                originalValues = {
+                    id: data.id,
+                    firstName: data.customer.customer_first_name,
+                    lastName: data.customer.customer_last_name,
+                    gender: data.customer.gender,
+                    age: data.customer.age,
+                    mobileNumber: data.customer.contact_number,
+                    address: data.customer.address,
+                    carUnit: data.vehicle.unit,
+                    carVariant: data.vehicle.variant,
+                    carColor: data.vehicle.color,
+                    transaction: data.transaction,
+                    source: data.customer.source,
+                    remarks: data.remarks
+                };
+                $('#editInquiryFormModal').modal('show');
+            },
+            error: function(xhr) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'Could not fetch inquiry data.'
+                });
+            }
+        });
     });
 
 
