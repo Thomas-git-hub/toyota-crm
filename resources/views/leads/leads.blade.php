@@ -9,6 +9,7 @@
     </div>
 </div>
 
+
 {{-- Edit Application Modal --}}
 <div class="modal fade" id="editInquiryFormModal" tabindex="-1" aria-labelledby="largeModalLabel" aria-hidden="true">
   <div class="modal-dialog modal-lg">
@@ -756,9 +757,9 @@
                                 });
                             }
                         });
-                    
+
                 })
-                    
+
                 $('#edit_transaction').val(data.transaction);
                 $('#edit_source').val(data.customer.source);
                 $('#edit_remarks').val(data.remarks);

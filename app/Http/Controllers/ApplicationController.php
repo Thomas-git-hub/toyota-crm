@@ -430,49 +430,6 @@ class ApplicationController extends Controller
         ->make(true);
     }
 
-    public function getVariantsAndColors(Request $request)
-    {
-        $unit = $request->input('unit');
-        $vehicles = Vehicle::where('unit', $unit)
-        ->get();
-
-        $variants = $vehicles->pluck('variant')->unique()->values()->toArray();
-        $colors = $vehicles->pluck('color')->unique()->values()->toArray();
-
-        return response()->json([
-            'variants' => $variants,
-            'colors' => $colors,
-        ]);
-    }
-
-    public function getVariants(Request $request)
-    {
-        $unit = $request->input('unit');
-        $vehicles = Vehicle::where('unit', $unit)
-        ->get();
-
-        $variants = $vehicles->pluck('variant')->unique()->values()->toArray();
-
-
-        return response()->json([
-            'variants' => $variants,
-        ]);
-    }
-
-    public function getColor(Request $request)
-    {
-        $unit = $request->input('unit');
-        $variant = $request->input('variant');
-        $vehicles = Vehicle::where('variant', $variant)
-        ->get();
-
-        $colors = $vehicles->pluck('color')->unique()->values()->toArray();
-
-        return response()->json([
-            'colors' => $colors,
-        ]);
-    }
-
     public function edit($id)
     {
         // Fetch the Application data by ID

@@ -700,7 +700,7 @@
 
                     // Get variants and colors based on the selected unit
                     $.ajax({
-                        url: '{{ route("application.getVariants") }}',
+                        url: '{{ route("leads.getVariants") }}',
                         type: 'GET',
                         data: { unit: data.vehicle.unit },
                         dataType: 'json',
@@ -717,7 +717,7 @@
                         }
                     });
                     $.ajax({
-                        url: '{{ route("application.getColor") }}',
+                        url: '{{ route("leads.getColor") }}',
                         type: 'GET',
                         data: { variant: data.vehicle.variant },
                         dataType: 'json',

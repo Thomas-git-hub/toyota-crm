@@ -38,7 +38,4 @@ Route::get('/list/approved', [ApplicationController::class, 'list_approved'])->n
 Route::get('/list/cancel', [ApplicationController::class, 'list_cancel'])->name('application.cancel');
 Route::get('/list/cash', [ApplicationController::class, 'list_cash'])->name('application.cash');
 Route::post('/application/store', [ApplicationController::class, 'store'])->name('application.store');
-Route::get('/application/get-variants-and-colors', [ApplicationController::class, 'getVariantsAndColors'])->name('application.getVariantsAndColors');
-Route::get('/application/get-variants', [ApplicationController::class, 'getVariants'])->name('application.getVariants');
-Route::get('/application/get-colors', [ApplicationController::class, 'getColor'])->name('application.getColor');
 Route::get('application/edit/{id}', [ApplicationController::class, 'edit'])->name('application.edit');
