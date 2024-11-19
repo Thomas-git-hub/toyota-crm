@@ -711,7 +711,6 @@
             url: `{{ url('leads/edit') }}/${inquiryId}`,
             type: 'GET',
             success: function(data) {
-                console.log(data);
                 // Populate the form fields with the inquiry data
                 $('#edit_id').val(data.id);
                 $('#edit_first_name').val(data.customer.customer_first_name);
