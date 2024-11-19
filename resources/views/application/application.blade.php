@@ -8,6 +8,127 @@
     </div>
 </div>
 
+{{-- Edit Application Modal --}}
+<div class="modal fade" id="editApplicationFormModal" tabindex="-1" aria-labelledby="largeModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="largeModalLabel">Edit</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <form id="editApplicationFormData">
+              <div class="mb-4">
+                  <div class="row mb-2">
+                      <div class="col-md">
+                          <input type="hidden" class="form-control" id="edit_id" name="id" />
+                          <label for="first_name" class="form-label required">First Name</label>
+                          <input type="text" class="form-control" id="edit_first_name" name="first_name" placeholder="" />
+                          <small class="text-danger" id="validateFirstname">Enter Customer First Name</small>
+                      </div>
+                      <div class="col-md">
+                          <label for="last_name" class="form-label required">Last Name</label>
+                          <input type="text" class="form-control" id="edit_last_name" name="last_name" placeholder="" />
+                          <small class="text-danger" id="validateLastname">Enter Customer Last Name</small>
+                      </div>
+                  </div>
+                  <div class="row mb-2">
+                      <div class="col-md">
+                          <label for="gender" class="form-label required">Gender</label>
+                          <select class="form-control" id="edit_gender" name="gender">
+                              <option value="">Select Gender</option>
+                              <option value="Female">Female</option>
+                              <option value="Male">Male</option>
+                          </select>
+                          <small class="text-danger" id="validateGender">Please Select Gender</small>
+                      </div>
+                      <div class="col-md">
+                          <label for="age" class="form-label required">Age</label>
+                          <input type="number" class="form-control" id="edit_age" name="age" placeholder="" />
+                          <small class="text-danger" id="validateLastname">Enter Customer Age</small>
+                      </div>
+                      <div class="col-md">
+                          <label for="mobile_number" class="form-label required">Mobile Number</label>
+                          <input type="text" class="form-control" id="edit_mobile_number" name="mobile_number" placeholder="09" />
+                          <small class="text-danger" id="validateMobileNumber">Enter Valid Mobile Number</small>
+                      </div>
+                  </div>
+                  <div class="row">
+                      <div class="col-md">
+                      <label for="edit_address" class="form-label required">Address</label>
+                      <input type="text" class="form-control" id="edit_address" name="address" placeholder="" />
+                      <small class="text-danger" id="validateAddress">Enter <Address></Address></small>
+                  </div>
+                  </div>
+              </div>
+              <div class="mb-4">
+                  <div class="row mb-2">
+                      <div class="col-md">
+                          <label for="car_unit" class="form-label required">Unit</label>
+                          <select class="form-control" id="edit_car_unit" name="car_unit">
+                              <option value="">Select Unit</option>
+                          </select>
+                          <small class="text-danger" id="validateUnit">Please Select Unit</small>
+                      </div>
+                      <div class="col-md">
+                          <label for="car_variant" class="form-label required">Variants</label>
+                          <select class="form-control" id="edit_car_variant" name="car_variant">
+                              <option value="">Select Variants</option>
+                          </select>
+                          <small class="text-danger" id="validateVariant required">Please Select Variant</small>
+                      </div>
+                      <div class="col-md">
+                          <label for="car_color" class="form-label required">Color</label>
+                          <select class="form-control" id="edit_car_color" name="car_color">
+                              <option value="">Select Color</option>
+                          </select>
+                          <small class="text-danger" id="validateColor">Please Select Color</small>
+                      </div>
+                  </div>
+              </div>
+              <div class="row mb-4">
+                  <div class="col-md">
+                      <label for="transaction" class="form-label required">Transactions</label>
+                      <select class="form-control" id="edit_transaction" name="transaction">
+                          <option value="">Select Transactions</option>
+                          <option value="cash">Cash</option>
+                          <option value="po">PO</option>
+                          <option value="financing">Financing</option>
+                      </select>
+                      <small class="text-danger" id="validateTransaction">Please Select Transaction</small>
+                  </div>
+                  <div class="col-md">
+                      <label for="source" class="form-label required">Source</label>
+                      <select class="form-control" id="edit_source" name="source" >
+                          <option value="">Select Source</option>
+                          <option value="Social-Media">Social-Media</option>
+                          <option value="Referal">Referal</option>
+                          <option value="Mall Duty">Mall Duty</option>
+                          <option value="Show Room">Show Room</option>
+                          <option value="Saturation">Saturation</option>
+                      </select>
+                      <small class="text-danger" id="validateSource">Please Select Source</small>
+                  </div>
+              </div>
+              <div class="row mb-2">
+                  <div class="col-md">
+                      <label for="additional_info" class="form-label">Remarks</label>
+                      <textarea class="form-control" placeholder="Message" id="edit_remarks" name="additional_info" rows="3"></textarea>
+                  </div>
+              </div>
+              <div class="row">
+                  <div class="col-md d-flex justify-content-end gap-2">
+                      <button type="button" class="btn btn-label-danger" id="cancelEditApplicationFormButton">Cancel</button>
+                      <button type="submit" class="btn btn-primary">Save Changes</button>
+                  </div>
+              </div>
+          </form>
+        </div>
+      </div>
+    </div>
+</div>
+
+{{-- Application Form --}}
 <div class="row mb-4">
     <div class="col-md">
         <div class="card" id="applicationFormCard" style="display: none;">
@@ -124,12 +245,13 @@
         </div>
     </div>
 </div>
-
 <div class="row mb-2">
     <div class="col-md d-flex justify-content-end">
         <button class="btn btn-primary" id="addNewApplicationButton">Add Application</button>
     </div>
 </div>
+
+{{-- Datatables Tabs --}}
 <div class="row mb-2">
     <div class="col">
         <div class="card custom-card">
@@ -232,7 +354,7 @@
         },
         pageLength: 10,
         paging: true,
-        responsive: true,
+        responsive: false,
         dom: '<"top"lf>rt<"bottom"ip>',
         language: {
             search: "",
@@ -274,7 +396,7 @@
                 render: function(data) {
                     return `
                         <div class="d-flex">
-                            <button type="button" class="btn btn-icon me-2 btn-success" data-bs-toggle="modal" data-bs-target="#editThesisEntiresModal">
+                            <button type="button" class="btn btn-icon me-2 btn-success edit-btn" data-bs-toggle="modal" data-bs-target="#editApplicationFormModal">
                                 <span class="tf-icons bx bx-pencil bx-22px"></span>
                             </button>
                         </div>
@@ -303,7 +425,7 @@
 
     // Inquiry Form Validation
     $(document).ready(function () {
-       
+
         $.ajax({
             url: '{{ route('leads.getUnit') }}',
             type: 'GET',
@@ -363,7 +485,7 @@
                     data: { variant: selectedVariant },
                     dataType: 'json',
                     success: function(data) {
-                       
+
                         let colorSelect = $('#car_color, #edit_car_color');
                         colorSelect.empty();
                         colorSelect.append('<option value="">Select Color...</option>');
@@ -479,7 +601,7 @@
             }
         });
 
-       
+
 
         $('#applicationFormData input, #leadFormData select').on('input change', function() {
             validateField(this);
@@ -493,7 +615,7 @@
 
     });
 
-
+    // datatables button tabs
     $(document).ready(function() {
 
         $('.btn-group .btn').on('click', function() {
@@ -527,38 +649,124 @@
             });
     });
 
+    // mobile number validation
+    $(document).ready(function () {
+        $("#mobile_number").on("input", function () {
+            let value = $(this).val();
 
-   
+            // Enforce the number to start with "09" and allow only digits
+            if (!/^09/.test(value)) {
+                value = "09"; // If it doesn't start with "09", reset to "09"
+            } else {
+                value = value.replace(/[^0-9]/g, ""); // Remove any non-numeric characters
+            }
 
-$(document).ready(function () {
-    $("#mobile_number").on("input", function () {
-        let value = $(this).val();
+            // Limit to exactly 11 digits
+            if (value.length > 11) {
+                value = value.slice(0, 11); // Truncate to 11 characters if exceeded
+            }
 
-        // Enforce the number to start with "09" and allow only digits
-        if (!/^09/.test(value)) {
-            value = "09"; // If it doesn't start with "09", reset to "09"
-        } else {
-            value = value.replace(/[^0-9]/g, ""); // Remove any non-numeric characters
-        }
+            // Update the input field with the sanitized value
+            $(this).val(value);
+        });
 
-        // Limit to exactly 11 digits
-        if (value.length > 11) {
-            value = value.slice(0, 11); // Truncate to 11 characters if exceeded
-        }
-
-        // Update the input field with the sanitized value
-        $(this).val(value);
+        // Form submission event to check final validation
+        $("#applicationFormData").on("submit", function (event) {
+            const mobileNumber = $("#mobile_number").val();
+            if (mobileNumber.length !== 11) {
+                event.preventDefault();
+                $("#validateMobileNumber").show().text("Mobile number must be exactly 11 digits.");
+            }
+        });
     });
 
-    // Form submission event to check final validation
-    $("#applicationFormData").on("submit", function (event) {
-        const mobileNumber = $("#mobile_number").val();
-        if (mobileNumber.length !== 11) {
-            event.preventDefault();
-            $("#validateMobileNumber").show().text("Mobile number must be exactly 11 digits.");
-        }
+    // Add this inside your <script> tag in the Blade file
+    $(document).on('click', '.edit-btn', function() {
+        const applicationId = $(this).data('id');
+        $.ajax({
+            url: `{{ url('application/edit') }}/${applicationId}`,
+            type: 'GET',
+            success: function(data) {
+                console.log(data);
+                // Populate the form fields with the inquiry data
+                $('#edit_id').val(data.id);
+                $('#edit_first_name').val(data.customer.customer_first_name);
+                $('#edit_last_name').val(data.customer.customer_last_name);
+                $('#edit_gender').val(data.customer.gender);
+                $('#edit_age').val(data.customer.age);
+                $('#edit_mobile_number').val(data.customer.contact_number);
+                $('#edit_address').val(data.customer.address);
+                $('#edit_car_unit').val(data.vehicle.unit).trigger('change');
+
+                    // Get variants and colors based on the selected unit
+                    $.ajax({
+                        url: '{{ route("application.getVariants") }}',
+                        type: 'GET',
+                        data: { unit: data.vehicle.unit },
+                        dataType: 'json',
+                        success: function(variantsData) {
+                            console.log(data.vehicle.variant);
+                            $('#edit_car_variant').val(data.vehicle.variant);
+                        },
+                        error: function(xhr) {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Error',
+                                text: 'Could not fetch variants.'
+                            });
+                        }
+                    });
+                    $.ajax({
+                        url: '{{ route("application.getColor") }}',
+                        type: 'GET',
+                        data: { variant: data.vehicle.variant },
+                        dataType: 'json',
+                        success: function(variantsData) {
+                            console.log(data.vehicle.color);
+                            $('#edit_car_color').val(data.vehicle.color);
+                        },
+                        error: function(xhr) {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Error',
+                                text: 'Could not fetch colors.'
+                            });
+                        }
+                    });
+
+                    $('#edit_transaction').val(data.transaction);
+                    $('#edit_source').val(data.customer.source);
+                    $('#edit_remarks').val(data.remarks);
+
+
+                    // Store original values
+                    originalValues = {
+                        id: data.id,
+                        firstName: data.customer.customer_first_name,
+                        lastName: data.customer.customer_last_name,
+                        gender: data.customer.gender,
+                        age: data.customer.age,
+                        mobileNumber: data.customer.contact_number,
+                        address: data.customer.address,
+                        carUnit: data.vehicle.unit,
+                        carVariant: data.vehicle.variant,
+                        carColor: data.vehicle.color,
+                        transaction: data.transaction,
+                        source: data.customer.source,
+                        remarks: data.remarks
+                    };
+                    $('#editApplicationFormModal').modal('show');
+
+                },
+                error: function(xhr) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: 'Could not fetch Application data.'
+                    });
+                }
+            });
     });
-});
 
 
 </script>

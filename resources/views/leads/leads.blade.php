@@ -2,8 +2,14 @@
 
 @section('content')
 
+{{-- Page Title --}}
+<div class="card bg-dark shadow-none mb-4">
+    <div class="card-body">
+        <h4 class="text-white"><i class='bx bxs-layer-plus'>&nbsp;</i>Leads</h4>
+    </div>
+</div>
 
-{{-- EDIT MODAL --}}
+{{-- Edit Application Modal --}}
 <div class="modal fade" id="editInquiryFormModal" tabindex="-1" aria-labelledby="largeModalLabel" aria-hidden="true">
   <div class="modal-dialog modal-lg">
     <div class="modal-content">
@@ -123,16 +129,7 @@
   </div>
 </div>
 
-
-{{-- TITLE --}}
-<div class="card bg-dark shadow-none mb-4">
-    <div class="card-body">
-        <h4 class="text-white"><i class='bx bxs-layer-plus'>&nbsp;</i>Leads</h4>
-    </div>
-</div>
-
-{{-- ADD FORM --}}
-
+{{-- Inquiry Form --}}
 <div class="row mb-2">
     <div class="col-md">
         <div class="card" id="inquiryFormCard" style="display: none;">
@@ -249,15 +246,14 @@
         </div>
     </div>
 </div>
-
-{{-- BUTTON TO TIGGER ADD FORM --}}
+{{-- Trigger Inquiry Form Button --}}
 <div class="row mb-2">
     <div class="col-md d-flex justify-content-end">
         <button class="btn btn-primary" id="addNewInquiryButton">Add New Inquiry</button>
     </div>
 </div>
 
-{{-- DATATABLES --}}
+{{-- Datatables --}}
 <div class="row mb-2">
     <div class="col">
         <div class="card custom-card">
@@ -483,7 +479,7 @@
                     data: { variant: selectedVariant },
                     dataType: 'json',
                     success: function(data) {
-                       
+
                         let colorSelect = $('#car_color, #edit_car_color');
                         colorSelect.empty();
                         colorSelect.append('<option value="">Select Color...</option>');
@@ -765,6 +761,7 @@
 
     });
 
+    // Mobile Number Validation
     $(document).ready(function () {
         $("#mobile_number, #edit_mobile_number").on("input", function () {
             let value = $(this).val();
@@ -887,7 +884,7 @@
     });
 
 
-    // display form
+    // Displaying of Inquiry Form
     $(document).ready(function () {
             // Show #inquiryFormCard when #addNewInquiryButton is clicked
             $("#addNewInquiryButton").on("click", function () {
