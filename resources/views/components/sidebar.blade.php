@@ -39,10 +39,10 @@
               <div class="text-truncate" data-i18n="Page 2">Application</div>
             </a>
         </li>
-        <li class="menu-item {{ request()->is('') ? 'active' : '' }}">
-            <a href="" class="menu-link">
+        <li class="menu-item {{ request()->is('vehicle-reservation') ? 'active' : '' }}">
+            <a href="/vehicle-reservation" class="menu-link">
                 <i class='menu-icon tf-icons bx bxs-car'></i>
-              <div class="text-truncate" data-i18n="Page 2">Vehicle Reservation</div>
+                <div class="text-truncate" data-i18n="Page 2">Vehicle Reservation</div>
             </a>
         </li>
         <li class="menu-item {{ request()->is('') ? 'active' : '' }}">

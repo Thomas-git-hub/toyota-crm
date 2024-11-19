@@ -5,6 +5,8 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\LeadController;
 use App\Http\Controllers\ApplicationController;
+use App\Http\Controllers\VehicleReservationController;
+
 
 
 
@@ -39,3 +41,7 @@ Route::get('/list/cancel', [ApplicationController::class, 'list_cancel'])->name(
 Route::get('/list/cash', [ApplicationController::class, 'list_cash'])->name('application.cash');
 Route::post('/application/store', [ApplicationController::class, 'store'])->name('application.store');
 Route::get('application/edit/{id}', [ApplicationController::class, 'edit'])->name('application.edit');
+
+
+// VEHICLE RESERVATION
+Route::get('vehicle-reservation', [VehicleReservationController::class, 'index'])->name('vehicle.reservation');
