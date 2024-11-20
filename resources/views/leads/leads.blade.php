@@ -349,7 +349,7 @@
             },
             pageLength: 10,
             paging: true,
-            responsive: true,
+            responsive: false,
             dom: '<"top"lf>rt<"bottom"ip>',
             language: {
                 search: "",

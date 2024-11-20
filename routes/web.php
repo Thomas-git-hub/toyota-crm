@@ -44,6 +44,9 @@ Route::get('/list/cash', [ApplicationController::class, 'list_cash'])->name('app
 Route::post('/application/store', [ApplicationController::class, 'store'])->name('application.store');
 Route::get('application/edit/{id}', [ApplicationController::class, 'edit'])->name('application.edit');
 Route::post('/application/update/{id}', [ApplicationController::class, 'update'])->name('application.update');
+Route::get('/getBanks', [ApplicationController::class, 'getBanks'])->name('application.getBanks');
+Route::get('/getStatus', [ApplicationController::class, 'getStatus'])->name('application.getStatus');
+
 
 
 
