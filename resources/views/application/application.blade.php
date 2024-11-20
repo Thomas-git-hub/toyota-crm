@@ -2,9 +2,13 @@
 
 @section('content')
 
+{{-- Page Title --}}
 <div class="card bg-dark shadow-none mb-4">
     <div class="card-body">
-        <h4 class="text-white"><i class='bx bx-list-plus'>&nbsp;</i>Application</h4>
+        <div class="d-flex align-items-center">
+            <i class='bx bx-list-plus text-white' style="font-size: 24px;">&nbsp;</i>
+            <h4 class="text-white mb-0">Application</h4>
+        </div>
     </div>
 </div>
 
@@ -850,8 +854,8 @@
             });
     });
 
-    
-    
+
+
 
 
 

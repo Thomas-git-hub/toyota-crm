@@ -5,7 +5,10 @@
 {{-- Page Title --}}
 <div class="card bg-dark shadow-none mb-4">
     <div class="card-body">
-        <h4 class="text-white"><i class='bx bxs-layer-plus'>&nbsp;</i>Leads</h4>
+        <div class="d-flex align-items-center">
+            <i class='bx bxs-layer-plus text-white' style="font-size: 24px;">&nbsp;</i>
+            <h4 class="text-white mb-0">Leads</h4>
+        </div>
     </div>
 </div>
 
@@ -15,7 +18,7 @@
   <div class="modal-dialog modal-lg">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="largeModalLabel">Large Modal</h5>
+        <h5 class="modal-title" id="largeModalLabel">Edit</h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
