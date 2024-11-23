@@ -28,6 +28,7 @@ Route::post('/leads/processing', [LeadController::class, 'processing'])->name('l
 Route::delete('/leads/destroy', [LeadController::class, 'destroy'])->name('leads.destroy');
 Route::get('/getProvince', [LeadController::class, 'getProvince'])->name('leads.getProvince');
 Route::get('/getUnit', [LeadController::class, 'getUnit'])->name('leads.getUnit');
+Route::get('/getInquiryType', [LeadController::class, 'getInquiryType'])->name('leads.getInquiryType');
 Route::get('/leads/get-variants-and-colors', [LeadController::class, 'getVariantsAndColors'])->name('leads.getVariantsAndColors');
 Route::get('/leads/get-variants', [LeadController::class, 'getVariants'])->name('leads.getVariants');
 Route::get('/leads/get-colors', [LeadController::class, 'getColor'])->name('leads.getColor');

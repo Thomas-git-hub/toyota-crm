@@ -17,12 +17,14 @@ return new class extends Migration
             $table->unsignedBigInteger('customer_id')->nullable();
             $table->unsignedBigInteger('vehicle_id');
             $table->string('transaction');
+            $table->string('category');
+            $table->integer('quantity')->nullable();
             $table->longText('remarks')->nullable();
             $table->string('date')->nullable(); //monthname day
             $table->string('status_id');
             $table->unsignedBigInteger('created_by');
-            $table->unsignedBigInteger('transactional_status_updated_by')->nullable();
-            $table->dateTime('transactional_status_updated_at')->nullable();
+            $table->unsignedBigInteger('status_updated_by')->nullable();
+            $table->date('status_updated_at')->nullable();
             $table->unsignedBigInteger('updated_by')->nullable();
             $table->timestamps();
             $table->softDeletes();

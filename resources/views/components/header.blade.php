@@ -67,5 +67,6 @@
     <!-- Custom Style -->
     <link rel="stylesheet" href="assets/css/system_color.css">
     <link rel="stylesheet" href="assets/css/table.css">
+    <link rel="stylesheet" href="assets/css/custom.css">
 
   </head>
