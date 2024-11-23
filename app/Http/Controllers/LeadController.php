@@ -87,7 +87,7 @@ class LeadController extends Controller
             $inquiry->status_id = in_array($validated['transaction'], ['cash', 'po']) ? $approved_status : $pending_status;
             $inquiry->status_updated_by = Auth::id();
             $inquiry->status_updated_at = now();
-            $inquiry->created_at = Auth::id();
+            $inquiry->created_at = now();
             $inquiry->created_by = Auth::id();
             $inquiry->updated_by = Auth::id();
             $inquiry->save();
@@ -137,9 +137,8 @@ class LeadController extends Controller
     public function list(Request $request){
 
         // dd($request->start_date);
-        $query = Inquiry::with([ 'user', 'customer', 'vehicle'])
-                        ->whereNull('deleted_at')
-                        ->where('transactional_status', '<>', 'approved');
+        $query = Inquiry::with([ 'user', 'customer', 'vehicle', 'status'])
+                        ->whereNull('deleted_at');
 
         if ($request->has('date_range') && !empty($request->date_range)) {
             [$startDate, $endDate] = explode(' to ', $request->date_range);
@@ -199,6 +198,10 @@ class LeadController extends Controller
 
         ->addColumn('color', function($data) {
             return $data->vehicle->color;
+        })
+
+        ->addColumn('status', function($data) {
+            return $data->status->status;
         })
 
         ->editColumn('created_at', function($data) {

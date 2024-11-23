@@ -431,7 +431,7 @@
             { data: 'age', name: 'age', title: 'Age' },
             { data: 'source', name: 'source', title: 'Source' },
             { data: 'address', name: 'address', title: 'Address' },
-            { data: 'transactional_status', name: 'transactional_status', title: 'Status', render: function(data) { return data.charAt(0).toUpperCase() + data.slice(1); } },
+            { data: 'status', name: 'status', title: 'Status', render: function(data) { return data.charAt(0).toUpperCase() + data.slice(1); } },
             { data: 'remarks', name: 'remarks', title: 'Remarks' },
             { data: 'date', name: 'date', title: 'Date' },
             {
