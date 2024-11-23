@@ -134,7 +134,7 @@
 </div>
 
 {{-- Inquiry Form --}}
-<div class="row mb-2">
+<div class="row mb-4">
     <div class="col-md">
         <div class="card" id="inquiryFormCard" style="display: none;">
             <div class="card-header">
@@ -250,6 +250,7 @@
         </div>
     </div>
 </div>
+
 {{-- Trigger Inquiry Form Button --}}
 <div class="row mb-2">
     <div class="col-md d-flex justify-content-end">
@@ -262,12 +263,22 @@
     <div class="col">
         <div class="card custom-card">
             <div class="card-body">
-                <div class="row">
+                <div class="row mb-2">
                     <div class="d-flex w-50 gap-2">
                         <div class="mb-3">
                             <div class="input-group">
                                 <input type="text" id="date-range-picker" class="form-control" placeholder="Select date range">
                             </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md">
+                        <div class="btn-group w-100" role="group" aria-label="Basic example">
+                            <button type="button" class="btn btn-label-dark active" data-route="">Individual</button>
+                            <button type="button" class="btn btn-label-dark" data-route="">Fleet</button>
+                            <button type="button" class="btn btn-label-dark" data-route="">Company</button>
+                            <button type="button" class="btn btn-label-dark" data-route="">Government</button>
                         </div>
                     </div>
                 </div>
@@ -401,6 +412,17 @@
             }
         ],
 
+    });
+
+
+    // datatables button tabs
+    $(document).ready(function() {
+        $('.btn-group .btn').on('click', function() {
+            // Remove 'active' class from all buttons in the group
+            $('.btn-group .btn').removeClass('active');
+            // Add 'active' class to the clicked button
+            $(this).addClass('active');
+        });
     });
 
 
