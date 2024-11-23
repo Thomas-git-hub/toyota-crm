@@ -86,6 +86,7 @@
                         <label for="car_color" class="form-label required">Color</label>
                         <select class="form-control" id="edit_car_color" name="car_color">
                             <option value="">Select Color</option>
+                            <option value="any_color">Any Color</option>
                         </select>
                         <small class="text-danger" id="validateColor">Please Select Color</small>
                     </div>
@@ -328,10 +329,10 @@
                 <div class="row">
                     <div class="col-md">
                         <div class="btn-group w-100" role="group" aria-label="Basic example">
-                            <button type="button" class="btn btn-label-dark active" data-route="">Individual</button>
-                            <button type="button" class="btn btn-label-dark" data-route="">Fleet</button>
-                            <button type="button" class="btn btn-label-dark" data-route="">Company</button>
-                            <button type="button" class="btn btn-label-dark" data-route="">Government</button>
+                            <button type="button" class="btn btn-label-dark active" data-route="{{ route('leads.individual.list') }}">Individual</button>
+                            <button type="button" class="btn btn-label-dark" data-route="{{ route('leads.fleet.list') }}">Fleet</button>
+                            <button type="button" class="btn btn-label-dark" data-route="{{ route('leads.company.list') }}">Company</button>
+                            <button type="button" class="btn btn-label-dark" data-route="{{ route('leads.government.list') }}">Government</button>
                         </div>
                     </div>
                 </div>
@@ -405,7 +406,7 @@
             processing: true,
             serverSide: true,
             ajax: {
-                url: '{{ route("leads.list") }}',
+                url: '{{ route("leads.individual.list") }}',
                 data: function(d) {
                     // Include the date range in the AJAX request
                     d.date_range = $('#date-range-picker').val();
@@ -464,18 +465,26 @@
 
     });
 
+     // Change DataTable route based on button click
+     $('.btn-group .btn').on('click', function (e) {
+            e.preventDefault();
 
-    // datatables button tabs
-    $(document).ready(function() {
-        $('.btn-group .btn').on('click', function() {
-            // Remove 'active' class from all buttons in the group
+            // Clear the date range picker
+            $('#date-range-picker').val(''); // Clear the date range input
+
+            // Reload the table without resetting the paging
+            inquiryTable.ajax.reload(null, false);
+
+            // Get the route from the clicked button
+            var route = $(this).data('route');
+            inquiryTable.ajax.url(route).load();
+
+            // Remove 'active' class from all buttons
             $('.btn-group .btn').removeClass('active');
+
             // Add 'active' class to the clicked button
             $(this).addClass('active');
         });
-    });
-
-
 
     // Inquiry Form Validation
     $(document).ready(function () {
@@ -590,19 +599,25 @@
         }
 
         // Validation function
-        function validateField(field, message) {
-            const $field = $(field);
-            const $errorMsg = $field.siblings('small');
+        function validateField() {
+            const requiredFields = $('.form-control.required');
+            let isValid = true;
 
-            if (!$field.val()) {
-                $field.addClass('is-invalid border-danger');
-                $errorMsg.show();
-                return false;
-            }
+            requiredFields.each(function() {
+                const $field = $(this);
+                const $errorMsg = $field.siblings('small');
 
-            $field.removeClass('is-invalid border-danger');
-            $errorMsg.hide();
-            return true;
+                if (!$field.val()) {
+                    $field.addClass('is-invalid border-danger');
+                    $errorMsg.show();
+                    isValid = false;
+                } else {
+                    $field.removeClass('is-invalid border-danger');
+                    $errorMsg.hide();
+                }
+            });
+
+            return isValid;
         }
 
 
@@ -825,8 +840,7 @@
 
     });
 
-
-
+  
     // Mobile Number Validation
     $(document).ready(function () {
         $("#mobile_number, #edit_mobile_number").on("input", function () {

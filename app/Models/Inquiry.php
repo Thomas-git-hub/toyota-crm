@@ -42,7 +42,12 @@ class Inquiry extends Model
     public function vehicle(){
         return $this->belongsTo(Vehicle::class, 'vehicle_id', 'id');
     }
+
     public function status(){
         return $this->belongsTo(Status::class, 'status_id', 'id');
+    }
+
+    public function inquiryType(){
+        return $this->belongsTo(InquryType::class, 'inquiry_type_id', 'id');
     }
 }

@@ -23,7 +23,10 @@ Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard
 //LEADS
 Route::get('/leads', [LeadController::class, 'index'])->name('leads');;
 Route::post('/leads', [LeadController::class, 'store'])->name('leads.store');
-Route::get('/leads/list', [LeadController::class, 'list'])->name('leads.list');
+Route::get('/leads/individual/list', [LeadController::class, 'individualList'])->name('leads.individual.list');
+Route::get('/leads/fleet/list', [LeadController::class, 'fleetList'])->name('leads.fleet.list');
+Route::get('/leads/company/list', [LeadController::class, 'companyList'])->name('leads.company.list');
+Route::get('/leads/government/list', [LeadController::class, 'governmentList'])->name('leads.government.list');
 Route::post('/leads/processing', [LeadController::class, 'processing'])->name('leads.processing');
 Route::delete('/leads/destroy', [LeadController::class, 'destroy'])->name('leads.destroy');
 Route::get('/getProvince', [LeadController::class, 'getProvince'])->name('leads.getProvince');
