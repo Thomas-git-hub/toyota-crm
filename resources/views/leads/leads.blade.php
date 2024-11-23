@@ -170,6 +170,14 @@
                                 <small class="text-danger" id="validateLastname">Enter Customer Last Name</small>
                             </div>
                         </div>
+                        {{-- Fleet Field --}}
+                        <div class="row mb-2 d-none" id="fleetColumnField">
+                            <div class="col-md">
+                                <label for="fleet" class="form-label required">Fleet</label>
+                                <input type="text" class="form-control" id="fleet" name="fleet" placeholder="" />
+                                <small class="text-danger" id="validateFleet">Enter Fleet Name</small>
+                            </div>
+                        </div>
                         {{-- Company Field --}}
                         <div class="row mb-2 d-none" id="companyColumnField">
                             <div class="col-md">
@@ -277,7 +285,7 @@
                     </div>
                     <div class="row">
                         <div class="col-md d-flex justify-content-end gap-2">
-                            <button type="button" class="btn btn-label-danger" id="cancelInquiryFormButton">Cancel</button>
+                            <button type="button" class="btn btn-label-danger" id="cancelEditInquiryFormButton">Cancel</button>
                             <button type="submit" class="btn btn-success">Add Inquiry</button>
                         </div>
                     </div>
@@ -738,28 +746,30 @@
     $(document).ready(function () {
         // Function to toggle visibility and validation based on inquiry type
         function handleInquiryTypeChange() {
-            const inquiryType = $('#inquiry_type').val();
+        const inquiryType = $('#inquiry_type').val();
 
-            // Reset all fields visibility and validation
-            $('#first_name, #last_name').closest('.row').show(); // Show first and last name by default
+        // Reset all fields visibility and validation
+        $('#first_name, #last_name').closest('.row').show(); // Show first and last name by default
+        $('#companyColumnField, #governmentColumnField, #quantityColumnField').addClass('d-none');
+        $('#first_name, #last_name, #company, #government, #quantity').removeClass('is-invalid border-danger').siblings('small').hide();
+
+        if (inquiryType === 'individual') {
+            // No special validation changes for individual, just hide others
             $('#companyColumnField, #governmentColumnField, #quantityColumnField').addClass('d-none');
-            $('#first_name, #last_name, #company, #government, #quantity').removeClass('is-invalid border-danger').siblings('small').hide();
-
-            if (inquiryType === 'individual') {
-                // No special validation changes for individual, just hide others
-                $('#companyColumnField, #governmentColumnField, #quantityColumnField').addClass('d-none');
-            } else if (inquiryType === 'fleet' || inquiryType === 'company') {
-                // Hide first and last name, show quantity
-                $('#first_name, #last_name').closest('.row').hide();
-                $('#quantityColumnField').removeClass('d-none');
-                $('#companyColumnField').toggleClass('d-none', inquiryType !== 'company');
-            } else if (inquiryType === 'government') {
-                // Hide first name, last name, and company, show government field
-                $('#first_name, #last_name').closest('.row').hide();
-                $('#companyColumnField').addClass('d-none');
-                $('#governmentColumnField').removeClass('d-none');
-            }
+        } else if (inquiryType === 'fleet' || inquiryType === 'company') {
+            // Hide first and last name, show quantity
+            $('#first_name, #last_name').closest('.row').hide();
+            $('#quantityColumnField').removeClass('d-none');
+            $('#companyColumnField').toggleClass('d-none', inquiryType !== 'company');
+            $('#fleetColumnField').toggleClass('d-none', inquiryType !== 'fleet');
+        } else if (inquiryType === 'government') {
+            // Hide first name, last name, and company, show government field
+            $('#first_name, #last_name').closest('.row').hide();
+            $('#quantityColumnField').removeClass('d-none');
+            $('#companyColumnField').addClass('d-none');
+            $('#governmentColumnField').removeClass('d-none');
         }
+    }
 
         // Attach change event to inquiry type select
         $('#inquiry_type').on('change', function () {
@@ -811,6 +821,7 @@
             isValid = validateField('#inquiry_type', 'Select Inquiry Type') && isValid;
             isValid = validateField('#first_name', 'Enter Customer First Name') && isValid;
             isValid = validateField('#last_name', 'Enter Customer Last Name') && isValid;
+            isValid = validateField('#fleet', 'Enter Company Name') && isValid;
             isValid = validateField('#company', 'Enter Company Name') && isValid;
             isValid = validateField('#government', 'Enter Government Agency') && isValid;
             isValid = validateField('#age', 'Enter Customer Age') && isValid;
