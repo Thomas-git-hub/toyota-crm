@@ -191,6 +191,7 @@
                                 <small class="text-danger" id="validateGovernment">Enter Government Agency</small>
                             </div>
                         </div>
+                        {{-- Gender and Age Field --}}
                         <div class="row mb-2">
                             <div class="col-md" id="genderColumnField">
                                 <label for="gender" class="form-label required">Gender</label>
@@ -215,7 +216,7 @@
                             </div>
                             <div class="col-md">
                                 <label for="address" class="form-label required">Address</label>
-                                <input type="text" class="form-control" id="address" name="address" placeholder="" />
+                                <input type="text" class="form-control" id="address" name="address" placeholder="House/Number and Street, Barangay/Subdivision, City/Municipality, Province" />
                                 <small class="text-danger" id="validateAddress">Enter <Address></Address></small>
                             </div>
                         </div>
@@ -473,7 +474,7 @@
             $(this).addClass('active');
         });
     });
-    
+
 
 
     // Inquiry Form Validation
@@ -607,7 +608,7 @@
 
         function handleInquiryTypeChange() {
             const inquiryType = $('#inquiry_type').val();
-            
+
             console.log(inquiryType);
 
             // Reset all fields visibility and validation
@@ -824,7 +825,7 @@
 
     });
 
-  
+
 
     // Mobile Number Validation
     $(document).ready(function () {

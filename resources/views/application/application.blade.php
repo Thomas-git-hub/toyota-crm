@@ -113,7 +113,7 @@
                       </select>
                       <small class="text-danger" id="validateSource">Please Select Source</small>
                   </div>
-                  <div class="mb-4">
+                  <div class="col-md">
                     <div class="row mb-2">
                         <div class="col-md">
                             <label for="edit_bank_id" class="form-label required">Bank</label>
@@ -131,6 +131,16 @@
                         </div>
                     </div>
                 </div>
+              </div>
+              <div class="row mb-4">
+                  <div class="col-md">
+                      <label for="reservation" class="form-label required">Reservation</label>
+                      <select class="form-control" id="edit_reservation" name="reservation">
+                          <option value="none">None</option>
+                          <option value="paid">Paid</option>
+                      </select>
+                      <small class="text-danger" id="validateReservation">Please Select Reservation</small>
+                  </div>
               </div>
               <div class="row mb-2">
                   <div class="col-md">
@@ -310,7 +320,7 @@
                     </div>
                 </div>
                 <div class="table-responsive">
-                    <table id="applicationTable" class="table table-striped table-hover" style="width:100%">
+                    <table id="applicationTable" class="table table-bordered table-hover" style="width:100%">
                         <tbody>
                         </tbody>
                     </table>
@@ -397,8 +407,9 @@
         columns: [
             { data: 'id', name: 'id', title: 'ID' , visible: false},
             { data: 'team', name: 'team', title: 'Team' },
+            { data: 'type', name: 'type', title: 'Type' },
             { data: 'agent', name: 'agent', title: 'Agent' },
-            { data: 'customer_name', name: 'customer_name', title: 'Customer Name' },
+            { data: 'customer_name', name: 'customer_name', title: 'Customer' },
             { data: 'contact_number', name: 'contact_number', title: 'Contact No.' },
             { data: 'unit', name: 'unit', title: 'Unit' },
             { data: 'variant', name: 'variant', title: 'Variant' },
@@ -417,8 +428,8 @@
                 render: function(data) {
                     return `
                         <div class="d-flex">
-                            <button type="button" class="btn btn-icon me-2 btn-info" data-bs-toggle="modal" data-bs-target="#editThesisEntiresModal">
-                                <span class="tf-icons bx bx-show-alt bx-22px"></span>
+                            <button type="button" class="btn btn-icon me-2 btn-label-secondary" data-bs-toggle="modal" data-bs-target="#editThesisEntiresModal">
+                                <span class="tf-icons bx bxs-message-rounded-detail bx-22px"></span>
                             </button>
                         </div>`;
                 }
@@ -432,7 +443,7 @@
                     return `
                         <div class="d-flex">
                             <button type="button" class="btn btn-icon me-2 btn-success edit-btn" data-bs-toggle="modal" data-bs-target="#editApplicationFormModal"  data-id="${data}">
-                                <span class="tf-icons bx bx-pencil bx-22px"></span>
+                                <span class="tf-icons bx bx-show-alt bx-22px"></span>
                             </button>
                         </div>
                     `;
