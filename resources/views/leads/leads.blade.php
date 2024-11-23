@@ -143,6 +143,21 @@
             <div class="card-body">
                 <form id="leadFormData">
                     <div class="mb-4">
+                        {{-- Inquiry Type Field --}}
+                        <div class="row mb-4">
+                            <div class="col-md">
+                                <label for="inquiry_type" class="form-label required">Select Inquiry Type</label>
+                                <select class="form-control" id="inquiry_type" name="inquiry_type">
+                                    <option value="">Select Inquiry Type</option>
+                                    <option value="individual">Individual</option>
+                                    <option value="fleet">Fleet</option>
+                                    <option value="company">Company</option>
+                                    <option value="government">Government</option>
+                                </select>
+                                <small class="text-danger" id="validateInquiryType">Please Select Inquiry Type</small>
+                            </div>
+                        </div>
+                        {{-- Customer First and Last Name Field --}}
                         <div class="row mb-2">
                             <div class="col-md">
                                 <label for="first_name" class="form-label required">First Name</label>
@@ -153,6 +168,22 @@
                                 <label for="last_name" class="form-label required">Last Name</label>
                                 <input type="text" class="form-control" id="last_name" name="last_name" placeholder="" />
                                 <small class="text-danger" id="validateLastname">Enter Customer Last Name</small>
+                            </div>
+                        </div>
+                        {{-- Company Field --}}
+                        <div class="row mb-2 d-none" id="companyColumnField">
+                            <div class="col-md">
+                                <label for="company" class="form-label required">Company</label>
+                                <input type="text" class="form-control" id="company" name="company" placeholder="" />
+                                <small class="text-danger" id="validateCompany">Enter Company Name</small>
+                            </div>
+                        </div>
+                        {{-- Government Field --}}
+                        <div class="row mb-2 d-none" id="governmentColumnField">
+                            <div class="col-md">
+                                <label for="government" class="form-label required">Government</label>
+                                <input type="text" class="form-control" id="government" name="government" placeholder="" />
+                                <small class="text-danger" id="validateGovernment">Enter Government Agency</small>
                             </div>
                         </div>
                         <div class="row mb-2">
@@ -206,6 +237,11 @@
                                     <option value="">Select Color</option>
                                 </select>
                                 <small class="text-danger" id="validateColor">Please Select Color</small>
+                            </div>
+                            <div class="col-md d-none" id="quantityColumnField">
+                                <label for="quantity" class="form-label required">Quantity</label>
+                                <input type="number" class="form-control" id="quantity" name="quantity" placeholder="" />
+                                <small class="text-danger" id="validateQuantity">Enter Quantity</small>
                             </div>
                         </div>
                     </div>
@@ -427,133 +463,365 @@
 
 
     // Inquiry Form Validation
+    // $(document).ready(function () {
+    //     $.ajax({
+    //         url: '{{ route('leads.getUnit') }}',
+    //         type: 'GET',
+    //         dataType: 'json',
+    //         success: function(data) {
+    //             let unitSelect = $('#car_unit, #edit_car_unit');
+    //             unitSelect.empty();
+    //             unitSelect.append('<option value="">Select Unit...</option>');
+    //             data.forEach(function(item) {
+    //                 unitSelect.append(`<option value="${item.unit}">${item.unit}</option>`);
+    //             });
+    //         },
+    //         error: function(error) {
+    //             console.error('Error loading unit:', error);
+    //         }
+    //     });
+
+    //      // Load variants and colors based on selected unit
+    //     $('#car_unit, #edit_car_unit').on('change', function() {
+    //         const selectedUnit = $(this).val();
+    //         if (selectedUnit) {
+    //             $.ajax({
+    //                 url: '{{ route("leads.getVariants") }}',
+    //                 type: 'GET',
+    //                 data: { unit: selectedUnit },
+    //                 dataType: 'json',
+    //                 success: function(data) {
+    //                     let variantSelect = $('#car_variant, #edit_car_variant');
+    //                     variantSelect.empty();
+    //                     variantSelect.append('<option value="">Select Variants...</option>');
+    //                     // Check if data.variants is an array or a single value
+    //                     if (Array.isArray(data.variants)) {
+    //                         data.variants.forEach(function(variant) {
+    //                             variantSelect.append(`<option value="${variant}">${variant}</option>`);
+    //                         });
+    //                     } else {
+    //                         variantSelect.append(`<option value="${data.variants}">${data.variants}</option>`);
+    //                     }
+    //                 },
+    //                 error: function(error) {
+    //                     console.error('Error loading variants and colors:', error);
+    //                 }
+    //             });
+    //         } else {
+    //             console.log('here');
+    //             // Clear the selects if no unit is selected
+    //             $('#car_variant').empty().append('<option value="">Select Variants...</option>');
+    //         }
+    //     });
+
+    //     $('#car_variant, #edit_car_variant').on('change', function() {
+    //         const selectedVariant = $(this).val();
+    //         if (selectedVariant) {
+    //             $.ajax({
+    //                 url: '{{ route("leads.getColor") }}',
+    //                 type: 'GET',
+    //                 data: { variant: selectedVariant },
+    //                 dataType: 'json',
+    //                 success: function(data) {
+
+    //                     let colorSelect = $('#car_color, #edit_car_color');
+    //                     colorSelect.empty();
+    //                     colorSelect.append('<option value="">Select Color...</option>');
+    //                     // Check if data.colors is an array or a single value
+    //                     if (Array.isArray(data.colors)) {
+    //                         data.colors.forEach(function(color) {
+    //                             colorSelect.append(`<option value="${color}">${color}</option>`);
+    //                         });
+    //                     } else {
+    //                         colorSelect.append(`<option value="${data.colors}">${data.colors}</option>`);
+    //                     }
+    //                 },
+    //                 error: function(error) {
+    //                     console.error('Error loading variants and colors:', error);
+    //                 }
+    //             });
+    //         } else {
+    //             console.log('here');
+    //             // Clear the selects if no unit is selected
+    //             $('#car_color').empty().append('<option value="">Select Color...</option>');
+    //         }
+    //     });
+
+    //     // Hide warning messages initially
+    //     $("small").hide();
+
+    //     // Helper function to capitalize first letter of each word
+    //     function capitalizeWords(str) {
+    //         return str.replace(/\b\w/g, function (txt) {
+    //             return txt.toUpperCase();
+    //         });
+    //     }
+
+    //     // Validation function
+    //     function validateField(field, message) {
+    //         const $field = $(field);
+    //         const $errorMsg = $field.siblings('small');
+
+    //         if (!$field.val()) {
+    //             $field.addClass('is-invalid border-danger');
+    //             $errorMsg.show();
+    //             return false;
+    //         }
+
+    //         $field.removeClass('is-invalid border-danger');
+    //         $errorMsg.hide();
+    //         return true;
+    //     }
+
+    //     // Validate form on submit
+    //     $("#leadFormData").on("submit", function (e) {
+    //         e.preventDefault();
+    //         let isValid = true;
+
+    //          // Validate required fields
+    //         isValid = validateField('#inquiry_type', 'Select Inquiry Type') && isValid;
+    //         isValid = validateField('#first_name', 'Enter Customer First Name') && isValid;
+    //         isValid = validateField('#last_name', 'Enter Customer Last Name') && isValid;
+    //         isValid = validateField('#company', 'Enter Company Name') && isValid;
+    //         isValid = validateField('#government', 'Enter Government Agency') && isValid;
+    //         isValid = validateField('#age', 'Enter Customer Age') && isValid;
+    //         isValid = validateField('#mobile_number', 'Enter Valid Mobile Number') && isValid;
+    //         isValid = validateField('#car_unit', 'Please Select Unit') && isValid;
+    //         isValid = validateField('#car_variant', 'Please Select Variant') && isValid;
+    //         isValid = validateField('#car_color', 'Please Select Color') && isValid;
+    //         isValid = validateField('#quantity', 'Enter Vehicle Quantity') && isValid;
+    //         isValid = validateField('#transaction', 'Please Select Transaction') && isValid;
+    //         isValid = validateField('#source', 'Please Select Source') && isValid;
+    //         isValid = validateField('#gender', 'Please Select Gender') && isValid;
+    //         isValid = validateField('#car_variant', 'Please Select a Variant') && isValid;
+    //         isValid = validateField('#address', 'Enter Address') && isValid;
+
+    //         // Special validation for mobile number
+    //         const mobileNumber = $('#mobile_number').val();
+    //         if (mobileNumber && !mobileNumber.match(/^09\d{9}$/)) {
+    //             $('#mobile_number').addClass('is-invalid border-danger');
+    //             $('#validateMobileNumber').show();
+    //             isValid = false;
+    //         }
+
+    //         if (isValid) {
+    //             const formData = $(this).serialize();
+    //             $.ajax({
+    //                 url: '{{ route("leads.store") }}',
+    //                 type: 'POST',
+    //                 data: formData,
+    //                 headers: {
+    //                     'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+    //                 },
+    //                 success: function(response) {
+    //                     if (response.success) {
+    //                          Swal.fire({
+    //                             icon: 'success',
+    //                             title: 'Success',
+    //                             text: response.message,
+    //                         });
+    //                         // Reset form and hide it
+    //                         $("#leadFormData")[0].reset();
+    //                         $("#inquiryFormCard").hide();
+    //                         $("#addNewInquiryButton").show();
+
+    //                         // Clear all validation states
+    //                         $(".text-danger").hide();
+    //                         $("input, select").removeClass("is-invalid border-danger");
+    //                         inquiryTable.ajax.reload();
+    //                     }
+    //                 },
+    //                 error: function(xhr) {
+    //                     Swal.fire({
+    //                         icon: 'error',
+    //                         title: 'Error',
+    //                         text: xhr.responseJSON?.message || 'Something went wrong!'
+    //                     });
+    //                 }
+    //             });
+    //         }
+    //     });
+
+
+    //     // Validate form on submit
+    //     $("#editInquiryFormData").on("submit", function (e) {
+    //         e.preventDefault();
+    //         let isValid = true;
+
+    //         // Validate required fields
+    //         isValid = validateField('#edit_first_name', 'Enter Customer First Name') && isValid;
+    //         isValid = validateField('#edit_last_name', 'Enter Customer Last Name') && isValid;
+    //         isValid = validateField('#edit_age', 'Enter Customer Age') && isValid;
+    //         isValid = validateField('#edit_mobile_number', 'Enter Valid Mobile Number') && isValid;
+    //         isValid = validateField('#edit_car_unit', 'Please Select Unit') && isValid;
+    //         isValid = validateField('#edit_car_variant', 'Please Select Variant') && isValid;
+    //         isValid = validateField('#edit_car_color', 'Please Select Color') && isValid;
+    //         isValid = validateField('#edit_transaction', 'Please Select Transaction') && isValid;
+    //         isValid = validateField('#edit_source', 'Please Select Source') && isValid;
+    //         isValid = validateField('#edit_gender', 'Please Select Gender') && isValid;
+    //         isValid = validateField('#edit_address', 'Enter Address') && isValid;
+
+    //         // Special validation for mobile number
+    //         const mobileNumber = $('#edit_mobile_number').val();
+    //         if (mobileNumber && !mobileNumber.match(/^09\d{9}$/)) {
+    //             $('#edit_mobile_number').addClass('is-invalid border-danger');
+    //             $('#validateMobileNumber').text('Invalid Mobile Number').show();
+    //             isValid = false;
+    //         } else {
+    //             $('#edit_mobile_number').removeClass('is-invalid border-danger');
+    //             $('#validateMobileNumber').hide();
+    //         }
+
+    //         // Restore original values on invalid fields
+    //         if (!isValid) {
+    //             $('#edit_id').val(originalValues.id);
+    //             $('#edit_first_name').val(originalValues.firstName);
+    //             $('#edit_last_name').val(originalValues.lastName);
+    //             $('#edit_age').val(originalValues.age);
+    //             $('#edit_car_unit').val(originalValues.carUnit);
+    //             $('#edit_car_variant').val(originalValues.carVariant);
+    //             $('#edit_car_color').val(originalValues.carColor);
+    //             $('#edit_transaction').val(originalValues.transaction);
+    //             $('#edit_source').val(originalValues.source);
+    //             $('#edit_gender').val(originalValues.gender);
+    //             $('#edit_address').val(originalValues.address);
+    //             return; // Stop execution if validation fails
+    //         }
+
+    //         // Proceed with AJAX request if the form is valid
+    //         const formData = $(this).serialize();
+    //         const inquiryId = originalValues.id; // Assuming you set data-id on the form
+
+    //         $.ajax({
+    //             url: `/leads/update/${inquiryId}`, // Adjust URL as needed
+    //             type: 'POST',
+    //             data: formData,
+    //             headers: {
+    //                 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+    //             },
+    //             success: function (response) {
+    //                 if (response.success) {
+    //                     Swal.fire({
+    //                         icon: 'success',
+    //                         title: 'Success',
+    //                         text: response.message,
+    //                     });
+    //                     // Reload the DataTable or update the UI as needed
+    //                     inquiryTable.ajax.reload();
+    //                     $('#editInquiryFormModal').modal('hide'); // Hide the modal
+    //                 }
+    //             },
+    //             error: function (xhr) {
+    //                 Swal.fire({
+    //                     icon: 'error',
+    //                     title: 'Error',
+    //                     text: xhr.responseJSON?.message || 'Something went wrong!'
+    //                 });
+    //             }
+    //         });
+    //     });
+
+
+    //     $('#leadFormData input, #leadFormData select').on('input change', function() {
+    //         validateField(this);
+    //     });
+
+    //     // Real-time Capitalization
+    //     $("input[type='text']").on("input", function () {
+    //         $(this).val(capitalizeWords($(this).val()));
+    //     });
+
+
+    // });
+
+    // New Inquiry Form Validation
     $(document).ready(function () {
-        $.ajax({
-            url: '{{ route('leads.getUnit') }}',
-            type: 'GET',
-            dataType: 'json',
-            success: function(data) {
-                let unitSelect = $('#car_unit, #edit_car_unit');
-                unitSelect.empty();
-                unitSelect.append('<option value="">Select Unit...</option>');
-                data.forEach(function(item) {
-                    unitSelect.append(`<option value="${item.unit}">${item.unit}</option>`);
-                });
-            },
-            error: function(error) {
-                console.error('Error loading unit:', error);
+        // Function to toggle visibility and validation based on inquiry type
+        function handleInquiryTypeChange() {
+            const inquiryType = $('#inquiry_type').val();
+
+            // Reset all fields visibility and validation
+            $('#first_name, #last_name').closest('.row').show(); // Show first and last name by default
+            $('#companyColumnField, #governmentColumnField, #quantityColumnField').addClass('d-none');
+            $('#first_name, #last_name, #company, #government, #quantity').removeClass('is-invalid border-danger').siblings('small').hide();
+
+            if (inquiryType === 'individual') {
+                // No special validation changes for individual, just hide others
+                $('#companyColumnField, #governmentColumnField, #quantityColumnField').addClass('d-none');
+            } else if (inquiryType === 'fleet' || inquiryType === 'company') {
+                // Hide first and last name, show quantity
+                $('#first_name, #last_name').closest('.row').hide();
+                $('#quantityColumnField').removeClass('d-none');
+                $('#companyColumnField').toggleClass('d-none', inquiryType !== 'company');
+            } else if (inquiryType === 'government') {
+                // Hide first name, last name, and company, show government field
+                $('#first_name, #last_name').closest('.row').hide();
+                $('#companyColumnField').addClass('d-none');
+                $('#governmentColumnField').removeClass('d-none');
             }
-        });
-
-         // Load variants and colors based on selected unit
-        $('#car_unit, #edit_car_unit').on('change', function() {
-            const selectedUnit = $(this).val();
-            if (selectedUnit) {
-                $.ajax({
-                    url: '{{ route("leads.getVariants") }}',
-                    type: 'GET',
-                    data: { unit: selectedUnit },
-                    dataType: 'json',
-                    success: function(data) {
-                        let variantSelect = $('#car_variant, #edit_car_variant');
-                        variantSelect.empty();
-                        variantSelect.append('<option value="">Select Variants...</option>');
-                        // Check if data.variants is an array or a single value
-                        if (Array.isArray(data.variants)) {
-                            data.variants.forEach(function(variant) {
-                                variantSelect.append(`<option value="${variant}">${variant}</option>`);
-                            });
-                        } else {
-                            variantSelect.append(`<option value="${data.variants}">${data.variants}</option>`);
-                        }
-                    },
-                    error: function(error) {
-                        console.error('Error loading variants and colors:', error);
-                    }
-                });
-            } else {
-                console.log('here');
-                // Clear the selects if no unit is selected
-                $('#car_variant').empty().append('<option value="">Select Variants...</option>');
-            }
-        });
-
-        $('#car_variant, #edit_car_variant').on('change', function() {
-            const selectedVariant = $(this).val();
-            if (selectedVariant) {
-                $.ajax({
-                    url: '{{ route("leads.getColor") }}',
-                    type: 'GET',
-                    data: { variant: selectedVariant },
-                    dataType: 'json',
-                    success: function(data) {
-
-                        let colorSelect = $('#car_color, #edit_car_color');
-                        colorSelect.empty();
-                        colorSelect.append('<option value="">Select Color...</option>');
-                        // Check if data.colors is an array or a single value
-                        if (Array.isArray(data.colors)) {
-                            data.colors.forEach(function(color) {
-                                colorSelect.append(`<option value="${color}">${color}</option>`);
-                            });
-                        } else {
-                            colorSelect.append(`<option value="${data.colors}">${data.colors}</option>`);
-                        }
-                    },
-                    error: function(error) {
-                        console.error('Error loading variants and colors:', error);
-                    }
-                });
-            } else {
-                console.log('here');
-                // Clear the selects if no unit is selected
-                $('#car_color').empty().append('<option value="">Select Color...</option>');
-            }
-        });
-
-        // Hide warning messages initially
-        $("small").hide();
-
-        // Helper function to capitalize first letter of each word
-        function capitalizeWords(str) {
-            return str.replace(/\b\w/g, function (txt) {
-                return txt.toUpperCase();
-            });
         }
 
-        // Validation function
-        function validateField(field, message) {
-            const $field = $(field);
-            const $errorMsg = $field.siblings('small');
+        // Attach change event to inquiry type select
+        $('#inquiry_type').on('change', function () {
+            handleInquiryTypeChange();
+        });
 
-            if (!$field.val()) {
-                $field.addClass('is-invalid border-danger');
-                $errorMsg.show();
-                return false;
-            }
-
-            $field.removeClass('is-invalid border-danger');
-            $errorMsg.hide();
-            return true;
-        }
-
-        // Validate form on submit
+        // Modify the validation logic in the submit handler
         $("#leadFormData").on("submit", function (e) {
             e.preventDefault();
             let isValid = true;
 
-             // Validate required fields
+            const inquiryType = $('#inquiry_type').val();
+
+            // Always validate inquiry type
+            isValid = validateField('#inquiry_type', 'Select Inquiry Type') && isValid;
+
+            if (inquiryType === 'individual') {
+                // Validate first and last name only for individual
+                isValid = validateField('#first_name', 'Enter Customer First Name') && isValid;
+                isValid = validateField('#last_name', 'Enter Customer Last Name') && isValid;
+            } else if (inquiryType === 'fleet' || inquiryType === 'company') {
+                // Validate quantity and optionally company for fleet/company
+                isValid = validateField('#quantity', 'Enter Vehicle Quantity') && isValid;
+                if (inquiryType === 'company') {
+                    isValid = validateField('#company', 'Enter Company Name') && isValid;
+                }
+            } else if (inquiryType === 'government') {
+                // Validate government field for government
+                isValid = validateField('#government', 'Enter Government Agency') && isValid;
+            }
+
+            // Validation function
+            function validateField(field, message) {
+                const $field = $(field);
+                const $errorMsg = $field.siblings('small');
+
+                if (!$field.val()) {
+                    $field.addClass('is-invalid border-danger');
+                    $errorMsg.show();
+                    return false;
+                }
+
+                $field.removeClass('is-invalid border-danger');
+                $errorMsg.hide();
+                return true;
+            }
+
+            // Validate required fields
+            isValid = validateField('#inquiry_type', 'Select Inquiry Type') && isValid;
             isValid = validateField('#first_name', 'Enter Customer First Name') && isValid;
             isValid = validateField('#last_name', 'Enter Customer Last Name') && isValid;
+            isValid = validateField('#company', 'Enter Company Name') && isValid;
+            isValid = validateField('#government', 'Enter Government Agency') && isValid;
             isValid = validateField('#age', 'Enter Customer Age') && isValid;
             isValid = validateField('#mobile_number', 'Enter Valid Mobile Number') && isValid;
             isValid = validateField('#car_unit', 'Please Select Unit') && isValid;
             isValid = validateField('#car_variant', 'Please Select Variant') && isValid;
             isValid = validateField('#car_color', 'Please Select Color') && isValid;
+            isValid = validateField('#quantity', 'Enter Vehicle Quantity') && isValid;
             isValid = validateField('#transaction', 'Please Select Transaction') && isValid;
             isValid = validateField('#source', 'Please Select Source') && isValid;
             isValid = validateField('#gender', 'Please Select Gender') && isValid;
-            isValid = validateField('#car_variant', 'Please Select a Variant') && isValid;
             isValid = validateField('#address', 'Enter Address') && isValid;
 
             // Special validation for mobile number
@@ -565,7 +833,7 @@
             }
 
             if (isValid) {
-                const formData = $(this).serialize();
+            const formData = $(this).serialize();
                 $.ajax({
                     url: '{{ route("leads.store") }}',
                     type: 'POST',
@@ -575,7 +843,7 @@
                     },
                     success: function(response) {
                         if (response.success) {
-                             Swal.fire({
+                            Swal.fire({
                                 icon: 'success',
                                 title: 'Success',
                                 text: response.message,
@@ -602,97 +870,10 @@
             }
         });
 
-
-        // Validate form on submit
-        $("#editInquiryFormData").on("submit", function (e) {
-            e.preventDefault();
-            let isValid = true;
-
-            // Validate required fields
-            isValid = validateField('#edit_first_name', 'Enter Customer First Name') && isValid;
-            isValid = validateField('#edit_last_name', 'Enter Customer Last Name') && isValid;
-            isValid = validateField('#edit_age', 'Enter Customer Age') && isValid;
-            isValid = validateField('#edit_mobile_number', 'Enter Valid Mobile Number') && isValid;
-            isValid = validateField('#edit_car_unit', 'Please Select Unit') && isValid;
-            isValid = validateField('#edit_car_variant', 'Please Select Variant') && isValid;
-            isValid = validateField('#edit_car_color', 'Please Select Color') && isValid;
-            isValid = validateField('#edit_transaction', 'Please Select Transaction') && isValid;
-            isValid = validateField('#edit_source', 'Please Select Source') && isValid;
-            isValid = validateField('#edit_gender', 'Please Select Gender') && isValid;
-            isValid = validateField('#edit_address', 'Enter Address') && isValid;
-
-            // Special validation for mobile number
-            const mobileNumber = $('#edit_mobile_number').val();
-            if (mobileNumber && !mobileNumber.match(/^09\d{9}$/)) {
-                $('#edit_mobile_number').addClass('is-invalid border-danger');
-                $('#validateMobileNumber').text('Invalid Mobile Number').show();
-                isValid = false;
-            } else {
-                $('#edit_mobile_number').removeClass('is-invalid border-danger');
-                $('#validateMobileNumber').hide();
-            }
-
-            // Restore original values on invalid fields
-            if (!isValid) {
-                $('#edit_id').val(originalValues.id);
-                $('#edit_first_name').val(originalValues.firstName);
-                $('#edit_last_name').val(originalValues.lastName);
-                $('#edit_age').val(originalValues.age);
-                $('#edit_car_unit').val(originalValues.carUnit);
-                $('#edit_car_variant').val(originalValues.carVariant);
-                $('#edit_car_color').val(originalValues.carColor);
-                $('#edit_transaction').val(originalValues.transaction);
-                $('#edit_source').val(originalValues.source);
-                $('#edit_gender').val(originalValues.gender);
-                $('#edit_address').val(originalValues.address);
-                return; // Stop execution if validation fails
-            }
-
-            // Proceed with AJAX request if the form is valid
-            const formData = $(this).serialize();
-            const inquiryId = originalValues.id; // Assuming you set data-id on the form
-
-            $.ajax({
-                url: `/leads/update/${inquiryId}`, // Adjust URL as needed
-                type: 'POST',
-                data: formData,
-                headers: {
-                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                },
-                success: function (response) {
-                    if (response.success) {
-                        Swal.fire({
-                            icon: 'success',
-                            title: 'Success',
-                            text: response.message,
-                        });
-                        // Reload the DataTable or update the UI as needed
-                        inquiryTable.ajax.reload();
-                        $('#editInquiryFormModal').modal('hide'); // Hide the modal
-                    }
-                },
-                error: function (xhr) {
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Error',
-                        text: xhr.responseJSON?.message || 'Something went wrong!'
-                    });
-                }
-            });
-        });
-
-
-        $('#leadFormData input, #leadFormData select').on('input change', function() {
-            validateField(this);
-        });
-
-        // Real-time Capitalization
-        $("input[type='text']").on("input", function () {
-            $(this).val(capitalizeWords($(this).val()));
-        });
-
-
+        // Initial call to set up form state
+        handleInquiryTypeChange();
     });
+
 
     // Mobile Number Validation
     $(document).ready(function () {
