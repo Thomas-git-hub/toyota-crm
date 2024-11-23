@@ -195,7 +195,7 @@
                             </div>
                         </div>
                         <div class="row mb-2">
-                            <div class="col-md">
+                            <div class="col-md" id="genderColumnField">
                                 <label for="gender" class="form-label required">Gender</label>
                                 <select class="form-control" id="gender" name="gender">
                                     <option value="">Select Gender</option>
@@ -204,23 +204,23 @@
                                 </select>
                                 <small class="text-danger" id="validateGender">Please Select Gender</small>
                             </div>
-                            <div class="col-md">
+                            <div class="col-md" id="ageColumnField">
                                 <label for="age" class="form-label required">Age</label>
                                 <input type="number" class="form-control" id="age" name="age" placeholder="" />
                                 <small class="text-danger" id="validateLastname">Enter Customer Age</small>
                             </div>
+                        </div>
+                        <div class="row">
                             <div class="col-md">
                                 <label for="mobile_number" class="form-label required">Mobile Number</label>
                                 <input type="text" class="form-control" id="mobile_number" name="mobile_number" placeholder="09" />
                                 <small class="text-danger" id="validateMobileNumber">Enter Valid Mobile Number</small>
                             </div>
-                        </div>
-                        <div class="row">
                             <div class="col-md">
-                            <label for="address" class="form-label required">Address</label>
-                            <input type="text" class="form-control" id="address" name="address" placeholder="" />
-                            <small class="text-danger" id="validateAddress">Enter <Address></Address></small>
-                        </div>
+                                <label for="address" class="form-label required">Address</label>
+                                <input type="text" class="form-control" id="address" name="address" placeholder="" />
+                                <small class="text-danger" id="validateAddress">Enter <Address></Address></small>
+                            </div>
                         </div>
                     </div>
                     <div class="mb-4">
@@ -277,6 +277,18 @@
                             <small class="text-danger" id="validateSource">Please Select Source</small>
                         </div>
                     </div>
+                    <div class="row mb-4">
+                        <div class="col-md">
+                            <label for="category" class="form-label required">Category</label>
+                            <select class="form-control" id="category" name="category">
+                                <option value="">Select Category</option>
+                                <option class="" value="Hot" style="color: #ff0000; font-weight: bold;">Hot</option>
+                                <option class="text-warning" value="Warm" style="font-weight: bold;">Warm</option>
+                                <option class="text-info" value="Cold" style="font-weight: bold;">Cold</option>
+                            </select>
+                            <small class="text-danger" id="validateCategory">Please Select Category</small>
+                        </div>
+                    </div>
                     <div class="row mb-2">
                         <div class="col-md">
                             <label for="additional_info" class="form-label">Remarks</label>
@@ -285,7 +297,7 @@
                     </div>
                     <div class="row">
                         <div class="col-md d-flex justify-content-end gap-2">
-                            <button type="button" class="btn btn-label-danger" id="cancelEditInquiryFormButton">Cancel</button>
+                            <button type="button" class="btn btn-label-danger" id="cancelInquiryFormButton">Cancel</button>
                             <button type="submit" class="btn btn-success">Add Inquiry</button>
                         </div>
                     </div>
@@ -746,30 +758,35 @@
     $(document).ready(function () {
         // Function to toggle visibility and validation based on inquiry type
         function handleInquiryTypeChange() {
-        const inquiryType = $('#inquiry_type').val();
+            const inquiryType = $('#inquiry_type').val();
 
-        // Reset all fields visibility and validation
-        $('#first_name, #last_name').closest('.row').show(); // Show first and last name by default
-        $('#companyColumnField, #governmentColumnField, #quantityColumnField').addClass('d-none');
-        $('#first_name, #last_name, #company, #government, #quantity').removeClass('is-invalid border-danger').siblings('small').hide();
-
-        if (inquiryType === 'individual') {
-            // No special validation changes for individual, just hide others
+            // Reset all fields visibility and validation
+            $('#first_name, #last_name').closest('.row').show(); // Show first and last name by default
             $('#companyColumnField, #governmentColumnField, #quantityColumnField').addClass('d-none');
-        } else if (inquiryType === 'fleet' || inquiryType === 'company') {
-            // Hide first and last name, show quantity
-            $('#first_name, #last_name').closest('.row').hide();
-            $('#quantityColumnField').removeClass('d-none');
-            $('#companyColumnField').toggleClass('d-none', inquiryType !== 'company');
-            $('#fleetColumnField').toggleClass('d-none', inquiryType !== 'fleet');
-        } else if (inquiryType === 'government') {
-            // Hide first name, last name, and company, show government field
-            $('#first_name, #last_name').closest('.row').hide();
-            $('#quantityColumnField').removeClass('d-none');
-            $('#companyColumnField').addClass('d-none');
-            $('#governmentColumnField').removeClass('d-none');
+            $('#first_name, #last_name, #company, #government, #quantity').removeClass('is-invalid border-danger').siblings('small').hide();
+
+            if (inquiryType === 'individual') {
+                // No special validation changes for individual, just hide others
+                $('#companyColumnField, #governmentColumnField, #quantityColumnField').addClass('d-none');
+                $('#quantityColumnField').closest('.row').hide();
+                $('#companyColumnField').closest('.row').hide();
+                $('#fleetColumnField').closest('.row').hide();
+            } else if (inquiryType === 'fleet' || inquiryType === 'company') {
+                // Hide first and last name, show quantity
+                $('#first_name, #last_name').closest('.row').hide();
+                $('#quantityColumnField').removeClass('d-none');
+                $('#companyColumnField').toggleClass('d-none', inquiryType !== 'company');
+                $('#fleetColumnField').toggleClass('d-none', inquiryType !== 'fleet');
+                $('#gender, #age').closest('.row').hide(); // Hide gender and age for fleet and company
+            } else if (inquiryType === 'government') {
+                // Hide first name, last name, and company, show government field
+                $('#first_name, #last_name').closest('.row').hide();
+                $('#quantityColumnField').removeClass('d-none');
+                $('#companyColumnField').addClass('d-none');
+                $('#governmentColumnField').removeClass('d-none');
+                $('#gender, #age').closest('.row').hide(); // Hide gender and age for fleet and company
+            }
         }
-    }
 
         // Attach change event to inquiry type select
         $('#inquiry_type').on('change', function () {
@@ -834,6 +851,7 @@
             isValid = validateField('#source', 'Please Select Source') && isValid;
             isValid = validateField('#gender', 'Please Select Gender') && isValid;
             isValid = validateField('#address', 'Enter Address') && isValid;
+            isValid = validateField('#category', 'Please Select Category') && isValid;
 
             // Special validation for mobile number
             const mobileNumber = $('#mobile_number').val();
