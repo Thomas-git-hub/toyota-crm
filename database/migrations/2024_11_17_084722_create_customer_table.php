@@ -19,8 +19,8 @@ return new class extends Migration
             $table->string('department_name')->nullable();
             $table->string('company_name')->nullable();
             $table->string('contact_number');
-            $table->string('gender');
-            $table->integer('age');
+            $table->string('gender')->nullable();
+            $table->integer('age')->nullable();
             $table->string('source');
             $table->string('address');
             $table->unsignedBigInteger('created_by');

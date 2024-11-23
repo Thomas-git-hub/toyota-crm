@@ -164,16 +164,8 @@ class LeadController extends Controller
             return $data->user->first_name . ' ' . $data->user->last_name;
         })
 
-        ->addColumn('customer_name', function($data) {
+        ->addColumn('client_name', function($data) {
             return $data->customer->customer_first_name . ' ' . $data->customer->customer_last_name;
-        })
-
-        ->addColumn('age', function($data) {
-            return $data->customer->age;
-        })
-
-        ->addColumn('gender', function($data) {
-            return $data->customer->gender;
         })
 
         ->addColumn('contact_number', function($data) {
