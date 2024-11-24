@@ -49,7 +49,7 @@ class LeadController extends Controller
                 'inquiry_type_id' => 'required',
                 'category' => 'required',
                 'quantity' => 'nullable',
-                
+
             ]);
 
             $customer = new Customer();
@@ -67,10 +67,20 @@ class LeadController extends Controller
             $customer->updated_by = Auth::id();
             $customer->save();
 
-            $vehicle = Vehicle::where('unit', $validated['car_unit'])
-            ->where('variant', $validated['car_variant'])
-            ->where('color',$validated['car_color'])
-            ->first();
+            $vehicle = Vehicle::firstOrCreate(
+                [
+                    'unit' => $validated['car_unit'],
+                    'variant' => $validated['car_variant'],
+                    'color' => $validated['car_color'],
+                ],
+                [
+                    'unit' => $validated['car_unit'],
+                    'variant' => $validated['car_variant'],
+                    'color' => $validated['car_color'],
+                    'created_by' => Auth::id(),
+                    'updated_by' => Auth::id(),
+                ]
+            );
 
             $approved_status = Status::where('status', 'like', 'approved')->first()->id;
             $pending_status = Status::where('status', 'like', 'pending')->first()->id;
@@ -84,7 +94,7 @@ class LeadController extends Controller
             $inquiry->category = $validated['category'];
             $inquiry->remarks = $validated['additional_info'];
             $inquiry->date = now()->format('F d'); // Month name day
-            $inquiry->status_id = in_array($validated['transaction'], ['cash', 'po']) ? $approved_status : $pending_status;
+            $inquiry->status_id = $pending_status;
             $inquiry->status_updated_by = Auth::id();
             $inquiry->status_updated_at = now();
             $inquiry->created_at = now();
@@ -93,34 +103,34 @@ class LeadController extends Controller
             $inquiry->save();
 
 
-            if($inquiry->status_id === $approved_status){
-                // Add the inquiry_id to the transactions table
-                $transaction = new Transactions();
-                $transaction->inquiry_id = $inquiry->id; // Set the inquiry_id
-                $transaction->status =  $pending_status;
-                $transaction->save(); // Save the transaction
+            // if($inquiry->status_id === $approved_status){
+            //     // Add the inquiry_id to the transactions table
+            //     $transaction = new Transactions();
+            //     $transaction->inquiry_id = $inquiry->id; // Set the inquiry_id
+            //     $transaction->status =  $pending_status;
+            //     $transaction->save(); // Save the transaction
 
-                if (in_array($inquiry->transaction, ['cash', 'po'])) {
+            //     if (in_array($inquiry->transaction, ['cash', 'po'])) {
 
-                    $application = new Application();
-                    $application->customer_id = $customer->id;
-                    $application->vehicle_id = $vehicle->id;
-                    $application->transaction_id = $transaction->id;
-                    $application->status_id = $approved_status;
-                    $application->transaction = $inquiry->transaction;
-                    $application->created_by = Auth::id();
-                    $application->updated_by = Auth::id();
-                    $application->save();
+            //         $application = new Application();
+            //         $application->customer_id = $customer->id;
+            //         $application->vehicle_id = $vehicle->id;
+            //         $application->transaction_id = $transaction->id;
+            //         $application->status_id = $approved_status;
+            //         $application->transaction = $inquiry->transaction;
+            //         $application->created_by = Auth::id();
+            //         $application->updated_by = Auth::id();
+            //         $application->save();
 
-                    // Update the transaction table's application_id with the latest inserted application's id
-                    $transaction->application_id = $application->id;
-                    $transaction->status = $approved_status;
-                    $transaction->application_transaction_date = now();
-                    $transaction->transaction_updated_date = now();
-                    $transaction->save();
-                }
+            //         // Update the transaction table's application_id with the latest inserted application's id
+            //         $transaction->application_id = $application->id;
+            //         $transaction->status = $approved_status;
+            //         $transaction->application_transaction_date = now();
+            //         $transaction->transaction_updated_date = now();
+            //         $transaction->save();
+            //     }
 
-            }
+            // }
 
             return response()->json([
                 'success' => true,
@@ -202,7 +212,7 @@ class LeadController extends Controller
         ->editColumn('created_at', function($data) {
             return $data->created_at->format('m/d/Y');
         })
-        
+
 
         ->make(true);
     }
@@ -275,7 +285,7 @@ class LeadController extends Controller
         ->editColumn('created_at', function($data) {
             return $data->created_at->format('m/d/Y');
         })
-        
+
 
         ->make(true);
     }
@@ -348,7 +358,7 @@ class LeadController extends Controller
         ->editColumn('created_at', function($data) {
             return $data->created_at->format('m/d/Y');
         })
-        
+
 
         ->make(true);
     }
@@ -421,7 +431,7 @@ class LeadController extends Controller
         ->editColumn('created_at', function($data) {
             return $data->created_at->format('m/d/Y');
         })
-        
+
 
         ->make(true);
     }
@@ -433,7 +443,7 @@ class LeadController extends Controller
             $inquiry->updated_by = Auth::user()->id;
             $inquiry->save();
 
-            
+
             if (!in_array($inquiry->transaction, ['cash', 'po'])) {
                 // Add the inquiry_id to the transactions table
 
@@ -443,7 +453,7 @@ class LeadController extends Controller
                 $transaction->status = $pending_status->id;
                 $transaction->save(); // Save the transaction
 
-                 
+
                  $application = new Application();
                  $application->customer_id = $inquiry->customer_id;
                  $application->vehicle_id = $inquiry->vehicle_id;
@@ -533,7 +543,7 @@ class LeadController extends Controller
         ->get();
 
         $variants = $vehicles->pluck('variant')->unique()->values()->toArray();
-      
+
 
         return response()->json([
             'variants' => $variants,
@@ -547,7 +557,7 @@ class LeadController extends Controller
         ->get();
 
         $colors = $vehicles->pluck('color')->unique()->values()->toArray();
-      
+
         return response()->json([
             'colors' => $colors,
         ]);

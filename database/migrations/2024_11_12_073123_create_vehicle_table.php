@@ -16,6 +16,8 @@ return new class extends Migration
             $table->string('unit');
             $table->string('variant');
             $table->string('color');
+            $table->unsignedBigInteger('created_by');
+            $table->unsignedBigInteger('updated_by');
             $table->timestamps();
             $table->softDeletes();
         });
