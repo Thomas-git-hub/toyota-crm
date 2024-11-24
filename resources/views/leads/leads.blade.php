@@ -599,25 +599,17 @@
         }
 
         // Validation function
-        function validateField() {
-            const requiredFields = $('.form-control.required');
-            let isValid = true;
-
-            requiredFields.each(function() {
-                const $field = $(this);
-                const $errorMsg = $field.siblings('small');
-
-                if (!$field.val()) {
-                    $field.addClass('is-invalid border-danger');
-                    $errorMsg.show();
-                    isValid = false;
-                } else {
-                    $field.removeClass('is-invalid border-danger');
-                    $errorMsg.hide();
-                }
-            });
-
-            return isValid;
+        function validateField(field, message) {
+            const $field = $(field);
+            const $errorMsg = $field.siblings('small');
+            if (!$field.val()) {
+                $field.addClass('is-invalid border-danger');
+                $errorMsg.show();
+                return false;
+            }
+            $field.removeClass('is-invalid border-danger');
+            $errorMsg.hide();
+            return true;
         }
 
 
@@ -840,7 +832,7 @@
 
     });
 
-  
+
     // Mobile Number Validation
     $(document).ready(function () {
         $("#mobile_number, #edit_mobile_number").on("input", function () {
