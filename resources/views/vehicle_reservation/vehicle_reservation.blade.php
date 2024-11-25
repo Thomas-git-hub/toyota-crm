@@ -75,8 +75,8 @@
                 <div class="row">
                     <div class="col-md">
                         <div class="btn-group w-100" role="group" aria-label="Basic example">
-                            <button type="button" class="btn btn-label-dark active" data-route="">Pending</button>
-                            <button type="button" class="btn btn-label-dark" data-route="">Reservation</button>
+                            <button type="button" class="btn btn-label-dark active" data-route="">Reservation</button>
+                            <button type="button" class="btn btn-label-dark" data-route="">For Release</button>
                         </div>
                     </div>
                 </div>
@@ -153,7 +153,7 @@ const availableUnitsTable = $('#availableUnitsTable').DataTable({
     serverSide: true, // Use client-side processing since we're providing static data
     ajax: {
                 url: '{{ route("vehicle.reservation.units.list") }}',
-                
+
             },
     pageLength: 10,
     paging: true,
@@ -166,7 +166,7 @@ const availableUnitsTable = $('#availableUnitsTable').DataTable({
         infoEmpty: "", // Removes the message when there's no data
         infoFiltered: "", // Removes the "filtered from X entries" part
     },
-  
+
     columns: [
         { data: 'unit', name: 'unit', title: 'Unit' },
         { data: 'quantity', name: 'quantity', title: 'Quantity' },
@@ -266,16 +266,14 @@ const vehicleReservationTable = $('#vehicleReservationTable').DataTable({
     ],
 });
 
-
 // datatables button tabs
 $(document).ready(function() {
-
-$('.btn-group .btn').on('click', function() {
-    // Remove 'active' class from all buttons in the group
-    $('.btn-group .btn').removeClass('active');
-    // Add 'active' class to the clicked button
-    $(this).addClass('active');
-});
+    $('.btn-group .btn').on('click', function() {
+        // Remove 'active' class from all buttons in the group
+        $('.btn-group .btn').removeClass('active');
+        // Add 'active' class to the clicked button
+        $(this).addClass('active');
+    });
 });
 </script>
 

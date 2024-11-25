@@ -12,40 +12,65 @@
     </div>
 </div>
 
-{{-- View Remarks Modal --}}
-<div class="modal fade" id="viewRemarksModal" tabindex="-1" aria-labelledby="largeModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg">
-      <div class="modal-content">
-        <div class="modal-header d-flex align-items-center gap-2">
-          <i class='bx bxs-message-rounded-detail'></i>
-          <h5 class="modal-title" id="largeModalLabel">Remarks</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+<!-- Modal for Adding Banks -->
+<div class="modal fade" id="selectBankModal" tabindex="-1" role="dialog" aria-labelledby="addBankModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header d-flex align-items-center gap-2">
+                <div class="d-flex align-items-center gap-2">
+                    <i class='bx bxs-bank' ></i>
+                    <h5 class="modal-title" id="largeModalLabel">Select Banks</h5>
+                </div>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="selectBankForm">
+                    <div id="bankFieldsContainer">
+                        <div class="row mb-2">
+                            <div class="col-md">
+                                <button type="button" class="btn btn-label-dark" id="addBankFieldButton">
+                                    {{-- <span class="tf-icons bx bxs-plus-circle bx-22px"></span> --}}
+                                    Add More Field
+                                </button>
+                            </div>
+                        </div>
+                        <!-- Bank Field Template -->
+                        <div class="row mb-2 bank-field">
+                            <div class="col-md">
+                                {{-- <label for="select_bank_id" class="form-label required">Choose Bank</label> --}}
+                                <select class="form-control" name="bank_id[]">
+                                    <option value="">Select a Bank</option>
+                                    <option value="metro_bank">Metro Bank</option>
+                                    <option value="bdo">BDO</option>
+                                    <option value="bpi">BPI</option>
+                                    <option value="china_bank">China Bank</option>
+                                    <option value="union_bank">Union Bank</option>
+                                </select>
+                            </div>
+                            {{-- <div class="col-md d-flex align-items-end">
+                                <button type="button" class="btn btn-danger removeBankFieldButton">
+                                    <i class="tf-icons bx bxs-trash bx-22px"></i>
+                                </button>
+                            </div> --}}
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-label-danger" data-bs-dismiss="modal">Close</button>
+                <button type="submit" class="btn btn-dark" form="selectBankForm">Add these Banks</button>
+            </div>
         </div>
-        <div class="modal-body">
-          <div id="remarksContent">
-              <textarea class="form-control mb-2 d-none" id="remarks" name="remarks" rows="5" placeholder="">{{-- display remarks here --}}
-                  Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
-              </textarea>
-              <p class="fs-5 text-dark" id="remarksParagraph">
-                  {{-- display remarks here --}}
-                  Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
-              </p>
-          </div>
-          <div class="d-flex justify-content-end gap-2">
-              <button class="btn btn-label-success" id="editRemarksButton">Edit</button>
-              <button class="btn btn-dark d-none" id="saveEditRemarksButton">Save</button>
-          </div>
-        </div>
-      </div>
     </div>
-  </div>
+</div>
+
 
 {{-- Edit Application Modal --}}
 <div class="modal fade" id="editApplicationFormModal" tabindex="-1" aria-labelledby="largeModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg">
       <div class="modal-content">
         <div class="modal-header">
-          <h5 class="modal-title" id="largeModalLabel">Edit</h5>
+          <h5 class="modal-title" id="largeModalLabel">Application Details</h5>
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <div class="modal-body">
@@ -203,7 +228,7 @@
                     </div>
                 </div>
             </div>
-            <div class="row mb-4">
+            <div class="row mb-2">
                 <div class="col-md">
                     <label for="edit_category" class="form-label required">Category</label>
                     <select class="form-control" id="edit_category" name="category">
@@ -215,6 +240,16 @@
                     <small class="text-danger" id="validateCategory">Please Select Category</small>
                 </div>
             </div>
+            <div class="row mb-4">
+                <div class="col-md">
+                    <label for="edit_payment_status" class="form-label required">Reservation Status</label>
+                    <select class="form-control" id="edit_payment_status" name="payment_status">
+                        <option value="none" selected>None</option>
+                        <option value="paid">Paid</option>
+                    </select>
+                    <small class="text-danger" id="validatePaymentStatus">Please Select Payment Status</small>
+                </div>
+            </div>
             <div class="row mb-2">
                 <div class="col-md">
                     <label for="additional_info" class="form-label">Remarks</label>
@@ -223,8 +258,9 @@
             </div>
             <div class="row">
                 <div class="col-md d-flex justify-content-end gap-2">
-                    <button type="button" class="btn btn-label-danger" id="cancelEditInquiryFormButton">Cancel</button>
-                    <button type="submit" class="btn btn-primary">Save Changes</button>
+                    <button type="button" class="btn btn-success" id="editApplicationModalButton">Edit Details</button>
+                    <button type="button" class="btn btn-label-danger d-none" id="cancelApplicationModalButton">Cancel</button>
+                    <button type="submit" class="btn btn-primary d-none" id="saveEditApplicationModalButton">Save Changes</button>
                 </div>
             </div>
           </form>
@@ -356,17 +392,14 @@
             { data: 'source', name: 'source', title: 'Source' },
             { data: 'date', name: 'date', title: 'Date' },
             {
-                data: 'remarks',
-                title: 'Remarks',
+                data: 'bank',
+                title: 'Bank',
                 orderable: false,
                 searchable: false,
                 render: function(data) {
-                    return `
-                        <div class="d-flex">
-                            <button type="button" class="btn btn-icon me-2 btn-label-secondary bordered" data-bs-toggle="modal" data-bs-target="#editThesisEntiresModal">
-                                <span class="tf-icons bx bxs-message-rounded-detail bx-22px"></span>
-                            </button>
-                        </div>`;
+                    return `<button type="button" class="btn btn-icon me-2 btn-warning" data-bs-toggle="modal" data-bs-target="#selectBankModal">
+                                <span class="tf-icons bx bxs-bank bx-22px"></span>
+                            </button>`;
                 }
             },
             {
@@ -378,7 +411,13 @@
                     return `
                         <div class="d-flex">
                             <button type="button" class="btn btn-icon me-2 btn-success edit-btn" data-bs-toggle="modal" data-bs-target="#editApplicationFormModal"  data-id="${data}">
-                                <span class="tf-icons bx bx-show-alt bx-22px"></span>
+                                <span class="tf-icons bx bxs-show bx-22px"></span>
+                            </button>
+                            <button type="button" class="btn btn-icon me-2 btn-primary processing-btn" data-id="">
+                                <span class="tf-icons bx bxs-check-circle bx-22px"></span>
+                            </button>
+                            <button type="button" class="btn btn-icon me-2 btn-danger cancel-btn" data-id="">
+                                <span class="tf-icons bx bxs-x-circle bx-22px"></span>
                             </button>
                         </div>
                     `;
@@ -859,18 +898,96 @@
         });
     });
 
-    // Edit Remarks hide show
+    // Edit Modal Fields disabled state -> Editable State
     $(document).ready(function () {
-        $("#editRemarksButton").on("click", function () {
-            // Hide the remarks paragraph and edit button
-            $("#remarksParagraph").addClass("d-none");
-            $("#editRemarksButton").addClass("d-none");
+        // Function to reset the modal to its initial uneditable state
+        function resetModalToInitialState() {
+            // Disable all input fields except the Edit button
+            $("#editApplicationFormData :input").not("#editApplicationModalButton").prop("disabled", true);
 
-            // Show the textarea and save button
-            $("#remarks").removeClass("d-none");
-            $("#saveEditRemarksButton").removeClass("d-none");
+            // Show the Edit button
+            $("#editApplicationModalButton").removeClass("d-none");
+
+            // Hide the Save and Cancel buttons
+            $("#saveEditApplicationModalButton").addClass("d-none");
+            $("#cancelApplicationModalButton").addClass("d-none");
+        }
+
+        // Initially, reset the modal to its initial state when the page is ready
+        resetModalToInitialState();
+
+        // When the Edit button is clicked
+        $("#editApplicationModalButton").on("click", function () {
+            // Enable all input fields except hidden fields
+            $("#editApplicationFormData :input").not("[type='hidden']").prop("disabled", false);
+
+            // Hide the Edit button
+            $(this).addClass("d-none");
+
+            // Show the Save Changes and Cancel buttons
+            $("#saveEditApplicationModalButton").removeClass("d-none");
+            $("#cancelApplicationModalButton").removeClass("d-none");
+        });
+
+        // When the Cancel button is clicked
+        $("#cancelApplicationModalButton").on("click", function () {
+            // Close the modal properly
+            $("#editApplicationFormModal").modal("hide");
+
+            // Reset the modal to its initial uneditable state when reopened
+            resetModalToInitialState();
+        });
+
+        // Reset the modal when it's closed (using Bootstrap modal `hidden.bs.modal` event)
+        $("#editApplicationFormModal").on("hidden.bs.modal", function () {
+            resetModalToInitialState();
         });
     });
+
+    // Adding of dynamic selection of Bank in the modal
+    $(document).ready(function () {
+        // Add new bank field
+        $("#addBankFieldButton").on("click", function (e) {
+            e.preventDefault();
+
+            // Create a new bank field
+            const newBankField = `
+                 <div class="row mb-2 bank-field">
+                    <div class="col-md d-flex align-items-center gap-2">
+                        <select class="form-control" name="bank_id[]">
+                            <option value="">Select a Bank</option>
+                            <option value="metro_bank">Metro Bank</option>
+                            <option value="bdo">BDO</option>
+                            <option value="bpi">BPI</option>
+                            <option value="china_bank">China Bank</option>
+                            <option value="union_bank">Union Bank</option>
+                        </select>
+                        <button type="button" class="btn btn-icon me-2 btn-label-danger removeBankFieldButton">
+                            <span class="tf-icons bx bxs-trash bx-22px"></span>
+                        </button>
+                    </div>
+                </div>
+            `;
+
+            // Append the new field before the Add Bank button
+            $("#bankFieldsContainer").append(newBankField);
+        });
+
+        // Remove bank field
+        $(document).on("click", ".removeBankFieldButton", function (e) {
+            e.preventDefault();
+
+            // Check if this field is not the very first field
+            const bankFields = $(".bank-field");
+            if (bankFields.length > 1) {
+                // Remove the parent row of the clicked remove button
+                $(this).closest(".bank-field").remove();
+            } else {
+                alert("The first field cannot be removed.");
+            }
+        });
+    });
+
 
 </script>
 

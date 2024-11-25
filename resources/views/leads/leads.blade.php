@@ -40,7 +40,7 @@
   </div>
 </div>
 
-{{-- Edit Application Modal --}}
+{{-- Edit Inquiry Modal --}}
 <div class="modal fade" id="editInquiryFormModal" tabindex="-1" aria-labelledby="largeModalLabel" aria-hidden="true">
   <div class="modal-dialog modal-lg">
     <div class="modal-content">
@@ -543,7 +543,7 @@
                                 <span class="tf-icons bx bxs-check-circle bx-22px"></span>
                             </button>
                             <button type="button" class="btn btn-icon me-2 btn-danger delete-btn" data-id="${data}">
-                                <span class="tf-icons bx bxs-x-circle bx-22px"></span>
+                                <span class="tf-icons bx bxs-trash bx-22px"></span>
                             </button>
                         </div>
                     `;
