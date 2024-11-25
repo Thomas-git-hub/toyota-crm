@@ -132,7 +132,7 @@ class ApplicationController extends Controller
         $status = Status::where('status', 'like', 'approved')->first();
         $query = Application::with(['user', 'customer', 'vehicle', 'trans', 'status', 'bank', 'inquiry'])
                         ->whereNull('deleted_at')
-                        // ->whereNotIn('transaction', ['cash', 'po'])
+                        ->whereNotIn('transaction', ['cash', 'po'])
                         ->where('status_id', $status->id)
                         ;
 
