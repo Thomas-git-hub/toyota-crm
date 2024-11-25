@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Inventory;
+use App\Models\Transactions;
 use App\Models\Vehicle;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -49,5 +50,9 @@ class VehicleReservationController extends Controller
         ->make(true);
     }
 
-    
+    public function getReservedCount(){
+        // $count = Transactions
+    }
+
+
 }

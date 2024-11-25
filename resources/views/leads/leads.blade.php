@@ -955,7 +955,6 @@
             $(this).val(capitalizeWords($(this).val()));
         });
 
-
     });
 
 

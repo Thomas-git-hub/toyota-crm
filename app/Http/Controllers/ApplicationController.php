@@ -132,7 +132,7 @@ class ApplicationController extends Controller
         $status = Status::where('status', 'like', 'approved')->first();
         $query = Application::with(['user', 'customer', 'vehicle', 'trans', 'status', 'bank', 'inquiry'])
                         ->whereNull('deleted_at')
-                        ->whereNotIn('transaction', ['cash', 'po'])
+                        // ->whereNotIn('transaction', ['cash', 'po'])
                         ->where('status_id', $status->id)
                         ;
 
@@ -611,45 +611,45 @@ class ApplicationController extends Controller
             $application->updated_by = Auth::id();
             $application->save();
 
-            $approved_status = Status::where('status', 'like', 'approved')->first()->id;
-            $pending_status = Status::where('status', 'like', 'pending')->first()->id;
+            // $approved_status = Status::where('status', 'like', 'approved')->first()->id;
+            // $pending_status = Status::where('status', 'like', 'pending')->first()->id;
 
             // Debugging: Check the values of status_id and approved_status
-            if ($application->status_id == $approved_status) { // Use == for comparison
+            // if ($application->status_id == $approved_status) { // Use == for comparison
 
-                $inventory = Inventory::where('vehicle_id', $vehicle->id)
-                ->where('CS_number_status', 'available')
-                ->first();
+            //     $inventory = Inventory::where('vehicle_id', $vehicle->id)
+            //     ->where('CS_number_status', 'available')
+            //     ->first();
 
-                if ($inventory) {
-                    $transaction = Transactions::where('application_id', $application->id)->first();
+            //     if ($inventory) {
+            //         $transaction = Transactions::where('application_id', $application->id)->first();
     
-                    $application->status_id = $approved_status;
-                    $application->transaction = $application->transaction;
-                    $application->updated_by = Auth::id();
-                    $application->updated_at = now();
-                    $application->save();
+            //         $application->status_id = $approved_status;
+            //         $application->transaction = $application->transaction;
+            //         $application->updated_by = Auth::id();
+            //         $application->updated_at = now();
+            //         $application->save();
 
-                    $transactions = Transactions::findOrFail($transaction->id);
-                    $transactions->status = $approved_status;
-                    $transactions->reservation_id = Transactions::max('reservation_id') + 1;
-                    $transactions->reservation_status = $pending_status;
-                    $transactions->reservation_date = now();
-                    $transactions->inventory_id = $inventory->id;
-                    $transactions->save();
+            //         $transactions = Transactions::findOrFail($transaction->id);
+            //         $transactions->status = $approved_status;
+            //         $transactions->reservation_id = Transactions::max('reservation_id') + 1;
+            //         $transactions->reservation_status = $pending_status;
+            //         $transactions->reservation_date = now();
+            //         $transactions->inventory_id = $inventory->id;
+            //         $transactions->save();
 
-                    $invt = Inventory::findOrFail($inventory->id);
-                    $invt->status = 'reserved';
-                    $invt->CS_number_status = 'reserved';
-                    $invt->updated_at = now();
+            //         $invt = Inventory::findOrFail($inventory->id);
+            //         $invt->status = 'reserved';
+            //         $invt->CS_number_status = 'reserved';
+            //         $invt->updated_at = now();
 
-                }else{
-                    return response()->json([
-                        'success' => false,
-                        'message' => 'No Data Found ' 
-                    ], 500);
-                }
-            }
+            //     }else{
+            //         return response()->json([
+            //             'success' => false,
+            //             'message' => 'No Data Found ' 
+            //         ], 500);
+            //     }
+            // }
             
             return response()->json([
                 'success' => true,
