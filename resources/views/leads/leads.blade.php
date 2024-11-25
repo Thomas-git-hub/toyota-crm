@@ -605,11 +605,10 @@
         function handleInquiryTypeChange() {
             const inquiryType = $('#inquiry_type').val();
 
-            console.log(inquiryType);
-                $('#first_name, #last_name').closest('.row').hide(); // Show first and last name by default
-                $('#companyColumnField, #governmentColumnField, #quantityColumnField').addClass('d-none');
-                $('#first_name, #last_name, #company, #government, #quantity').removeClass('is-invalid border-danger').siblings('small').hide();
-                $('#gender, #age').closest('.row').hide();
+                // $('#first_name, #last_name').closest('.row').hide(); // Show first and last name by default
+                // $('#companyColumnField, #governmentColumnField, #quantityColumnField').addClass('d-none');
+                // $('#first_name, #last_name, #company, #government, #quantity').removeClass('is-invalid border-danger').siblings('small').hide();
+                // $('#gender, #age').closest('.row').hide();
 
             if (inquiryType === 'Individual') {
                 // No special validation changes for individual, just hide others
@@ -617,6 +616,7 @@
                 $('#companyColumnField, #governmentColumnField, #quantityColumnField').addClass('d-none');
                 $('#quantityColumnField').addClass('d-none');
                 $('#companyColumnField').addClass('d-none');
+                $('#gender, #age').closest('.row').show();
 
                 $('#fleetColumnField').addClass('d-none');
             } else if (inquiryType === 'Fleet' || inquiryType === 'Company') {
@@ -638,7 +638,6 @@
             }
         }
 
-        // handleInquiryTypeChange()
 
         $('#inquiry_type').on('change', function () {
             let selectedId = $(this).find(':selected').data('id');
@@ -648,22 +647,17 @@
         });
 
 
-        function validateField() {
-            const requiredFields = $('.form-control.required');
-            let isValid = true;
-            requiredFields.each(function() {
-                const $field = $(this);
-                const $errorMsg = $field.siblings('small');
-                if (!$field.val()) {
-                    $field.addClass('is-invalid border-danger');
-                    $errorMsg.show();
-                    isValid = false;
-                } else {
-                    $field.removeClass('is-invalid border-danger');
-                    $errorMsg.hide();
-                }
-            });
-            return isValid;
+        function validateField(field, message) {
+            const $field = $(field);
+            const $errorMsg = $field.siblings('small');
+            if (!$field.val()) {
+                $field.addClass('is-invalid border-danger');
+                $errorMsg.show();
+                return false;
+            }
+            $field.removeClass('is-invalid border-danger');
+            $errorMsg.hide();
+            return true;
         }
 
 

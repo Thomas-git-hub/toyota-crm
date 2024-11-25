@@ -10,8 +10,6 @@ use App\Http\Controllers\VehicleReleasesController;
 use App\Http\Controllers\VehicleInventoryController;
 
 
-
-
 //LOGIN
 Route::get('/', [LoginController::class, 'index']);
 Route::post('/login', [LoginController::class, 'login'])->name("login.user");

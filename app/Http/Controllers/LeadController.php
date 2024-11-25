@@ -438,13 +438,15 @@ class LeadController extends Controller
 
     public function processing(Request $request){
         try {
+
+            $status = Status::where('status', 'like', 'Processing')->first()->id;
             $inquiry = Inquiry::findOrFail(decrypt($request->id));
-            $inquiry->transactional_status = 'approved';
+            $inquiry->status_id =  $status;
             $inquiry->updated_by = Auth::user()->id;
             $inquiry->save();
 
 
-            if (!in_array($inquiry->transaction, ['cash', 'po'])) {
+            if ($inquiry->status_id === $status ) {
                 // Add the inquiry_id to the transactions table
 
                 $pending_status = Status::where('status', 'like', 'pending')->first();
