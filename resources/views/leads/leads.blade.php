@@ -12,13 +12,40 @@
     </div>
 </div>
 
+{{-- View Remarks Modal --}}
+<div class="modal fade" id="viewRemarksModal" tabindex="-1" aria-labelledby="largeModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header d-flex align-items-center gap-2">
+        <i class='bx bxs-message-rounded-detail'></i>
+        <h5 class="modal-title" id="largeModalLabel">Remarks</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div id="remarksContent">
+            <textarea class="form-control mb-2 d-none" id="remarks" name="remarks" rows="5" placeholder="">{{-- display remarks here --}}
+                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
+            </textarea>
+            <p class="fs-5 text-dark" id="remarksParagraph">
+                {{-- display remarks here --}}
+                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
+            </p>
+        </div>
+        <div class="d-flex justify-content-end gap-2">
+            <button class="btn btn-label-success" id="editRemarksButton">Edit</button>
+            <button class="btn btn-dark d-none" id="saveEditRemarksButton">Save</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
 
 {{-- Edit Application Modal --}}
 <div class="modal fade" id="editInquiryFormModal" tabindex="-1" aria-labelledby="largeModalLabel" aria-hidden="true">
   <div class="modal-dialog modal-lg">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="largeModalLabel">Edit</h5>
+        <h5 class="modal-title" id="largeModalLabel">Inquiry Details</h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
@@ -178,8 +205,9 @@
             </div>
             <div class="row">
                 <div class="col-md d-flex justify-content-end gap-2">
-                    <button type="button" class="btn btn-label-danger" id="cancelEditInquiryFormButton">Cancel</button>
-                    <button type="submit" class="btn btn-primary">Save Changes</button>
+                    <button type="button" class="btn btn-success" id="editInquiryModalButton">Edit Details</button>
+                    <button type="button" class="btn btn-label-danger d-none" id="cancelInquiryModalButton">Cancel</button>
+                    <button type="submit" class="btn btn-dark d-none" id="saveEditInquiryModalButton">Save Changes</button>
                 </div>
             </div>
         </form>
@@ -391,7 +419,7 @@
                     </div>
                 </div>
                 <div class="table-responsive">
-                    <table id="inquiryTable" class="table table-striped table-hover" style="width:100%">
+                    <table id="inquiryTable" class="table table-bordered table-hover" style="width:100%">
                         <tbody>
                         </tbody>
                     </table>
@@ -485,7 +513,20 @@
             { data: 'transaction', name: 'transaction', title: 'Transaction' },
             { data: 'source', name: 'source', title: 'Source' },
             { data: 'status', name: 'status', title: 'Status', render: function(data) { return data.charAt(0).toUpperCase() + data.slice(1); } },
-            { data: 'remarks', name: 'remarks', title: 'Remarks' },
+            {
+                data: 'remarks',
+                name: 'remarks',
+                title: 'Remarks',
+                render: function(data) {
+                    return `
+                        <div class="d-flex">
+                            <button type="button" class="btn btn-icon me-2 btn-label-secondary border remarks-btn" data-bs-toggle="modal" data-bs-target="#viewRemarksModal" data-id="${data}">
+                                <span class="tf-icons bx bxs-message-rounded-detail bx-22px"></span>
+                            </button>
+                        </div>
+                            `;
+                }
+            },
             { data: 'date', name: 'date', title: 'Date' },
             {
                 data: 'id',
@@ -496,7 +537,7 @@
                     return `
                         <div class="d-flex">
                             <button type="button" class="btn btn-icon me-2 btn-success edit-btn" data-bs-toggle="modal" data-bs-target="#editInquiryFormModal" data-id="${data}">
-                                <span class="tf-icons bx bx-pencil bx-22px"></span>
+                                <span class="tf-icons bx bxs-show bx-22px"></span>
                             </button>
                             <button type="button" class="btn btn-icon me-2 btn-primary processing-btn" data-id="${data}">
                                 <span class="tf-icons bx bxs-check-circle bx-22px"></span>
@@ -883,7 +924,7 @@
             // Restore original values on invalid fields
             if (!isValid) {
                 $('#edit_id').val(originalValues.id);
-               
+
                 $('#edit_car_unit').val(originalValues.carUnit);
                 $('#edit_car_variant').val(originalValues.carVariant);
                 $('#edit_car_color').val(originalValues.carColor);
@@ -901,7 +942,7 @@
                     $('#edit_gender').val(originalValues.gender);
 
                 } else if (edit_inquiry_type === 'Fleet' || edit_inquiry_type === 'Company') {
-                
+
                     $('#edit_fleet').val(edit_inquiry_type === 'Company' ? '' : originalValues.fleet);
                     $('#edit_company').val(edit_inquiry_type === 'Fleet' ? '' : originalValues.company);
 
@@ -1161,6 +1202,52 @@
             });
     });
 
+    // Edit Modal Fields disabled state -> Editable State
+    $(document).ready(function () {
+        // Function to reset the modal to its initial uneditable state
+        function resetModalToInitialState() {
+            // Disable all input fields except the Edit button
+            $("#editInquiryFormData :input").not("#editInquiryModalButton").prop("disabled", true);
+
+            // Show the Edit button
+            $("#editInquiryModalButton").removeClass("d-none");
+
+            // Hide the Save and Cancel buttons
+            $("#saveEditInquiryModalButton").addClass("d-none");
+            $("#cancelInquiryModalButton").addClass("d-none");
+        }
+
+        // Initially, reset the modal to its initial state when the page is ready
+        resetModalToInitialState();
+
+        // When the Edit button is clicked
+        $("#editInquiryModalButton").on("click", function () {
+            // Enable all input fields except hidden fields
+            $("#editInquiryFormData :input").not("[type='hidden']").prop("disabled", false);
+
+            // Hide the Edit button
+            $(this).addClass("d-none");
+
+            // Show the Save Changes and Cancel buttons
+            $("#saveEditInquiryModalButton").removeClass("d-none");
+            $("#cancelInquiryModalButton").removeClass("d-none");
+        });
+
+        // When the Cancel button is clicked
+        $("#cancelInquiryModalButton").on("click", function () {
+            // Close the modal properly
+            $("#editInquiryFormModal").modal("hide");
+
+            // Reset the modal to its initial uneditable state when reopened
+            resetModalToInitialState();
+        });
+
+        // Reset the modal when it's closed (using Bootstrap modal `hidden.bs.modal` event)
+        $("#editInquiryFormModal").on("hidden.bs.modal", function () {
+            resetModalToInitialState();
+        });
+    });
+
     //Process Data
     $(document).on('click', '.processing-btn', function() {
         const leadId = $(this).data('id');
@@ -1249,6 +1336,18 @@
         });
     });
 
+    // Edit Remarks hide show
+    $(document).ready(function () {
+        $("#editRemarksButton").on("click", function () {
+            // Hide the remarks paragraph and edit button
+            $("#remarksParagraph").addClass("d-none");
+            $("#editRemarksButton").addClass("d-none");
+
+            // Show the textarea and save button
+            $("#remarks").removeClass("d-none");
+            $("#saveEditRemarksButton").removeClass("d-none");
+        });
+    });
 
 
 </script>

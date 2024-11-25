@@ -12,6 +12,34 @@
     </div>
 </div>
 
+{{-- View Remarks Modal --}}
+<div class="modal fade" id="viewRemarksModal" tabindex="-1" aria-labelledby="largeModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header d-flex align-items-center gap-2">
+          <i class='bx bxs-message-rounded-detail'></i>
+          <h5 class="modal-title" id="largeModalLabel">Remarks</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <div id="remarksContent">
+              <textarea class="form-control mb-2 d-none" id="remarks" name="remarks" rows="5" placeholder="">{{-- display remarks here --}}
+                  Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
+              </textarea>
+              <p class="fs-5 text-dark" id="remarksParagraph">
+                  {{-- display remarks here --}}
+                  Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
+              </p>
+          </div>
+          <div class="d-flex justify-content-end gap-2">
+              <button class="btn btn-label-success" id="editRemarksButton">Edit</button>
+              <button class="btn btn-dark d-none" id="saveEditRemarksButton">Save</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
 {{-- Edit Application Modal --}}
 <div class="modal fade" id="editApplicationFormModal" tabindex="-1" aria-labelledby="largeModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg">
@@ -335,7 +363,7 @@
                 render: function(data) {
                     return `
                         <div class="d-flex">
-                            <button type="button" class="btn btn-icon me-2 btn-label-secondary" data-bs-toggle="modal" data-bs-target="#editThesisEntiresModal">
+                            <button type="button" class="btn btn-icon me-2 btn-label-secondary bordered" data-bs-toggle="modal" data-bs-target="#editThesisEntiresModal">
                                 <span class="tf-icons bx bxs-message-rounded-detail bx-22px"></span>
                             </button>
                         </div>`;
@@ -592,7 +620,7 @@
             // Restore original values on invalid fields
             if (!isValid) {
                 $('#edit_id').val(originalValues.id);
-            
+
                 $('#edit_car_unit').val(originalValues.carUnit);
                 $('#edit_car_variant').val(originalValues.carVariant);
                 $('#edit_car_color').val(originalValues.carColor);
@@ -610,7 +638,7 @@
                     $('#edit_gender').val(originalValues.gender);
 
                 } else if (edit_inquiryType === 'Fleet' || edit_inquiry_type === 'Company') {
-                
+
                     $('#edit_fleet').val(edit_inquiryType === 'Company' ? '' : originalValues.fleet);
                     $('#edit_company').val(edit_inquiryType === 'Fleet' ? '' : originalValues.company);
 
@@ -795,7 +823,7 @@
                 $('#edit_source').val(data.customer.source);
                 $('#edit_remarks').val(data.remarks);
 
-    
+
                 // Store original values
                 originalValues = {
                     id: data.id,
@@ -828,6 +856,19 @@
                     text: 'Could not fetch Application data.'
                 });
             }
+        });
+    });
+
+    // Edit Remarks hide show
+    $(document).ready(function () {
+        $("#editRemarksButton").on("click", function () {
+            // Hide the remarks paragraph and edit button
+            $("#remarksParagraph").addClass("d-none");
+            $("#editRemarksButton").addClass("d-none");
+
+            // Show the textarea and save button
+            $("#remarks").removeClass("d-none");
+            $("#saveEditRemarksButton").removeClass("d-none");
         });
     });
 
