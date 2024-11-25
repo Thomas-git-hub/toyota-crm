@@ -150,7 +150,11 @@ flatpickr("#date-range-picker", {
 // DataTable initialization
 const availableUnitsTable = $('#availableUnitsTable').DataTable({
     processing: true,
-    serverSide: false, // Use client-side processing since we're providing static data
+    serverSide: true, // Use client-side processing since we're providing static data
+    ajax: {
+                url: '{{ route("vehicle.reservation.units.list") }}',
+                
+            },
     pageLength: 10,
     paging: true,
     responsive: true,
@@ -162,13 +166,7 @@ const availableUnitsTable = $('#availableUnitsTable').DataTable({
         infoEmpty: "", // Removes the message when there's no data
         infoFiltered: "", // Removes the "filtered from X entries" part
     },
-    data: [
-        { unit: "Toyota Corolla", quantity: 5 },
-        { unit: "Honda Civic", quantity: 3 },
-        { unit: "Ford Focus", quantity: 2 },
-        { unit: "Nissan Altima", quantity: 4 },
-        { unit: "Chevrolet Cruze", quantity: 1 },
-    ],
+  
     columns: [
         { data: 'unit', name: 'unit', title: 'Unit' },
         { data: 'quantity', name: 'quantity', title: 'Quantity' },

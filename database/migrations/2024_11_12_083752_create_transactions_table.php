@@ -15,13 +15,14 @@ return new class extends Migration
             $table->id();
             $table->unsignedBigInteger('inquiry_id')->nullable();
             $table->unsignedBigInteger('application_id')->nullable();
-            $table->unsignedBigInteger('resevation_id')->nullable();
+            $table->unsignedBigInteger('reservation_id')->nullable();
+            $table->unsignedBigInteger('reservation_status')->nullable();
             $table->unsignedBigInteger('inventory_id')->nullable();
             $table->date('application_transaction_date')->nullable();
             $table->date('transaction_updated_date')->nullable();
+            $table->date('reservation_date')->nullable();
             $table->date('released_date')->nullable();
             $table->string('status')->nullable();
-            $table->string('updated_status')->nullable();
             $table->timestamps();
             $table->softDeletes();
         });

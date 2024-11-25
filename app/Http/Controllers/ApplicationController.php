@@ -9,6 +9,8 @@ use App\Models\Team;
 use App\Models\Transactions;
 use App\Models\Vehicle;
 use App\Models\Banks;
+use App\Models\Inquiry;
+use App\Models\Inventory;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -128,7 +130,7 @@ class ApplicationController extends Controller
 
         // dd($request->start_date);
         $status = Status::where('status', 'like', 'approved')->first();
-        $query = Application::with([ 'user', 'customer', 'vehicle', 'trans'])
+        $query = Application::with(['user', 'customer', 'vehicle', 'trans', 'status', 'bank', 'inquiry'])
                         ->whereNull('deleted_at')
                         ->whereNotIn('transaction', ['cash', 'po'])
                         ->where('status_id', $status->id)
@@ -158,25 +160,26 @@ class ApplicationController extends Controller
             return $data->user->first_name . ' ' . $data->user->last_name;
         })
 
-        ->addColumn('customer_name', function($data) {
-            return $data->customer->customer_first_name . ' ' . $data->customer->customer_last_name;
+        ->addColumn('type', function($data) {
+            return $data->inquiry->inquiryType->inquiry_type;
         })
 
-        ->addColumn('age', function($data) {
-            return $data->customer->age;
-        })
-
-        ->addColumn('gender', function($data) {
-            return $data->customer->gender;
+        ->addColumn('client_name', function($data) {
+            if($data->inquiry->inquiryType->inquiry_type === 'Individual'){
+                return $data->customer->customer_first_name . ' ' . $data->customer->customer_last_name;
+            }else if($data->inquiry->inquiryType->inquiry_type === 'Fleet'){
+                return $data->customer->company_name; 
+            }else if($data->inquiry->inquiryType->inquiry_type === 'Company'){
+                return $data->customer->company_name; 
+            }else if($data->inquiry->inquiryType->inquiry_type === 'Government'){
+                return $data->customer->department_name; 
+            } 
         })
 
         ->addColumn('contact_number', function($data) {
             return $data->customer->contact_number;
         })
 
-        ->addColumn('address', function($data) {
-            return $data->customer->address;
-        })
 
         ->addColumn('source', function($data) {
             return $data->customer->source;
@@ -209,7 +212,7 @@ class ApplicationController extends Controller
 
         // dd($request->start_date);
         $statusIds = Status::whereIn('status', ['Denied', 'Cancel'])->pluck('id')->toArray();
-        $query = Application::with(['user', 'customer', 'vehicle', 'trans'])
+        $query = Application::with(['user', 'customer', 'vehicle', 'trans', 'status', 'bank', 'inquiry'])
                         ->whereNull('deleted_at')
                         ->whereIn('status_id', $statusIds);
 
@@ -237,24 +240,24 @@ class ApplicationController extends Controller
             return $data->user->first_name . ' ' . $data->user->last_name;
         })
 
-        ->addColumn('customer_name', function($data) {
-            return $data->customer->customer_first_name . ' ' . $data->customer->customer_last_name;
+        ->addColumn('type', function($data) {
+            return $data->inquiry->inquiryType->inquiry_type;
         })
 
-        ->addColumn('age', function($data) {
-            return $data->customer->age;
-        })
-
-        ->addColumn('gender', function($data) {
-            return $data->customer->gender;
+        ->addColumn('client_name', function($data) {
+            if($data->inquiry->inquiryType->inquiry_type === 'Individual'){
+                return $data->customer->customer_first_name . ' ' . $data->customer->customer_last_name;
+            }else if($data->inquiry->inquiryType->inquiry_type === 'Fleet'){
+                return $data->customer->company_name; 
+            }else if($data->inquiry->inquiryType->inquiry_type === 'Company'){
+                return $data->customer->company_name; 
+            }else if($data->inquiry->inquiryType->inquiry_type === 'Government'){
+                return $data->customer->department_name; 
+            } 
         })
 
         ->addColumn('contact_number', function($data) {
             return $data->customer->contact_number;
-        })
-
-        ->addColumn('address', function($data) {
-            return $data->customer->address;
         })
 
         ->addColumn('source', function($data) {
@@ -288,7 +291,7 @@ class ApplicationController extends Controller
 
         // dd($request->start_date);
         $statusIds = Status::whereIn('status', ['Denied', 'Cancel'])->pluck('id')->toArray();
-        $query = Application::with(['user', 'customer', 'vehicle', 'trans'])
+        $query = Application::with(['user', 'customer', 'vehicle', 'trans', 'status', 'bank', 'inquiry'])
                         ->whereNull('deleted_at')
                         ->whereNotIn('status_id', $statusIds)
                         ->whereIn('transaction', ['cash', 'po']);
@@ -317,24 +320,24 @@ class ApplicationController extends Controller
             return $data->user->first_name . ' ' . $data->user->last_name;
         })
 
-        ->addColumn('customer_name', function($data) {
-            return $data->customer->customer_first_name . ' ' . $data->customer->customer_last_name;
+        ->addColumn('type', function($data) {
+            return $data->inquiry->inquiryType->inquiry_type;
         })
 
-        ->addColumn('age', function($data) {
-            return $data->customer->age;
-        })
-
-        ->addColumn('gender', function($data) {
-            return $data->customer->gender;
+        ->addColumn('client_name', function($data) {
+            if($data->inquiry->inquiryType->inquiry_type === 'Individual'){
+                return $data->customer->customer_first_name . ' ' . $data->customer->customer_last_name;
+            }else if($data->inquiry->inquiryType->inquiry_type === 'Fleet'){
+                return $data->customer->company_name; 
+            }else if($data->inquiry->inquiryType->inquiry_type === 'Company'){
+                return $data->customer->company_name; 
+            }else if($data->inquiry->inquiryType->inquiry_type === 'Government'){
+                return $data->customer->department_name; 
+            } 
         })
 
         ->addColumn('contact_number', function($data) {
             return $data->customer->contact_number;
-        })
-
-        ->addColumn('address', function($data) {
-            return $data->customer->address;
         })
 
         ->addColumn('source', function($data) {
@@ -368,7 +371,7 @@ class ApplicationController extends Controller
 
         // dd($request->start_date);
         $pending_status = Status::where('status', 'like', 'pending')->first();
-        $query = Application::with(['user', 'customer', 'vehicle', 'trans'])
+        $query = Application::with(['user', 'customer', 'vehicle', 'trans', 'status', 'bank', 'inquiry'])
                         ->whereNull('deleted_at')
                         ->whereNotIn('transaction', ['cash', 'po'])
                         ->where('status_id', $pending_status->id);
@@ -382,6 +385,8 @@ class ApplicationController extends Controller
         }
 
         $list = $query->get();
+
+        // dd($list->toArray());
 
         return DataTables::of($list)
         ->addColumn('id', function($data) {
@@ -397,24 +402,23 @@ class ApplicationController extends Controller
             return $data->user->first_name . ' ' . $data->user->last_name;
         })
 
-        ->addColumn('customer_name', function($data) {
-            return $data->customer->customer_first_name . ' ' . $data->customer->customer_last_name;
+        ->addColumn('type', function($data) {
+            return $data->inquiry->inquiryType->inquiry_type;
         })
 
-        ->addColumn('age', function($data) {
-            return $data->customer->age;
+        ->addColumn('client_name', function($data) {
+            if($data->inquiry->inquiryType->inquiry_type === 'Individual'){
+                return $data->customer->customer_first_name . ' ' . $data->customer->customer_last_name;
+            }else if($data->inquiry->inquiryType->inquiry_type === 'Fleet'){
+                return $data->customer->company_name; 
+            }else if($data->inquiry->inquiryType->inquiry_type === 'Company'){
+                return $data->customer->company_name; 
+            }else if($data->inquiry->inquiryType->inquiry_type === 'Government'){
+                return $data->customer->department_name; 
+            } 
         })
-
-        ->addColumn('gender', function($data) {
-            return $data->customer->gender;
-        })
-
         ->addColumn('contact_number', function($data) {
             return $data->customer->contact_number;
-        })
-
-        ->addColumn('address', function($data) {
-            return $data->customer->address;
         })
 
         ->addColumn('source', function($data) {
@@ -448,19 +452,17 @@ class ApplicationController extends Controller
     {
         // Fetch the Application data by ID
         $decryptedId = decrypt($id);
-        $data = Application::with(['user', 'customer', 'vehicle', 'trans', 'status', 'bank'])
+        $data = Application::with(['user', 'customer', 'vehicle', 'trans', 'status', 'bank', 'inquiry'])
             ->where('id', $decryptedId)
             ->first();
-
-        // Include the status options
-        $statuses = Status::all();
-        $banks = Banks::all();
-
-        return response()->json([
-            'application' => $data,
-            'statuses' => $statuses,
-            'banks' => $banks
-        ]);
+            $statuses = Status::all();
+            $banks = Banks::all();
+    
+            return response()->json([
+                'application' => $data,
+                'statuses' => $statuses,
+                'banks' => $banks
+            ]);
     }
 
     // public function update(Request $request, $id)
@@ -541,9 +543,13 @@ class ApplicationController extends Controller
     {
         try {
             $validated = $request->validate([
-                'first_name' => 'required|string',
-                'last_name' => 'required|string',
-                'age' => 'required|integer',
+               'first_name' => 'nullable',
+                'last_name' => 'nullable',
+                'government' => 'nullable',
+                'company' => 'nullable',
+                'fleet' => 'nullable',
+                'gender' => 'nullable',
+                'age' => 'nullable',
                 'mobile_number' => 'required|string',
                 'car_unit' => 'required|string',
                 'car_variant' => 'required|string',
@@ -551,8 +557,9 @@ class ApplicationController extends Controller
                 'transaction' => 'required|string',
                 'source' => 'required|string',
                 'additional_info' => 'nullable|string',
-                'gender' => 'required|string',
                 'address' => 'required',
+                'category' => 'required',
+                'quantity' => 'nullable',
                 'status_id' => 'required',
                 'bank_id' => 'required',
             ]);
@@ -560,20 +567,39 @@ class ApplicationController extends Controller
             // Find the inquiry and related customer and vehicle
             $application = Application::findOrFail($id);
             $customer = Customer::findOrFail($application->customer_id);
-            $vehicle = Vehicle::where('unit', $validated['car_unit'])
-                ->where('variant', $validated['car_variant'])
-                ->where('color', $validated['car_color'])
-                ->first();
+            $transaction = Transactions::findorfail($application->transaction_id);
+            $inquiry = Inquiry::findorfail($transaction->inquiry_id);
+            $vehicle = Vehicle::firstOrCreate(
+                [
+                    'unit' => $validated['car_unit'],
+                    'variant' => $validated['car_variant'],
+                    'color' => $validated['car_color'],
+                ],
+                [
+                    'unit' => $validated['car_unit'],
+                    'variant' => $validated['car_variant'],
+                    'color' => $validated['car_color'],
+                    'created_by' => Auth::id(),
+                    'updated_by' => Auth::id(),
+                ]
+            );
+
+            $inquiry->category = $validated['category'];
+            $inquiry->quantity = $validated['quantity'];
+            $inquiry->save();
 
             // Update customer data
             $customer->customer_first_name = $validated['first_name'];
             $customer->customer_last_name = $validated['last_name'];
+            $customer->department_name = $validated['government'];
+            $customer->company_name = $validated['company'] ?  $validated['company'] : $validated['fleet'];
             $customer->contact_number = $validated['mobile_number'];
             $customer->gender = $validated['gender'];
             $customer->address = $validated['address'];
             $customer->age = $validated['age'];
             $customer->source = $validated['source'];
             $customer->updated_by = Auth::id();
+            $customer->updated_at = now();
             $customer->save();
 
             // Update inquiry data
@@ -585,21 +611,44 @@ class ApplicationController extends Controller
             $application->updated_by = Auth::id();
             $application->save();
 
-        
-            if (in_array($application->transaction, ['cash', 'po'])) {
-                $transaction = Transactions::where('application_id', $application->id)->first();
-                $approved_status = Status::where('status', 'like', 'approved')->first();
+            $approved_status = Status::where('status', 'like', 'approved')->first()->id;
+            $pending_status = Status::where('status', 'like', 'pending')->first()->id;
 
-                $application->status_id = $approved_status->id;
-                $application->transaction = $application->transaction;
-                $application->created_by = Auth::id();
-                $application->updated_by = Auth::id();
-                $application->save();
+            // Debugging: Check the values of status_id and approved_status
+            if ($application->status_id == $approved_status) { // Use == for comparison
 
-                $transactions = Transactions::findOrFail($transaction->id);
-                $transactions->status = $approved_status->id;
-                $transactions->save();
-                
+                $inventory = Inventory::where('vehicle_id', $vehicle->id)
+                ->where('CS_number_status', 'available')
+                ->first();
+
+                if ($inventory) {
+                    $transaction = Transactions::where('application_id', $application->id)->first();
+    
+                    $application->status_id = $approved_status;
+                    $application->transaction = $application->transaction;
+                    $application->updated_by = Auth::id();
+                    $application->updated_at = now();
+                    $application->save();
+
+                    $transactions = Transactions::findOrFail($transaction->id);
+                    $transactions->status = $approved_status;
+                    $transactions->reservation_id = Transactions::max('reservation_id') + 1;
+                    $transactions->reservation_status = $pending_status;
+                    $transactions->reservation_date = now();
+                    $transactions->inventory_id = $inventory->id;
+                    $transactions->save();
+
+                    $invt = Inventory::findOrFail($inventory->id);
+                    $invt->status = 'reserved';
+                    $invt->CS_number_status = 'reserved';
+                    $invt->updated_at = now();
+
+                }else{
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'No Data Found ' 
+                    ], 500);
+                }
             }
             
             return response()->json([

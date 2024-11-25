@@ -844,8 +844,8 @@
             // Always validate inquiry type
             isValid = validateField('#edit_inquiry_type', 'Select Inquiry Type') && isValid;
 
-            if (edit_inquiryType === 'Individual' || edit_inquiryType === '') {
-                isValid = validateField('#edit_irst_name', 'Enter Customer First Name') && isValid;
+            if (edit_inquiryType === 'Individual') {
+                isValid = validateField('#edit_first_name', 'Enter Customer First Name') && isValid;
                 isValid = validateField('#edit_last_name', 'Enter Customer Last Name') && isValid;
                 isValid = validateField('#edit_age', 'Enter Customer Age') && isValid;
                 isValid = validateField('#edit_gender', 'Please Select Gender') && isValid;

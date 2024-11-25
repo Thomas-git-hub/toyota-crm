@@ -54,6 +54,7 @@ Route::get('/getStatus', [ApplicationController::class, 'getStatus'])->name('app
 
 // VEHICLE RESERVATION
 Route::get('vehicle-reservation', [VehicleReservationController::class, 'index'])->name('vehicle.reservation');
+Route::get('vehicle-reservation/units/list', [VehicleReservationController::class, 'availableUnitsList'])->name('vehicle.reservation.units.list');
 
 
 // VEHICLE RELEASES

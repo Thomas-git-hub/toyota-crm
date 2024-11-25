@@ -11,4 +11,8 @@ class Transactions extends Model
     use HasFactory, SoftDeletes;
     
     protected $table = 'transactions';
+
+      public function inquiry(){
+        return $this->belongsTo(Inquiry::class, 'inquiry_id', 'id');
+    }
 }
