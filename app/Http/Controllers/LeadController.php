@@ -707,5 +707,25 @@ class LeadController extends Controller
         return response()->json($data);
     }
 
+    public function updateRemarks(Request $request){
+        try {
+            $inquiry = Inquiry::findOrFail($request->id);
+            $inquiry->remarks = $request->remarks;
+            $inquiry->save();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Remarks updated successfully'
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Error updating remarks: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    
+
 
 }

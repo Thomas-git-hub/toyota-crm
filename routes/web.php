@@ -35,6 +35,7 @@ Route::get('/leads/get-variants', [LeadController::class, 'getVariants'])->name(
 Route::get('/leads/get-colors', [LeadController::class, 'getColor'])->name('leads.getColor');
 Route::get('leads/edit/{id}', [LeadController::class, 'edit'])->name('leads.edit');
 Route::post('/leads/update/{id}', [LeadController::class, 'update'])->name('leads.update');
+Route::post('/leads/updateRemarks/', [LeadController::class, 'updateRemarks'])->name('leads.updateRemarks');
 
 
 // APPLICATION
@@ -48,6 +49,10 @@ Route::get('application/edit/{id}', [ApplicationController::class, 'edit'])->nam
 Route::post('/application/update/{id}', [ApplicationController::class, 'update'])->name('application.update');
 Route::get('/getBanks', [ApplicationController::class, 'getBanks'])->name('application.getBanks');
 Route::get('/getStatus', [ApplicationController::class, 'getStatus'])->name('application.getStatus');
+Route::post('/application/processing', [ApplicationController::class, 'processing'])->name('application.processing');
+Route::post('/application/cancel', [ApplicationController::class, 'cancel'])->name('application.status.cancel');
+Route::post('/application/store/banks', [ApplicationController::class, 'updateBanks'])->name('application.store.banks');
+
 
 
 

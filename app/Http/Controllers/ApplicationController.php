@@ -465,80 +465,6 @@ class ApplicationController extends Controller
             ]);
     }
 
-    // public function update(Request $request, $id)
-    // {
-    //     try {
-    //         $validated = $request->validate([
-    //             'first_name' => 'required|string',
-    //             'last_name' => 'required|string',
-    //             'age' => 'required|integer',
-    //             'mobile_number' => 'required|string',
-    //             'car_unit' => 'required|string',
-    //             'car_variant' => 'required|string',
-    //             'car_color' => 'required|string',
-    //             'transaction' => 'required|string',
-    //             'source' => 'required|string',
-    //             'additional_info' => 'nullable|string',
-    //             'gender' => 'required|string',
-    //             'address' => 'required',
-    //         ]);
-
-    //         // Fetch existing customer
-    //         $customer = Customer::findOrFail($id);
-    //         $customer->customer_first_name = $validated['first_name'];
-    //         $customer->customer_last_name = $validated['last_name'];
-    //         $customer->contact_number = $validated['mobile_number'];
-    //         $customer->gender = $validated['gender'];
-    //         $customer->address = $validated['address'];
-    //         $customer->age = $validated['age'];
-    //         $customer->source = $validated['source'];
-    //         $customer->updated_by = Auth::id();
-    //         $customer->save();
-
-    //         // Fetch vehicle
-    //         $vehicle = Vehicle::where('unit', $validated['car_unit'])
-    //             ->where('variant', $validated['car_variant'])
-    //             ->where('color', $validated['car_color'])
-    //             ->first();
-
-    //         if (!$vehicle) {
-    //             throw new \Exception("Vehicle not found");
-    //         }
-
-    //         // Fetch application and transaction for the customer
-    //         $application = Application::where('customer_id', $id)->firstOrFail();
-    //         $transaction = Transactions::findOrFail($application->transaction_id);
-
-    //         // Update transaction status
-    //         if (in_array($validated['transaction'], ['cash', 'po'])) {
-    //             $approved_status = Status::where('status', 'like', 'approved')->first();
-    //             $transaction->status = $approved_status->id;
-    //         } else {
-    //             $pending_status = Status::where('status', 'like', 'pending')->first();
-    //             $transaction->status = $pending_status->id;
-    //         }
-    //         $transaction->updated_at = now();
-    //         $transaction->save();
-
-    //         // Update application
-    //         $application->vehicle_id = $vehicle->id;
-    //         $application->status_id = $transaction->status;
-    //         $application->transaction = $validated['transaction'];
-    //         $application->updated_by = Auth::id();
-    //         $application->save();
-
-    //         return response()->json([
-    //             'success' => true,
-    //             'message' => 'Application updated successfully'
-    //         ]);
-    //     } catch (\Exception $e) {
-    //         return response()->json([
-    //             'success' => false,
-    //             'message' => 'Error updating application: ' . $e->getMessage()
-    //         ], 500);
-    //     }
-    // }
-
     public function update(Request $request, $id)
     {
         try {
@@ -560,8 +486,7 @@ class ApplicationController extends Controller
                 'address' => 'required',
                 'category' => 'required',
                 'quantity' => 'nullable',
-                'status_id' => 'required',
-                'bank_id' => 'required',
+                'payment_status' => 'nullable',
             ]);
 
             // Find the inquiry and related customer and vehicle
@@ -604,53 +529,16 @@ class ApplicationController extends Controller
 
             // Update inquiry data
             $application->vehicle_id = $vehicle->id;
-            $application->status_id = $validated['status_id'];
-            $application->bank_id = $validated['bank_id'];
             $application->transaction = $validated['transaction'];
             $application->remarks = $validated['additional_info'];
             $application->updated_by = Auth::id();
             $application->save();
 
-            // $approved_status = Status::where('status', 'like', 'approved')->first()->id;
-            // $pending_status = Status::where('status', 'like', 'pending')->first()->id;
+           
 
-            // Debugging: Check the values of status_id and approved_status
-            // if ($application->status_id == $approved_status) { // Use == for comparison
+            $transaction->reservation_status = $validated['payment_status'];
+            $transaction->save();
 
-            //     $inventory = Inventory::where('vehicle_id', $vehicle->id)
-            //     ->where('CS_number_status', 'available')
-            //     ->first();
-
-            //     if ($inventory) {
-            //         $transaction = Transactions::where('application_id', $application->id)->first();
-    
-            //         $application->status_id = $approved_status;
-            //         $application->transaction = $application->transaction;
-            //         $application->updated_by = Auth::id();
-            //         $application->updated_at = now();
-            //         $application->save();
-
-            //         $transactions = Transactions::findOrFail($transaction->id);
-            //         $transactions->status = $approved_status;
-            //         $transactions->reservation_id = Transactions::max('reservation_id') + 1;
-            //         $transactions->reservation_status = $pending_status;
-            //         $transactions->reservation_date = now();
-            //         $transactions->inventory_id = $inventory->id;
-            //         $transactions->save();
-
-            //         $invt = Inventory::findOrFail($inventory->id);
-            //         $invt->status = 'reserved';
-            //         $invt->CS_number_status = 'reserved';
-            //         $invt->updated_at = now();
-
-            //     }else{
-            //         return response()->json([
-            //             'success' => false,
-            //             'message' => 'No Data Found ' 
-            //         ], 500);
-            //     }
-            // }
-            
             return response()->json([
                 'success' => true,
                 'message' => 'Application updated successfully'
@@ -673,6 +561,114 @@ class ApplicationController extends Controller
         $data = Status::all();
         return response()->json($data);
     }
+
+    public function processing(Request $request){
+        try {
+
+            $approved_status = Status::where('status', 'like', 'approved')->first()->id;
+            $pending_status = Status::where('status', 'like', 'pending')->first()->id;
+
+            $application = Application::findOrFail(decrypt($request->id));
+
+            if( $application->status_id == $pending_status){
+                $application->status_id =  $approved_status;
+                $application->updated_by = Auth::user()->id;
+                $application->updated_at = now();
+                $application->save();
+
+            }else if( $application->status_id == $approved_status){
+               
+                $inventory = Inventory::where('vehicle_id', $application->vehicle_id)
+                ->where('CS_number_status', 'available')
+                ->first();
+
+                if ($inventory) {
+                    $transaction = Transactions::where('application_id', $application->id)->first();
+    
+                    $application->status_id = $approved_status;
+                    $application->transaction = $application->transaction;
+                    $application->updated_by = Auth::id();
+                    $application->updated_at = now();
+                    $application->save();
+
+                    $transactions = Transactions::findOrFail($transaction->id);
+                    $transactions->status = $approved_status;
+                    $transactions->reservation_id = Transactions::max('reservation_id') + 1;
+                    $transactions->reservation_date = now();
+                    $transactions->inventory_id = $inventory->id;
+                    $transactions->save();
+
+                    $invt = Inventory::findOrFail($inventory->id);
+                    $invt->status = 'reserved';
+                    $invt->CS_number_status = 'reserved';
+                    $invt->updated_at = now();
+
+                }else{
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'No Data Found ' 
+                    ], 500);
+                }
+
+            }
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Application updated successfully'
+            ]);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Error updating application status: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    public function cancel(Request $request){
+        try {
+
+            $cancel_status = Status::where('status', 'like', 'cancel')->first()->id;
+
+            $application = Application::findOrFail(decrypt($request->id));
+            $application->status_id =  $cancel_status;
+            $application->updated_by = Auth::user()->id;
+            $application->updated_at = now();
+            $application->save();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Application has been canceled successfully'
+            ]);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Error updating application status: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    public function updateBanks(Request $request){
+        try {
+        $application = Application::findOrFail(decrypt($request->application_id));
+        $application->bank_id =json_encode($request->bank_id);
+        $application->save();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Banks updated successfully'
+        ]);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Error updating banks: ' . $e->getMessage()
+            ], 500);
+        }
+
+    }
+    
 
 
 }

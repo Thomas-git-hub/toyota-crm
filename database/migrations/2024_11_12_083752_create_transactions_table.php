@@ -16,7 +16,7 @@ return new class extends Migration
             $table->unsignedBigInteger('inquiry_id')->nullable();
             $table->unsignedBigInteger('application_id')->nullable();
             $table->unsignedBigInteger('reservation_id')->nullable();
-            $table->unsignedBigInteger('reservation_status')->nullable();
+            $table->string('reservation_status')->default('none');
             $table->unsignedBigInteger('inventory_id')->nullable();
             $table->date('application_transaction_date')->nullable();
             $table->date('transaction_updated_date')->nullable();

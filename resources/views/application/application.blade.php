@@ -25,6 +25,7 @@
             </div>
             <div class="modal-body">
                 <form id="selectBankForm">
+                    <input type="hidden" name="application_id" id="application_id">
                     <div id="bankFieldsContainer">
                         <div class="row mb-2">
                             <div class="col-md">
@@ -37,21 +38,10 @@
                         <!-- Bank Field Template -->
                         <div class="row mb-2 bank-field">
                             <div class="col-md">
-                                {{-- <label for="select_bank_id" class="form-label required">Choose Bank</label> --}}
-                                <select class="form-control" name="bank_id[]">
-                                    <option value="">Select a Bank</option>
-                                    <option value="metro_bank">Metro Bank</option>
-                                    <option value="bdo">BDO</option>
-                                    <option value="bpi">BPI</option>
-                                    <option value="china_bank">China Bank</option>
-                                    <option value="union_bank">Union Bank</option>
+                                <select class="form-control" name="bank_id[]" id=bank_ids>
                                 </select>
                             </div>
-                            {{-- <div class="col-md d-flex align-items-end">
-                                <button type="button" class="btn btn-danger removeBankFieldButton">
-                                    <i class="tf-icons bx bxs-trash bx-22px"></i>
-                                </button>
-                            </div> --}}
+                           
                         </div>
                     </div>
                 </form>
@@ -207,25 +197,6 @@
                         <option value="Saturation">Saturation</option>
                     </select>
                     <small class="text-danger" id="validateSource">Please Select Source</small>
-                </div>
-            </div>
-
-            <div class="col-md">
-                <div class="row mb-2">
-                    <div class="col-md">
-                        <label for="edit_bank_id" class="form-label required">Bank</label>
-                        <select class="form-control" id="edit_bank_id" name="bank_id">
-                            <option value="">Select a Bank</option>
-                        </select>
-                        <small class="text-danger" id="validateBank">Please Select a Bank</small>
-                    </div>
-                    <div class="col-md">
-                        <label for="edit_status_id" class="form-label required">Status</label>
-                        <select class="form-control" id="edit_status_id" name="status_id">
-                            <option value="">Select a Status</option>
-                        </select>
-                        <small class="text-danger" id="validateStatus">Please Select a Status</small>
-                    </div>
                 </div>
             </div>
             <div class="row mb-2">
@@ -392,12 +363,12 @@
             { data: 'source', name: 'source', title: 'Source' },
             { data: 'date', name: 'date', title: 'Date' },
             {
-                data: 'bank',
+                data: 'id',
                 title: 'Bank',
                 orderable: false,
                 searchable: false,
                 render: function(data) {
-                    return `<button type="button" class="btn btn-icon me-2 btn-warning" data-bs-toggle="modal" data-bs-target="#selectBankModal">
+                    return `<button type="button" class="btn btn-icon me-2 btn-warning bank-btn" data-bs-toggle="modal" data-bs-target="#selectBankModal" data-id="${data}">
                                 <span class="tf-icons bx bxs-bank bx-22px"></span>
                             </button>`;
                 }
@@ -413,10 +384,10 @@
                             <button type="button" class="btn btn-icon me-2 btn-success edit-btn" data-bs-toggle="modal" data-bs-target="#editApplicationFormModal"  data-id="${data}">
                                 <span class="tf-icons bx bxs-show bx-22px"></span>
                             </button>
-                            <button type="button" class="btn btn-icon me-2 btn-primary processing-btn" data-id="">
+                            <button type="button" class="btn btn-icon me-2 btn-primary processing-btn" data-id="${data}">
                                 <span class="tf-icons bx bxs-check-circle bx-22px"></span>
                             </button>
-                            <button type="button" class="btn btn-icon me-2 btn-danger cancel-btn" data-id="">
+                            <button type="button" class="btn btn-icon me-2 btn-danger cancel-btn" data-id="${data}">
                                 <span class="tf-icons bx bxs-x-circle bx-22px"></span>
                             </button>
                         </div>
@@ -457,39 +428,7 @@
      // Inquiry Form Validation
      $(document).ready(function () {
 
-        $.ajax({
-            url: '{{ route('application.getBanks') }}',
-            type: 'GET',
-            dataType: 'json',
-            success: function(data) {
-                let bankSelect = $('#bank_id, #edit_bank_id');
-                bankSelect.empty();
-                bankSelect.append('<option value="">Select Banks...</option>');
-                data.forEach(function(item) {
-                    bankSelect.append(`<option value="${item.id}">${item.bank_name}</option>`);
-                });
-            },
-            error: function(error) {
-                console.error('Error loading banks:', error);
-            }
-        });
-
-        $.ajax({
-            url: '{{ route('application.getStatus') }}',
-            type: 'GET',
-            dataType: 'json',
-            success: function(data) {
-                let statusSelect = $('#edit_status_id');
-                statusSelect.empty();
-                statusSelect.append('<option value="">Select Status...</option>');
-                data.forEach(function(item) {
-                    statusSelect.append(`<option value="${item.id}">${item.status}</option>`);
-                });
-            },
-            error: function(error) {
-                console.error('Error loading status:', error);
-            }
-        });
+       
 
         $.ajax({
             url: '{{ route('leads.getUnit') }}',
@@ -639,8 +578,6 @@
             isValid = validateField('#edit_transaction', 'Please Select Transaction') && isValid;
             isValid = validateField('#edit_source', 'Please Select Source') && isValid;
             isValid = validateField('#edit_address', 'Enter Address') && isValid;
-            isValid = validateField('#edit_bank_id', 'Please Select a Bank') && isValid;
-            isValid = validateField('#edit_status_id', 'Please Select a Status') && isValid;
 
             // Special validation for mobile number
             const mobileNumber = $('#edit_mobile_number').val();
@@ -753,11 +690,11 @@
                 $('#edit_age').val(data.customer.age);
                 $('#edit_mobile_number').val(data.customer.contact_number);
                 $('#edit_address').val(data.customer.address);
-                $('#edit_bank_id').val();
                 $('#edit_car_unit').val(data.vehicle.unit).trigger('change');
                 $('#edit_inquiry_type').val(data.inquiry.inquiry_type.inquiry_type);
                 $('#edit_category').val(data.inquiry.category).trigger('change');
                 $('#edit_quantity').val(data.inquiry.quantity);
+                $('#edit_payment_status').val(data.trans.reservation_status).trigger('change');
 
 
                 const edit_inquiry_type =  $('#edit_inquiry_type').val();
@@ -840,24 +777,6 @@
                     });
                 })
 
-                const statusSelect = $('#edit_status_id');
-                statusSelect.empty(); // Clear existing options
-                statusSelect.append('<option value="">Select Status...</option>'); // Default option
-                statuses.forEach(function(status) {
-                    statusSelect.append(`<option value="${status.id}" ${status.id === data.status_id ? 'selected' : ''}>${status.status}</option>`);
-                });
-
-                // Populate the bank dropdown
-                if (data.bank && data.bank.id) { // Only run this if bank has value and is not null
-                    const editBankSelect = $('#edit_bank_id');
-                    editBankSelect.empty(); // Clear existing options
-                    editBankSelect.append('<option value="">Select Bank...</option>'); // Default option
-                    banks.forEach(function(bank) {
-
-                        editBankSelect.append(`<option value="${bank.id}" ${bank.id === data.bank_id ? 'selected' : ''}>${bank.bank_name}</option>`);
-                    });
-                }
-
                 $('#edit_transaction').val(data.transaction);
                 $('#edit_source').val(data.customer.source);
                 $('#edit_remarks').val(data.remarks);
@@ -893,6 +812,95 @@
                     icon: 'error',
                     title: 'Error',
                     text: 'Could not fetch Application data.'
+                });
+            }
+        });
+    });
+
+     //Process Data
+    $(document).on('click', '.processing-btn', function() {
+        const appID = $(this).data('id');
+
+        Swal.fire({
+            title: 'Are you sure?',
+            text: "Do you want to update its status?",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes, update it!'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                $.ajax({
+                    url: '{{ route("application.processing") }}',
+                    type: 'POST',
+                    data: {
+                        id: appID
+                    },
+                    headers: {
+                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                    },
+                    success: function(response) {
+                        if (response.success) {
+                            Swal.fire(
+                                'Updated!',
+                                response.message,
+                                'success'
+                            );
+                            applicationTable.ajax.reload();
+                        }
+                    },
+                    error: function(xhr) {
+                        Swal.fire(
+                            'Error!',
+                            xhr.responseJSON?.message || 'Something went wrong!',
+                            'error'
+                        );
+                    }
+                });
+            }
+        });
+    });
+
+    $(document).on('click', '.cancel-btn', function() {
+        const appID = $(this).data('id');
+
+        Swal.fire({
+            title: 'Are you sure?',
+            text: "Do you want to cancel this application?",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes, cancel it!'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                $.ajax({
+                    url: '{{ route("application.status.cancel") }}',
+                    type: 'POST',
+                    data: {
+                        id: appID
+                    },
+                    headers: {
+                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                    },
+                    success: function(response) {
+                        if (response.success) {
+                            Swal.fire(
+                                'Updated!',
+                                response.message,
+                                'success'
+                            );
+                            applicationTable.ajax.reload();
+                        }
+                    },
+                    error: function(xhr) {
+                        Swal.fire(
+                            'Error!',
+                            xhr.responseJSON?.message || 'Something went wrong!',
+                            'error'
+                        );
+                    }
                 });
             }
         });
@@ -944,50 +952,136 @@
         });
     });
 
-    // Adding of dynamic selection of Bank in the modal
-    $(document).ready(function () {
-        // Add new bank field
-        $("#addBankFieldButton").on("click", function (e) {
-            e.preventDefault();
+    function populateBankSelects(data, targetSelect = null) {
+        if (targetSelect) {
+            // Populate only the target select
+            const selectedValue = targetSelect.val(); // Save the current selected value
+            targetSelect.empty(); // Clear options
+            targetSelect.append('<option value="">Select Banks...</option>'); // Add default option
+            data.forEach(function (item) {
+                targetSelect.append(`<option value="${item.id}">${item.bank_name}</option>`);
+            });
+            targetSelect.val(selectedValue); // Restore the selected value
+        } else {
+            // Populate all selects
+            const bankSelects = $("select[name='bank_id[]']");
+            bankSelects.each(function () {
+                const bankSelect = $(this);
+                const selectedValue = bankSelect.val(); // Save the current selected value
+                bankSelect.empty();
+                bankSelect.append('<option value="">Select Banks...</option>'); // Add default option
+                data.forEach(function (item) {
+                    bankSelect.append(`<option value="${item.id}">${item.bank_name}</option>`);
+                });
+                bankSelect.val(selectedValue); // Restore the selected value
+            });
+        }
+    }
 
-            // Create a new bank field
-            const newBankField = `
-                 <div class="row mb-2 bank-field">
-                    <div class="col-md d-flex align-items-center gap-2">
-                        <select class="form-control" name="bank_id[]">
-                            <option value="">Select a Bank</option>
-                            <option value="metro_bank">Metro Bank</option>
-                            <option value="bdo">BDO</option>
-                            <option value="bpi">BPI</option>
-                            <option value="china_bank">China Bank</option>
-                            <option value="union_bank">Union Bank</option>
-                        </select>
-                        <button type="button" class="btn btn-icon me-2 btn-label-danger removeBankFieldButton">
-                            <span class="tf-icons bx bxs-trash bx-22px"></span>
-                        </button>
-                    </div>
+    // Fetch banks from the server
+    function fetchBanks(targetSelect = null) {
+        $.ajax({
+            url: '{{ route('application.getBanks') }}',
+            type: 'GET',
+            dataType: 'json',
+            success: function (data) {
+                populateBankSelects(data, targetSelect); // Populate only the target select if provided
+            },
+            error: function (error) {
+                console.error('Error loading banks:', error);
+            },
+        });
+    }
+
+    $(document).on('click', '.bank-btn', function () {
+        $('#application_id').val($(this).data('id'));
+        fetchBanks(); // Initial fetch of banks
+    });
+
+    $("#addBankFieldButton").on("click", function (e) {
+        e.preventDefault();
+
+        // Create a new bank field
+        const newBankField = `
+            <div class="row mb-2 bank-field">
+                <div class="col-md d-flex align-items-center gap-2">
+                    <select class="form-control" name="bank_id[]">
+                        <option value="">Select Banks...</option>
+                    </select>
+                    <button type="button" class="btn btn-icon me-2 btn-label-danger removeBankFieldButton">
+                        <span class="tf-icons bx bxs-trash bx-22px"></span>
+                    </button>
                 </div>
-            `;
+            </div>
+        `;
 
-            // Append the new field before the Add Bank button
-            $("#bankFieldsContainer").append(newBankField);
+        // Append the new field to the container
+        const newField = $(newBankField);
+        $("#bankFieldsContainer").append(newField);
+
+        // Fetch and populate only the newly added select field
+        const newSelect = newField.find("select[name='bank_id[]']");
+        fetchBanks(newSelect);
+    });
+
+    // Remove bank field
+    $(document).on("click", ".removeBankFieldButton", function (e) {
+        e.preventDefault();
+
+        // Check if this field is not the very first field
+        const bankFields = $(".bank-field");
+        if (bankFields.length > 1) {
+            // Remove the parent row of the clicked remove button
+            $(this).closest(".bank-field").remove();
+        } else {
+            alert("The first field cannot be removed.");
+        }
+    });
+    
+
+    $('#selectBankForm').on('submit', function(e) {
+        e.preventDefault();
+        
+        // Collect selected bank IDs
+        const bankIds = [];
+        $("select[name='bank_id[]']").each(function() {
+            const selectedValue = $(this).val();
+            if (selectedValue) {
+                bankIds.push(selectedValue);
+            }
         });
 
-        // Remove bank field
-        $(document).on("click", ".removeBankFieldButton", function (e) {
-            e.preventDefault();
+        // Add bankIds to the form data
+        const formData = $(this).serialize() 
+        // + '&bank_id=' + JSON.stringify(bankIds);
 
-            // Check if this field is not the very first field
-            const bankFields = $(".bank-field");
-            if (bankFields.length > 1) {
-                // Remove the parent row of the clicked remove button
-                $(this).closest(".bank-field").remove();
-            } else {
-                alert("The first field cannot be removed.");
+        // Submit the form data to the store method
+        $.ajax({
+            url: '{{ route('application.store.banks') }}',
+            type: 'POST',
+            data: formData,
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            },
+            success: function(response) {
+                if (response.success) {
+                    Swal.fire(
+                        'Updated!',
+                        response.message,
+                        'success'
+                    );
+                    $('#selectBankModal').modal('hide'); // Hide the modal
+                }
+            },
+            error: function(xhr) {
+                Swal.fire(
+                    'Error!',
+                    xhr.responseJSON?.message || 'Something went wrong!',
+                    'error'
+                );
             }
         });
     });
-
 
 </script>
 

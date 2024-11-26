@@ -23,17 +23,16 @@
       </div>
       <div class="modal-body">
         <div id="remarksContent">
-            <textarea class="form-control mb-2 d-none" id="remarks" name="remarks" rows="5" placeholder="">{{-- display remarks here --}}
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
+            <input type="hidden" name="remarks_id" id="remarks_id">
+            <textarea class="form-control mb-2 d-none" id="remarks" name="remarks" rows="5" placeholder="">
+            {{-- display remarks here --}}
             </textarea>
             <p class="fs-5 text-dark" id="remarksParagraph">
-                {{-- display remarks here --}}
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
             </p>
         </div>
         <div class="d-flex justify-content-end gap-2">
             <button class="btn btn-label-success" id="editRemarksButton">Edit</button>
-            <button class="btn btn-dark d-none" id="saveEditRemarksButton">Save</button>
+            <button class="btn btn-dark d-none save-remark" id="saveEditRemarksButton">Save</button>
         </div>
       </div>
     </div>
@@ -514,8 +513,8 @@
             { data: 'source', name: 'source', title: 'Source' },
             { data: 'status', name: 'status', title: 'Status', render: function(data) { return data.charAt(0).toUpperCase() + data.slice(1); } },
             {
-                data: 'remarks',
-                name: 'remarks',
+                data: 'id',
+                name: 'id',
                 title: 'Remarks',
                 render: function(data) {
                     return `
@@ -1178,6 +1177,32 @@
         });
     });
 
+    // Add this inside your <script> tag in the Blade file
+    $(document).on('click', '.remarks-btn', function() {
+        // Clear all validation messages before opening the modal
+        $(".text-danger").hide();
+        $("input, select").removeClass("is-invalid border-danger");
+
+        const inquiryId = $(this).data('id');
+        $.ajax({
+            url: `{{ url('leads/edit') }}/${inquiryId}`,
+            type: 'GET',
+            success: function(data) {
+
+                $('#remarks').val(data.remarks);
+                $('#remarks_id').val(data.id);
+                $('#remarksParagraph').text(data.remarks);
+            },
+            error: function(xhr) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'Could not fetch inquiry data.'
+                });
+            }
+        });
+    });
+
 
     // Displaying of Inquiry Form
     $(document).ready(function () {
@@ -1246,6 +1271,53 @@
         $("#editInquiryFormModal").on("hidden.bs.modal", function () {
             resetModalToInitialState();
         });
+    });
+
+    $(document).on('click', '.save-remark', function() {
+        const ID =  $('#remarks_id').val();
+        const remarksData =  $('#remarks').val();
+        $.ajax({
+            url: '{{ route("leads.updateRemarks") }}',
+            type: 'POST',
+            data: {
+                id: ID,
+                remarks:remarksData,
+            },
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            },
+            success: function(response) {
+                if (response.success) {
+                    Swal.fire(
+                        'Updated!',
+                        response.message,
+                        'success'
+                    );
+                    $('#viewRemarksModal').modal('hide'); // Hide the modal
+
+                     // Show the textarea and save button
+                    $("#remarks").addClass("d-none");
+                    $("#saveEditRemarksButton").addClass("d-none");
+
+                    $("#remarksParagraph").removeClass("d-none");
+                    $("#editRemarksButton").removeClass("d-none");
+                }
+            },
+            error: function(xhr) {
+                Swal.fire(
+                    'Error!',
+                    xhr.responseJSON?.message || 'Something went wrong!',
+                    'error'
+                );
+                $("#remarks").addClass("d-none");
+                $("#saveEditRemarksButton").addClass("d-none");
+
+                $("#remarksParagraph").removeClass("d-none");
+                $("#editRemarksButton").removeClass("d-none");
+                
+            }
+        });
+
     });
 
     //Process Data
