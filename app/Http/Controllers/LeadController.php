@@ -492,35 +492,6 @@ class LeadController extends Controller
             $inquiry->save();
 
 
-            // if($inquiry->status_id === $approved_status){
-            //     // Add the inquiry_id to the transactions table
-            //     $transaction = new Transactions();
-            //     $transaction->inquiry_id = $inquiry->id; // Set the inquiry_id
-            //     $transaction->status =  $pending_status;
-            //     $transaction->save(); // Save the transaction
-
-            //     if (in_array($inquiry->transaction, ['cash', 'po'])) {
-
-            //         $application = new Application();
-            //         $application->customer_id = $customer->id;
-            //         $application->vehicle_id = $vehicle->id;
-            //         $application->transaction_id = $transaction->id;
-            //         $application->status_id = $approved_status;
-            //         $application->transaction = $inquiry->transaction;
-            //         $application->created_by = Auth::id();
-            //         $application->updated_by = Auth::id();
-            //         $application->save();
-
-            //         // Update the transaction table's application_id with the latest inserted application's id
-            //         $transaction->application_id = $application->id;
-            //         $transaction->status = $approved_status;
-            //         $transaction->application_transaction_date = now();
-            //         $transaction->transaction_updated_date = now();
-            //         $transaction->save();
-            //     }
-
-            // }
-
             return response()->json([
                 'success' => true,
                 'message' => 'Inquiry created successfully'
@@ -663,30 +634,29 @@ class LeadController extends Controller
 
             if ($inquiry->status_id === $status ) {
                 // Add the inquiry_id to the transactions table
-
                 $pending_status = Status::where('status', 'like', 'pending')->first();
+
                 $transaction = new Transactions();
                 $transaction->inquiry_id = $inquiry->id; // Set the inquiry_id
                 $transaction->status = $pending_status->id;
                 $transaction->save(); // Save the transaction
 
-
-                 $application = new Application();
-                 $application->customer_id = $inquiry->customer_id;
-                 $application->vehicle_id = $inquiry->vehicle_id;
-                 $application->transaction_id = $transaction->id;
-                 $application->transaction = $inquiry->transaction;
-                 $application->status_id = $pending_status->id;
-                 $application->created_by = Auth::id();
-                 $application->updated_by = Auth::id();
-                 $application->save();
-
-                 // Update the transaction table's application_id with the latest inserted application's id
-                 $transaction->application_id = $application->id;
-                 $transaction->status =  $application->status_id;
-                 $transaction->application_transaction_date = now();
-                 $transaction->transaction_updated_date = now();
-                 $transaction->save();
+                $application = new Application();
+                $application->customer_id = $inquiry->customer_id;
+                $application->vehicle_id = $inquiry->vehicle_id;
+                $application->transaction_id = $transaction->id;
+                $application->transaction = $inquiry->transaction;
+                $application->status_id = $pending_status->id;
+                $application->created_by = Auth::id();
+                $application->updated_by = Auth::id();
+                $application->save();
+                // Update the transaction table's application_id with the latest inserted application's id
+                $transaction->application_id = $application->id;
+                $transaction->status =  $application->status_id;
+                $transaction->application_transaction_date = now();
+                $transaction->transaction_updated_date = now();
+                $transaction->save();
+                    
             }
 
             return response()->json([
@@ -724,8 +694,4 @@ class LeadController extends Controller
             ], 500);
         }
     }
-
-    
-
-
 }

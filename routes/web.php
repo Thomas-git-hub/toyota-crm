@@ -63,6 +63,7 @@ Route::get('vehicle-reservation/units/list', [VehicleReservationController::clas
 Route::get('vehicle-reservation/pending/list', [VehicleReservationController::class, 'list_pending'])->name('vehicle.reservation.pending.list');
 Route::get('vehicle-reservation/released/list', [VehicleReservationController::class, 'list_released'])->name('vehicle.reservation.released.list');
 Route::get('vehicle-reservation/getReservedCount', [VehicleReservationController::class, 'getReservedCount'])->name('vehicle.reservation.getReservedCount');
+Route::get('vehicle-reservation/reservationPerTeam', [VehicleReservationController::class, 'reservationPerTeam'])->name('vehicle.reservation.reservationPerTeam');
 
 
 // VEHICLE RELEASES

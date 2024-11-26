@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Application;
 use App\Models\Inventory;
 use App\Models\Status;
 use App\Models\Team;
@@ -225,6 +226,40 @@ class VehicleReservationController extends Controller
 
         ->make(true);
     }
+
+    
+    public function reservationPerTeam(){
+        DB::statement("SET SQL_MODE=''");
+        
+        $query = Team::whereNull('deleted_at');
+                        
+
+        $list = $query->get();
+
+        return DataTables::of($list)
+        ->addColumn('id', function($data) {
+            return encrypt($data->id);
+        })
+        ->addColumn('team', function($data) {
+            return $data->name;
+        })
+
+        ->addColumn('quantity', function($data) {
+            $pending_status = Status::where('status', 'like', 'pending')->first();
+            $count = Transactions::with(['inquiry', 'inventory', 'application'])
+            ->whereNull('deleted_at')
+            ->where('team_id', $data->id)
+            ->whereNotNull('reservation_id')
+            ->where('reservation_transaction_status', $pending_status->id)
+            ->count();
+           
+            return $count;
+        })
+        
+        ->make(true);
+    }
+
+
 
 
 

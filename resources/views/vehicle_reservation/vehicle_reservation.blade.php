@@ -198,7 +198,10 @@
 
     const statusTable = $('#statusTable').DataTable({
         processing: true,
-        serverSide: false, // Use client-side processing since we're providing static data
+        serverSide: true, // Use client-side processing since we're providing static data
+        ajax: {
+            url: '{{ route("vehicle.reservation.reservationPerTeam") }}',
+        },
         pageLength: 10,
         paging: true,
         responsive: true,
@@ -210,13 +213,6 @@
             infoEmpty: "", // Removes the message when there's no data
             infoFiltered: "", // Removes the "filtered from X entries" part
         },
-        data: [
-            { team: "EOV", quantity: 5 },
-            { team: "JDS", quantity: 3 },
-            { team: "IBT", quantity: 2 },
-            { team: "EDJ", quantity: 4 },
-            { team: "JLB", quantity: 1 },
-        ],
         columns: [
             { data: 'team', name: 'team', title: 'Team' },
             { data: 'quantity', name: 'quantity', title: 'Quantity' },

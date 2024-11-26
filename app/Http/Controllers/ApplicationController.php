@@ -417,7 +417,7 @@ class ApplicationController extends Controller
                 return $data->customer->department_name; 
             } 
         })
-        
+
         ->addColumn('contact_number', function($data) {
             return $data->customer->contact_number;
         })
@@ -552,7 +552,6 @@ class ApplicationController extends Controller
         }
     }
 
-
     public function getBanks(){
         $data = Banks::all();
         return response()->json($data);
@@ -580,13 +579,13 @@ class ApplicationController extends Controller
                 $application->save();
 
             }else if( $application->status_id == $approved_status){
-               
+
                 $inventory = Inventory::where('vehicle_id', $application->vehicle_id)
                 ->where('CS_number_status', 'available')
                 ->first();
 
                 if ($inventory) {
-                    $transaction = Transactions::where('application_id', $application->id)->first();
+                    $transaction = Transactions::with('inquiry')->where('application_id', $application->id)->first();
     
                     $application->status_id = $processing_status;
                     $application->transaction = $application->transaction;
@@ -600,6 +599,7 @@ class ApplicationController extends Controller
                     $transactions->reservation_transaction_status = $pending_status;
                     $transactions->reservation_date = now();
                     $transactions->inventory_id = $inventory->id;
+                    $transactions->team_id = Auth::user()->team_id;
                     $transactions->save();
 
                     $invt = Inventory::findOrFail($inventory->id);
