@@ -17,6 +17,10 @@ class Application extends Model
         return $this->belongsTo(User::class, 'created_by', 'id');
     }
 
+    public function updatedBy(){
+        return $this->belongsTo(User::class, 'updated_by', 'id');
+    }
+
     public function customer(){
         return $this->belongsTo(Customer::class, 'customer_id', 'id');
     }

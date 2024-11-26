@@ -417,6 +417,7 @@ class ApplicationController extends Controller
                 return $data->customer->department_name; 
             } 
         })
+        
         ->addColumn('contact_number', function($data) {
             return $data->customer->contact_number;
         })
@@ -567,10 +568,12 @@ class ApplicationController extends Controller
 
             $approved_status = Status::where('status', 'like', 'approved')->first()->id;
             $pending_status = Status::where('status', 'like', 'pending')->first()->id;
+            $cancel_status = Status::where('status', 'like', 'cancel')->first()->id;
+            $processing_status = Status::where('status', 'like', 'Processing')->first()->id;
 
             $application = Application::findOrFail(decrypt($request->id));
 
-            if( $application->status_id == $pending_status){
+            if( $application->status_id == $pending_status || $application->status_id == $cancel_status ){
                 $application->status_id =  $approved_status;
                 $application->updated_by = Auth::user()->id;
                 $application->updated_at = now();
@@ -585,7 +588,7 @@ class ApplicationController extends Controller
                 if ($inventory) {
                     $transaction = Transactions::where('application_id', $application->id)->first();
     
-                    $application->status_id = $approved_status;
+                    $application->status_id = $processing_status;
                     $application->transaction = $application->transaction;
                     $application->updated_by = Auth::id();
                     $application->updated_at = now();
@@ -594,6 +597,7 @@ class ApplicationController extends Controller
                     $transactions = Transactions::findOrFail($transaction->id);
                     $transactions->status = $approved_status;
                     $transactions->reservation_id = Transactions::max('reservation_id') + 1;
+                    $transactions->reservation_transaction_status = $pending_status;
                     $transactions->reservation_date = now();
                     $transactions->inventory_id = $inventory->id;
                     $transactions->save();
@@ -602,6 +606,7 @@ class ApplicationController extends Controller
                     $invt->status = 'reserved';
                     $invt->CS_number_status = 'reserved';
                     $invt->updated_at = now();
+                    $invt->save();
 
                 }else{
                     return response()->json([
