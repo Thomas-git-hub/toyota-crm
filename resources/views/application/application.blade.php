@@ -41,7 +41,7 @@
                                 <select class="form-control" name="bank_id[]" id=bank_ids>
                                 </select>
                             </div>
-                           
+
                         </div>
                     </div>
                 </form>
@@ -368,9 +368,16 @@
                 orderable: false,
                 searchable: false,
                 render: function(data) {
-                    return `<button type="button" class="btn btn-icon me-2 btn-warning bank-btn" data-bs-toggle="modal" data-bs-target="#selectBankModal" data-id="${data}">
-                                <span class="tf-icons bx bxs-bank bx-22px"></span>
-                            </button>`;
+                    return `
+                            <div class="d-flex">
+                                <button type="button" class="btn btn-icon me-2 btn-warning bank-btn" data-bs-toggle="modal" data-bs-target="#selectBankModal" data-id="${data}">
+                                    <span class="tf-icons bx bxs-bank bx-22px"></span>
+                                </button>
+                                <button type="button" class="btn btn-icon me-2 btn-info bank-btn" data-bs-toggle="modal" data-bs-target="#bankApprovalDateModal" data-id="">
+                                    <span class="tf-icons bx bxs-bank bx-22px"></span>
+                                </button>
+                            </div>
+                            `;
                 }
             },
             {
@@ -428,7 +435,7 @@
      // Inquiry Form Validation
      $(document).ready(function () {
 
-       
+
 
         $.ajax({
             url: '{{ route('leads.getUnit') }}',
@@ -1037,11 +1044,11 @@
             alert("The first field cannot be removed.");
         }
     });
-    
+
 
     $('#selectBankForm').on('submit', function(e) {
         e.preventDefault();
-        
+
         // Collect selected bank IDs
         const bankIds = [];
         $("select[name='bank_id[]']").each(function() {
@@ -1052,7 +1059,7 @@
         });
 
         // Add bankIds to the form data
-        const formData = $(this).serialize() 
+        const formData = $(this).serialize()
         // + '&bank_id=' + JSON.stringify(bankIds);
 
         // Submit the form data to the store method

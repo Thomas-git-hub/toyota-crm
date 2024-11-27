@@ -656,7 +656,7 @@ class LeadController extends Controller
                 $transaction->application_transaction_date = now();
                 $transaction->transaction_updated_date = now();
                 $transaction->save();
-                    
+
             }
 
             return response()->json([
