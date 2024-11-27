@@ -216,6 +216,11 @@ class ApplicationController extends Controller
         ->addColumn('transaction', function($data) {
             return $data->transaction;
         })
+        
+        ->addColumn('reservation_status', function($data) {
+            $transaction = $data->transactions->first();
+            return $transaction ? $transaction->reservation_status : 'N/A';
+        })
 
         ->editColumn('date', function($data) {
             return $data->created_at->format('m/d/Y');
@@ -309,6 +314,11 @@ class ApplicationController extends Controller
 
         ->addColumn('transaction', function($data) {
             return $data->transaction;
+        })
+        
+        ->addColumn('reservation_status', function($data) {
+            $transaction = $data->transactions->first();
+            return $transaction ? $transaction->reservation_status : 'N/A';
         })
 
         ->editColumn('date', function($data) {
@@ -406,6 +416,11 @@ class ApplicationController extends Controller
             return $data->transaction;
         })
 
+        ->addColumn('reservation_status', function($data) {
+            $transaction = $data->transactions->first();
+            return $transaction ? $transaction->reservation_status : 'N/A';
+        })
+
         ->editColumn('date', function($data) {
             return $data->created_at->format('m/d/Y');
         })
@@ -500,6 +515,11 @@ class ApplicationController extends Controller
         ->addColumn('transaction', function($data) {
             return $data->transaction;
         })
+        
+        ->addColumn('reservation_status', function($data) {
+            $transaction = $data->transactions->first();
+            return $transaction ? $transaction->reservation_status : 'N/A';
+        })
 
         ->editColumn('date', function($data) {
             return $data->created_at->format('m/d/Y');
@@ -510,29 +530,28 @@ class ApplicationController extends Controller
 
     public function edit($id)
     {
-        // Fetch the Application data by ID
         $decryptedId = decrypt($id);
-        $data = Application::with(['user', 'customer', 'vehicle','status', 'bank', 'transactions'])
+        $data = Application::with(['user', 'customer', 'vehicle', 'status', 'bank', 'transactions'])
             ->where('id', $decryptedId)
             ->first();
+        
         $firstTransaction = $data->transactions->first();
         if ($firstTransaction) {
-
             $inquiry = Inquiry::where('id', $firstTransaction->inquiry_id)->first();
             $inquirytype = InquryType::where('id', $inquiry->inquiry_type_id)->first()->inquiry_type;
         }
 
-            $statuses = Status::all();
-            $banks = Banks::all();
-    
-            return response()->json([
-                'firstTransaction' => $firstTransaction,
-                'inquiry' => $inquiry,
-                'inquirytype' => $inquirytype,
-                'application' => $data,
-                'statuses' => $statuses,
-                'banks' => $banks
-            ]);
+        $statuses = Status::all();
+        $banks = Banks::all();
+
+        return response()->json([
+            'firstTransaction' => $firstTransaction,
+            'inquiry' => $inquiry,
+            'inquirytype' => $inquirytype,
+            'application' => $data,
+            'statuses' => $statuses,
+            'banks' => $banks
+        ]);
     }
 
     public function update(Request $request, $id)

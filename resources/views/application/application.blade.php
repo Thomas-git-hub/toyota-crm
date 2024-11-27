@@ -55,6 +55,51 @@
 </div>
 
 
+{{-- Bank Approval Date Modal --}}
+<div class="modal fade" id="bankApprovalDateModal" tabindex="-1" role="dialog" aria-labelledby="bankApprovalDateModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="bankApprovalDateModalLabel">Bank Approval Date</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="bankApprovalDateForm">
+                    <div class="row d-flex align-items-center mb-2">
+                        <div class="col-md-4">
+                            <b class="">Metro Bank</b>
+                        </div>
+                        <div class="col-md-8">
+                            <input type="date" class="form-control" id="bank_approval_date" name="bank_approval_date">
+                        </div>
+                    </div>
+                    <div class="row d-flex align-items-center mb-4">
+                        <div class="col-md-4">
+                            <b class="">Union Bank</b>
+                        </div>
+                        <div class="col-md-8">
+                            <input type="date" class="form-control" id="bank_approval_date" name="bank_approval_date">
+                        </div>
+                    </div>
+                    <div class="mb-2">
+                        {{-- <label for="exampleFormControlSelect1" class="form-label">Select Prefered Bank</label> --}}
+                        <select class="form-select" id="exampleFormControlSelect1" aria-label="Default select example">
+                          <option selected>Select Prefered Bank</option>
+                          <option value="1">Metro Bank</option>
+                          <option value="2">Union Bank</option>
+                        </select>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-label-danger" data-bs-dismiss="modal">Close</button>
+                <button type="submit" class="btn btn-dark" form="bankApprovalDateForm">Save</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
 {{-- Edit Application Modal --}}
 <div class="modal fade" id="editApplicationFormModal" tabindex="-1" aria-labelledby="largeModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg">
@@ -240,6 +285,7 @@
     </div>
 </div>
 
+
 {{-- Datatables Tabs --}}
 <div class="row mb-2">
     <div class="col">
@@ -257,10 +303,10 @@
                 <div class="row">
                     <div class="col-md">
                         <div class="btn-group w-100" role="group" aria-label="Basic example">
-                            <button type="button" class="btn btn-label-dark active" data-route="{{ route('application.pending') }}">Pending</button>
-                            <button type="button" class="btn btn-label-dark" data-route="{{ route('application.approved') }}">Approved</button>
-                            <button type="button" class="btn btn-label-dark" data-route="{{ route('application.cancel') }}">Denied/Canceled</button>
-                            <button type="button" class="btn btn-label-dark" data-route="{{ route('application.cash') }}">Cash</button>
+                            <button id="pending-tab" type="button" class="btn btn-label-dark active" data-route="{{ route('application.pending') }}">Pending Applications</button>
+                            <button id="cash-tab" type="button" class="btn btn-label-dark" data-route="{{ route('application.cash') }}">Cash/PO Applications</button>
+                            <button id="approved-tab" type="button" class="btn btn-label-dark" data-route="{{ route('application.approved') }}">Approved Applications</button>
+                            <button id="canceled-tab" type="button" class="btn btn-label-dark" data-route="{{ route('application.cancel') }}">Denied/Canceled Applications</button>
                         </div>
                     </div>
                 </div>
@@ -302,7 +348,7 @@
                 }
             }
         },
-        // Add clear button
+        // Add clear button 
         onReady: function(selectedDates, dateStr, instance) {
             // Create a "Clear" button
             const clearButton = document.createElement("button");
@@ -360,6 +406,7 @@
             { data: 'variant', name: 'variant', title: 'Variant' },
             { data: 'color', name: 'color', title: 'Color' },
             { data: 'transaction', name: 'transaction', title: 'Transaction' },
+            { data: 'reservation_status', name: 'reservation_status', title: 'Reservation Status' },
             { data: 'source', name: 'source', title: 'Source' },
             { data: 'date', name: 'date', title: 'Date' },
             {
@@ -367,19 +414,31 @@
                 title: 'Bank',
                 orderable: false,
                 searchable: false,
-                render: function(data) {
+                render: function (data) {
+                    // Determine the active tab
+                    let activeTab = $('.btn-group .active').attr('id'); // Get the ID of the active tab
+                    let isPendingTab = activeTab === 'pending-tab';
+                    let isApprovedTab = activeTab === 'approved-tab';
+                    let isCashTab = activeTab === 'cash-tab';
+                    let isCanceledTab = activeTab === 'canceled-tab';
+                    
+                    // Hide or show buttons based on the active tab
+                    let bankBtnStyle =  isCashTab || isCanceledTab ? 'display: none;' : ''; // Hide for Approved and Cash tabs
+                    let approvalDateBtnStyle = isPendingTab || isCashTab || isCanceledTab ? 'display: none;' : ''; // Hide for Pending tab
+
                     return `
-                            <div class="d-flex">
-                                <button type="button" class="btn btn-icon me-2 btn-warning bank-btn" data-bs-toggle="modal" data-bs-target="#selectBankModal" data-id="${data}">
-                                    <span class="tf-icons bx bxs-bank bx-22px"></span>
-                                </button>
-                                <button type="button" class="btn btn-icon me-2 btn-info bank-btn" data-bs-toggle="modal" data-bs-target="#bankApprovalDateModal" data-id="">
-                                    <span class="tf-icons bx bxs-bank bx-22px"></span>
-                                </button>
-                            </div>
-                            `;
+                        <div class="d-flex">
+                            <button type="button" class="btn btn-icon me-2 btn-warning bank-btn" data-bs-toggle="modal" data-bs-target="#selectBankModal" data-id="${data}" style="${bankBtnStyle}">
+                                <span class="tf-icons bx bxs-bank bx-22px"></span>
+                            </button>
+                            <button type="button" class="btn btn-icon me-2 btn-info bank-approval-date-btn" data-bs-toggle="modal" data-bs-target="#bankApprovalDateModal" data-id="${data}" style="${approvalDateBtnStyle}">
+                                <span class="tf-icons bx bxs-calendar-plus bx-22px"></span>
+                            </button>
+                        </div>
+                    `;
                 }
             },
+
             {
                 data: 'id',
                 title: 'Action',
@@ -411,6 +470,16 @@
         ],
     });
 
+    // displaying of bank buttons based on active tab
+    $('.btn-group button').on('click', function () {
+        // Remove active class from all buttons and set it to the clicked one
+        $('.btn-group button').removeClass('active');
+        $(this).addClass('active');
+
+        // Redraw DataTable to apply new button visibility
+        $('#applicationTable').DataTable().ajax.reload(null, false); // Reloads data without resetting pagination
+    });
+
     // Change DataTable route based on button click
     $('.btn-group .btn').on('click', function(e) {
         e.preventDefault();
@@ -434,9 +503,6 @@
 
      // Inquiry Form Validation
      $(document).ready(function () {
-
-
-
         $.ajax({
             url: '{{ route('leads.getUnit') }}',
             type: 'GET',
@@ -990,22 +1056,79 @@
 
     // Fetch banks from the server
     function fetchBanks(targetSelect = null) {
-        $.ajax({
-            url: '{{ route('application.getBanks') }}',
-            type: 'GET',
-            dataType: 'json',
-            success: function (data) {
-                populateBankSelects(data, targetSelect); // Populate only the target select if provided
-            },
-            error: function (error) {
-                console.error('Error loading banks:', error);
-            },
+        return new Promise((resolve, reject) => {
+            $.ajax({
+                url: '{{ route('application.getBanks') }}',
+                type: 'GET',
+                dataType: 'json',
+                success: function (data) {
+                    populateBankSelects(data, targetSelect);
+                    resolve(data);
+                },
+                error: function (error) {
+                    console.error('Error loading banks:', error);
+                    reject(error);
+                },
+            });
         });
     }
-
+    
+    // Display selected banks on modal
     $(document).on('click', '.bank-btn', function () {
-        $('#application_id').val($(this).data('id'));
-        fetchBanks(); // Initial fetch of banks
+        const applicationId = $(this).data('id');
+        $('#application_id').val(applicationId);
+        
+        // Fetch existing banks for this application
+        $.ajax({
+            url: `/application/edit/${applicationId}`,
+            type: 'GET',
+            success: function(response) {
+                const application = response.application;
+                // Clear existing bank fields except the first one
+                $(".bank-field:not(:first)").remove();
+                
+                // If there are selected banks
+                if (application.bank_id) {
+                    const selectedBanks = JSON.parse(application.bank_id);
+                    
+                    // Remove all existing fields first
+                    $(".bank-field").remove();
+                    
+                    // Add a field for each selected bank
+                    selectedBanks.forEach((bankId, index) => {
+                        const newBankField = `
+                            <div class="row mb-2 bank-field">
+                                <div class="col-md d-flex align-items-center gap-2">
+                                    <select class="form-control" name="bank_id[]">
+                                        <option value="">Select Banks...</option>
+                                    </select>
+                                    ${index > 0 ? `
+                                        <button type="button" class="btn btn-icon me-2 btn-label-danger removeBankFieldButton">
+                                            <span class="tf-icons bx bxs-trash bx-22px"></span>
+                                        </button>
+                                    ` : ''}
+                                </div>
+                            </div>
+                        `;
+                        
+                        $("#bankFieldsContainer").append(newBankField);
+                    });
+                    
+                    // Fetch and populate all bank options, then set selected values
+                    fetchBanks().then(() => {
+                        selectedBanks.forEach((bankId, index) => {
+                            $("select[name='bank_id[]']").eq(index).val(bankId);
+                        });
+                    });
+                } else {
+                    // If no banks selected, just fetch banks for the default single field
+                    fetchBanks();
+                }
+            },
+            error: function(xhr) {
+                console.error('Error fetching application data:', xhr);
+            }
+        });
     });
 
     $("#addBankFieldButton").on("click", function (e) {

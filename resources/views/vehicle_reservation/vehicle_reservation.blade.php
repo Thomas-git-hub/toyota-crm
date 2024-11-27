@@ -75,8 +75,8 @@
                 <div class="row">
                     <div class="col-md">
                         <div class="btn-group w-100" role="group" aria-label="Basic example">
-                            <button type="button" class="btn btn-label-dark active" data-route="{{ route("vehicle.reservation.pending.list") }}">Reservation</button>
-                            <button type="button" class="btn btn-label-dark" data-route="{{ route("vehicle.reservation.released.list") }}">For Release</button>
+                            <button type="button" class="btn btn-label-dark active" data-route="{{ route("vehicle.reservation.pending.list") }}">Pending</button>
+                            <button type="button" class="btn btn-label-dark" data-route="{{ route("vehicle.reservation.released.list") }}">Reservation</button>
                         </div>
                     </div>
                 </div>
