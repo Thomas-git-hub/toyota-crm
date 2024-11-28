@@ -138,18 +138,6 @@ class VehicleReleasesController extends Controller
         ->editColumn('unit', function($data) {
             return $data->application->vehicle->unit;
         })
-
-        ->addColumn('customer_name', function($data) {
-            if($data->inquiry->inquiryType->inquiry_type === 'Individual'){
-                return $data->inquiry->customer->customer_first_name . ' ' . $data->inquiry->customer->customer_last_name;
-            }else if($data->inquiry->inquiryType->inquiry_type === 'Fleet'){
-                return $data->inquiry->customer->company_name; 
-            }else if($data->inquiry->inquiryType->inquiry_type === 'Company'){
-                return $data->inquiry->customer->company_name; 
-            }else if($data->inquiry->inquiryType->inquiry_type === 'Government'){
-                return $data->inquiry->customer->department_name; 
-            } 
-        })
         
         ->editColumn('year_model', function($data) {
             return $data->inventory->year_model ?? '';

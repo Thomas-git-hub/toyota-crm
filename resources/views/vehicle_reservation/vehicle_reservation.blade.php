@@ -321,6 +321,10 @@
             $('.btn-group .btn').removeClass('active');
             // Add 'active' class to the clicked button
             $(this).addClass('active');
+            $('#date-range-picker').val(''); // Clear the date range input
+            vehicleReservationTable.ajax.reload(null, false); // Reload the table without resetting the paging
+            var route = $(this).data('route'); // Get the route from the clicked button
+            vehicleReservationTable.ajax.url(route).load();
         });
     });
 

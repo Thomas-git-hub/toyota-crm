@@ -97,22 +97,71 @@
 <script>
 
     function releasedCount() {
-            $.ajax({
-                url: '{{ route("vehicle.releases.getReleasedCount") }}', // Adjust the route as necessary
-                type: 'GET',
-                success: function(response) {
-                    if (response.releasedCount !== undefined) {
-                        $('#releasedCount').text(response.releasedCount); // Update the count in the HTML
-                        $('#pendingForReleaseCount').text(response.pendingForReleaseCount); // Update the count in the HTML
-                    }
-                },
-                error: function(xhr) {
-                    console.error('Error fetching transaction count:', xhr);
+        $.ajax({
+            url: '{{ route("vehicle.releases.getReleasedCount") }}', // Adjust the route as necessary
+            type: 'GET',
+            success: function(response) {
+                if (response.releasedCount !== undefined) {
+                    $('#releasedCount').text(response.releasedCount); // Update the count in the HTML
+                    $('#pendingForReleaseCount').text(response.pendingForReleaseCount); // Update the count in the HTML
                 }
+            },
+            error: function(xhr) {
+                console.error('Error fetching transaction count:', xhr);
+            }
+        });
+    }
+
+    releasedCount();
+
+    //Date filter
+    flatpickr("#date-range-picker", {
+        mode: "range",
+        dateFormat: "m/d/Y",
+        onChange: function(selectedDates, dateStr, instance) {
+            // Check if both start and end dates are selected
+            if (selectedDates.length === 2) {
+                // Check if the end date is earlier than or equal to the start date
+                if (selectedDates[1] <= selectedDates[0]) {
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'Warning!',
+                        text: 'Please select a valid date range.',
+                    });
+                } else {
+                    // Reload the tables if a valid range is selected
+                    vehicleReleasesTable.ajax.reload(null, false);
+                }
+            }
+        },
+        // Add clear button
+        onReady: function(selectedDates, dateStr, instance) {
+            // Create a "Clear" button
+            const clearButton = document.createElement("button");
+            clearButton.innerHTML = "Clear";
+            clearButton.classList.add("clear-btn");
+
+            // Create a "Close" button
+            const closeButton = document.createElement("button");
+            closeButton.innerHTML = "Close";
+            closeButton.classList.add("close-btn");
+
+            // Append the buttons to the flatpickr calendar
+            instance.calendarContainer.appendChild(clearButton);
+            instance.calendarContainer.appendChild(closeButton);
+
+            // Add event listener to clear the date and reload the tables
+            clearButton.addEventListener("click", function() {
+                instance.clear(); // Clear the date range
+                vehicleReleasesTable.ajax.reload(null, false); // Reload the tables
+            });
+
+            // Add event listener to close the calendar
+            closeButton.addEventListener("click", function() {
+                instance.close(); // Close the flatpickr calendar
             });
         }
-
-        releasedCount();
+    });
     // DataTable initialization
     const releasedUnitsTable = $('#releasedUnitsTable').DataTable({
         processing: true,
@@ -184,6 +233,9 @@
         serverSide: true, // Use client-side processing since we're providing static data
         ajax: {
             url: '{{ route("vehicle.releases.pending.list") }}',
+            data: function(d) {
+                d.date_range = $('#date-range-picker').val();
+            },
         },
         pageLength: 10,
         paging: true,
@@ -239,6 +291,11 @@
             $('.btn-group .btn').removeClass('active');
             // Add 'active' class to the clicked button
             $(this).addClass('active');
+
+            $('#date-range-picker').val(''); // Clear the date range input
+            vehicleReleasesTable.ajax.reload(null, false); // Reload the table without resetting the paging
+            //  var route = $(this).data('route'); // Get the route from the clicked button
+            // vehicleReleasesTable.ajax.url(route).load();
         });
     });
 
