@@ -61,15 +61,19 @@ Route::post('/application/banks/approval/{id}', [ApplicationController::class, '
 Route::get('vehicle-reservation', [VehicleReservationController::class, 'index'])->name('vehicle.reservation');
 Route::get('vehicle-reservation/units/list', [VehicleReservationController::class, 'availableUnitsList'])->name('vehicle.reservation.units.list');
 Route::get('vehicle-reservation/pending/list', [VehicleReservationController::class, 'list_pending'])->name('vehicle.reservation.pending.list');
-Route::get('vehicle-reservation/released/list', [VehicleReservationController::class, 'list_released'])->name('vehicle.reservation.released.list');
+Route::get('vehicle-reservation/list', [VehicleReservationController::class, 'list_reserved'])->name('vehicle.reservation.list');
 Route::get('vehicle-reservation/getReservedCount', [VehicleReservationController::class, 'getReservedCount'])->name('vehicle.reservation.getReservedCount');
 Route::get('vehicle-reservation/reservationPerTeam', [VehicleReservationController::class, 'reservationPerTeam'])->name('vehicle.reservation.reservationPerTeam');
-Route::post('vehicle-reservation/processing', [VehicleReservationController::class, 'processing'])->name('vehicle.reservation.processing');
+Route::post('vehicle-reservation/processing_pending', [VehicleReservationController::class, 'processing_pending'])->name('vehicle.reservation.processing_pending');
+Route::post('vehicle-reservation/processing_reserved', [VehicleReservationController::class, 'processing_reserved'])->name('vehicle.reservation.processing_reserved');
 
 
 // VEHICLE RELEASES
 Route::get('vehicle-releases', [VehicleReleasesController::class, 'index'])->name('vehicle.releases');
-
-
+Route::get('vehicle-releases/pending/list', [VehicleReleasesController::class, 'list_pending_for_release'])->name('vehicle.releases.pending.list');
+Route::get('vehicle-releases/releasedUnitsList', [VehicleReleasesController::class, 'releasedUnitsList'])->name('vehicle.releases.units.list');
+Route::get('vehicle-releases/releasedPerTeam', [VehicleReleasesController::class, 'releasedPerTeam'])->name('vehicle.releases.releasedPerTeam');
+Route::get('vehicle-releases/getReleasedCount', [VehicleReleasesController::class, 'getReleasedCount'])->name('vehicle.releases.getReleasedCount');
+Route::post('vehicle-releases/processing', [VehicleReleasesController::class, 'processing'])->name('vehicle.releases.processing');
 // VEHICLE INVENTORY
 Route::get('vehicle-inventory', [VehicleInventoryController::class, 'index'])->name('vehicle.inventory');

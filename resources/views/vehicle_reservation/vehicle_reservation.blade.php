@@ -76,7 +76,7 @@
                     <div class="col-md">
                         <div class="btn-group w-100" role="group" aria-label="Basic example">
                             <button type="button" class="btn btn-label-dark active" data-route="{{ route("vehicle.reservation.pending.list") }}">Pending</button>
-                            <button type="button" class="btn btn-label-dark" data-route="{{ route("vehicle.reservation.released.list") }}">Reservation</button>
+                            <button type="button" class="btn btn-label-dark" data-route="{{ route("vehicle.reservation.list") }}">Reservation</button>
                         </div>
                     </div>
                 </div>
@@ -97,6 +97,9 @@
 @section('components.specific_page_scripts')
 
 <script>
+    $(document).ready(function() {
+        $('.btn-group .btn.active').click();
+    });
 
     function reservedCount() {
         $.ajax({
@@ -242,13 +245,7 @@
             search: "",
             searchPlaceholder: "Search..."
         },
-        // data: [
-        //     { unit: "Unit1", customer_name: "Customer 1", year_model: "2020", variant: "Variant 1", color: "Red", cs_number: "CS001", trans_type: "Type 1", trans_bank: "Bank 1", agent: "Agent 1", team: "Team 1", date_assigned: "2020-01-01", remarks: "Remark 1", action: "<button class='process-btn'>Process</button>" },
-        //     { unit: "Unit2", customer_name: "Customer 2", year_model: "2021", variant: "Variant 2", color: "Blue", cs_number: "CS002", trans_type: "Type 2", trans_bank: "Bank 2", agent: "Agent 2", team: "Team 2", date_assigned: "2021-02-01", remarks: "Remark 2", action: "<button class='process-btn'>Process</button>" },
-        //     { unit: "Unit3", customer_name: "Customer 3", year_model: "2022", variant: "Variant 3", color: "Green", cs_number: "CS003", trans_type: "Type 3", trans_bank: "Bank 3", agent: "Agent 3", team: "Team 3", date_assigned: "2022-03-01", remarks: "Remark 3", action: "<button class='process-btn'>Process</button>" },
-        //     { unit: "Unit4", customer_name: "Customer 4", year_model: "2023", variant: "Variant 4", color: "Yellow", cs_number: "CS004", trans_type: "Type 4", trans_bank: "Bank 4", agent: "Agent 4", team: "Team 4", date_assigned: "2023-04-01", remarks: "Remark 4", action: "<button class='process-btn'>Process</button>" },
-        //     { unit: "Unit5", customer_name: "Customer 5", year_model: "2024", variant: "Variant 5", color: "Purple", cs_number: "CS005", trans_type: "Type 5", trans_bank: "Bank 5", agent: "Agent 5", team: "Team 5", date_assigned: "2024-05-01", remarks: "Remark 5", action: "<button class='process-btn'>Process</button>" },
-        // ],
+        
         columns: [
             { data: 'unit', name: 'unit', title: 'Unit' },
             { data: 'client_name', name: 'client_name', title: 'Customer Name' },
@@ -262,14 +259,30 @@
             { data: 'team', name: 'team', title: 'Team' },
             { data: 'date_assigned', name: 'date_assigned', title: 'Date Assigned' },
             {
+                data: 'application_id',
+                name: 'application_id',
+                title: 'Action',
+                orderable: false,
+                searchable: false,
+                visible: false,
+                render: function(data, type, row) {
+                        return `<div class="d-flex">
+                                    <button type="button" class="btn btn-icon me-2 btn-primary processing-pending-btn" data-id="${data}">
+                                        <span class="tf-icons bx bxs-check-circle bx-22px"></span>
+                                    </button>
+                                </div>`;
+                    }
+            },
+            {
                 data: 'id',
                 name: 'id',
                 title: 'Action',
                 orderable: false,
                 searchable: false,
+                visible: false,
                 render: function(data, type, row) {
                         return `<div class="d-flex">
-                                    <button type="button" class="btn btn-icon me-2 btn-primary processing-btn" data-id="${data}">
+                                    <button type="button" class="btn btn-icon me-2 btn-primary processing-reserved-btn" data-id="${data}">
                                         <span class="tf-icons bx bxs-check-circle bx-22px"></span>
                                     </button>
                                 </div>`;
@@ -292,6 +305,10 @@
         const isReservationTab = $(this).text().trim() === 'Reservation';
         vehicleReservationTable.column(2).visible(isReservationTab); // year_model
         vehicleReservationTable.column(5).visible(isReservationTab); // cs_number
+        vehicleReservationTable.column(12).visible(isReservationTab); // application_id
+
+        const isPendingTab = $(this).text().trim() === 'Pending';
+        vehicleReservationTable.column(11).visible(isPendingTab); // id
         
         var route = $(this).data('route');
         vehicleReservationTable.ajax.url(route).load();
@@ -308,21 +325,21 @@
     });
 
       //Process Data
-      $(document).on('click', '.processing-btn', function() {
+    $(document).on('click', '.processing-pending-btn', function() {
         const appID = $(this).data('id');
 
         Swal.fire({
             title: 'Are you sure?',
-            text: "Do you want to release this transaction?",
+            text: "Do you want to reserved this transaction?",
             icon: 'warning',
             showCancelButton: true,
             confirmButtonColor: '#3085d6',
             cancelButtonColor: '#d33',
-            confirmButtonText: 'Yes, release it!'
+            confirmButtonText: 'Yes, reserved it!'
         }).then((result) => {
             if (result.isConfirmed) {
                 $.ajax({
-                    url: '{{ route("vehicle.reservation.processing") }}',
+                    url: '{{ route("vehicle.reservation.processing_pending") }}',
                     type: 'POST',
                     data: {
                         id: appID
@@ -337,7 +354,57 @@
                                 response.message,
                                 'success'
                             );
-                            applicationTable.ajax.reload();
+                            vehicleReservationTable.ajax.reload();
+                            statusTable.ajax.reload();
+                            availableUnitsTable.ajax.reload();
+                            reservedCount();
+                        }
+                    },
+                    error: function(xhr) {
+                        Swal.fire(
+                            'Error!',
+                            xhr.responseJSON?.message || 'Something went wrong!',
+                            'error'
+                        );
+                    }
+                });
+            }
+        });
+    });
+
+    $(document).on('click', '.processing-reserved-btn', function() {
+        const appID = $(this).data('id');
+
+        Swal.fire({
+            title: 'Are you sure?',
+            text: "Do you want to proceed this to pending for release?",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes, proceed it!'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                $.ajax({
+                    url: '{{ route("vehicle.reservation.processing_reserved") }}',
+                    type: 'POST',
+                    data: {
+                        id: appID
+                    },
+                    headers: {
+                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                    },
+                    success: function(response) {
+                        if (response.success) {
+                            Swal.fire(
+                                'Updated!',
+                                response.message,
+                                'success'
+                            );
+                            vehicleReservationTable.ajax.reload();
+                            statusTable.ajax.reload();
+                            availableUnitsTable.ajax.reload();
+                            reservedCount();
                         }
                     },
                     error: function(xhr) {

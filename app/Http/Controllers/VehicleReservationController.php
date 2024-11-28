@@ -18,7 +18,11 @@ use Yajra\DataTables\Facades\DataTables;
 class VehicleReservationController extends Controller
 {
     public function index() {
-        return view('vehicle_reservation.vehicle_reservation');
+        if(Auth::check()){
+            return view('vehicle_reservation.vehicle_reservation');
+        }else{
+            return view('index');
+        }
     }
 
     public function availableUnitsList(){
@@ -73,8 +77,8 @@ class VehicleReservationController extends Controller
         DB::statement("SET SQL_MODE=''");
         $pending_status = Status::where('status', 'like', 'pending')->first();
         $query = Transactions::with(['inquiry', 'inventory', 'application'])
-                        ->whereNull('deleted_at')
                         ->where('reservation_transaction_status', $pending_status->id)
+                        ->whereNull('deleted_at')
                         ->whereNotNull('reservation_id')
                         ;
 
@@ -150,7 +154,7 @@ class VehicleReservationController extends Controller
         ->make(true);
     }
 
-    public function list_released(Request $request){
+    public function list_reserved(Request $request){
 
         // dd($request->start_date);
         $reserved_status = Status::where('status', 'like', 'Reserved')->first();
@@ -213,7 +217,7 @@ class VehicleReservationController extends Controller
             return $data->inquiry->inquiryType->inquiry_type;
         })
         ->addColumn('trans_bank', function($data) {
-            return '';
+            return $data->application->bank->bank_name;
         })
 
         ->addColumn('team', function($data) {
@@ -264,7 +268,7 @@ class VehicleReservationController extends Controller
         ->make(true);
     }
 
-    public function processing(Request $request){
+    public function processing_pending(Request $request){
         try {
 
             $approved_status = Status::where('status', 'like', 'approved')->first()->id;
@@ -272,15 +276,14 @@ class VehicleReservationController extends Controller
             $cancel_status = Status::where('status', 'like', 'cancel')->first()->id;
             $processing_status = Status::where('status', 'like', 'Processing')->first()->id;
             $reserved_status = Status::where('status', 'like', 'Reserved')->first()->id;
+            $pending_for_release_status = Status::where('status', 'like', 'Pending For Release')->first()->id;
 
-            $transactions = Transactions::where('id', decrypt($request->id))
+            $transaction_pendings = Transactions::where('application_id', $request->id)
             ->where('reservation_transaction_status', $pending_status)
-            ->whereNull('inventory_id')
             ->whereNull('deleted_at')
             ->get();
 
-
-            foreach ($transactions as $transaction) {
+            foreach ($transaction_pendings as $transaction) {
                 $transaction->status = $reserved_status;
                 $transaction->reservation_transaction_status = $reserved_status;
                 $transaction->reservation_date = now();
@@ -303,6 +306,54 @@ class VehicleReservationController extends Controller
             return response()->json([
                 'success' => true,
                 'message' => 'Vehicle reservation request successfully processed'
+            ]);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Error updating reservation process: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    public function processing_reserved(Request $request){
+        try {
+
+            $approved_status = Status::where('status', 'like', 'approved')->first()->id;
+            $pending_status = Status::where('status', 'like', 'pending')->first()->id;
+            $cancel_status = Status::where('status', 'like', 'cancel')->first()->id;
+            $processing_status = Status::where('status', 'like', 'Processing')->first()->id;
+            $reserved_status = Status::where('status', 'like', 'Reserved')->first()->id;
+            $pending_for_release_status = Status::where('status', 'like', 'Pending For Release')->first()->id;
+        
+            $transaction_pendings = Transactions::where('id', decrypt($request->id))
+            ->where('reservation_transaction_status', $reserved_status)
+            ->whereNull('deleted_at')
+            ->get();
+
+            foreach ($transaction_pendings as $transaction) {
+                $transaction->status = $pending_for_release_status;
+                $transaction->reservation_transaction_status = $pending_for_release_status;
+                $transaction->reservation_date = now();
+                $transaction->save();
+
+                $application = Application::findOrFail($transaction->application_id);
+                $application->status_id = $pending_for_release_status;
+                $application->updated_by = Auth::user()->id;
+                $application->updated_at = now();
+                $application->save();
+
+                $inquiry = Inquiry::findOrFail($transaction->inquiry_id);
+                $inquiry->status_id= $pending_for_release_status;
+                $inquiry->status_updated_by = Auth::user()->id;
+                $inquiry->status_updated_at = now();
+                $inquiry->save();
+
+            }
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Vehicle reservation successfully processed to pending for release'
             ]);
 
         } catch (\Exception $e) {
