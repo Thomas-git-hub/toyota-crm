@@ -12,6 +12,7 @@ use App\Models\Banks;
 use App\Models\Inquiry;
 use App\Models\Inventory;
 use App\Models\InquryType;
+use App\Models\BankTransaction;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -761,8 +762,21 @@ class ApplicationController extends Controller
     public function updateBanks(Request $request){
         try {
         $application = Application::findOrFail(decrypt($request->application_id));
-        $application->bank_id =json_encode($request->bank_id);
-        $application->save();
+
+        $banksArray = $request->bank_id;
+
+        foreach ($banksArray as $bank) {
+            $bankTrans = new BankTransaction;
+            $bankTrans->application_id = decrypt($request->application_id);
+            $bankTrans->bank_id = $bank;
+            $bankTrans->created_by = Auth::id();
+            $bankTrans->updated_by = Auth::id();
+            $bankTrans->save();
+
+        }
+
+        // $application->bank_id =json_encode($request->bank_id);
+        // $application->save();
 
         return response()->json([
             'success' => true,
@@ -777,7 +791,74 @@ class ApplicationController extends Controller
         }
 
     }
-    
 
+    public function getBanksForApplication($id)
+    {
+        try {
+            $decryptedId = decrypt($id);
+            
+            // Get all bank transactions for this application
+            $bankTransactions = BankTransaction::with('bank')
+                ->where('application_id', $decryptedId)
+                ->get()
+                ->map(function($transaction) {
+                    return [
+                        'bank_id' => $transaction->bank_id,
+                        'bank_name' => $transaction->bank->bank_name,
+                        'approval_date' => $transaction->approval_date,
+                        'is_preferred' => $transaction->is_preferred
+                    ];
+                });
+            
+            return response()->json([
+                'success' => true,
+                'banks' => $bankTransactions,
+                'id' => $decryptedId,
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Error fetching banks: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    public function updateBankApproval(Request $request, $id)
+    {
+        try {
+            $validated = $request->validate([
+                'bank_ids' => 'required|array',
+                'bank_ids.*' => 'required|exists:banks,id',
+                'approval_dates' => 'required|array',
+                'approval_dates.*' => 'nullable|date',
+                'preferred_bank' => 'required|exists:banks,id'
+            ]);
+
+            // Update approval dates and preferred status for each bank
+            foreach ($validated['bank_ids'] as $index => $bankId) {
+                BankTransaction::where('application_id', decrypt($id))
+                ->where('bank_id', $bankId)
+                    ->update([
+                        'approval_date' => $validated['approval_dates'][$index],
+                        'is_preferred' => $bankId == $validated['preferred_bank'],
+                        'updated_by' => Auth::id()
+                    ]);
+            }
+
+            $application = Application::findOrFail(decrypt($id));
+            $application->bank_id = $validated['preferred_bank'];
+            $application->save();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Bank approval dates updated successfully'
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Error updating bank approval dates: ' . $e->getMessage()
+            ], 500);
+        }
+    }
 
 }

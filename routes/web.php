@@ -52,6 +52,8 @@ Route::get('/getStatus', [ApplicationController::class, 'getStatus'])->name('app
 Route::post('/application/processing', [ApplicationController::class, 'processing'])->name('application.processing');
 Route::post('/application/cancel', [ApplicationController::class, 'cancel'])->name('application.status.cancel');
 Route::post('/application/store/banks', [ApplicationController::class, 'updateBanks'])->name('application.store.banks');
+Route::get('/application/banks/{id}', [ApplicationController::class, 'getBanksForApplication'])->name('application.banks.get');
+Route::post('/application/banks/approval/{id}', [ApplicationController::class, 'updateBankApproval'])->name('application.banks.approval');
 
 
 

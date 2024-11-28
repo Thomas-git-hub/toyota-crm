@@ -66,29 +66,11 @@
             <div class="modal-body">
                 <form id="bankApprovalDateForm">
                     <div class="row d-flex align-items-center mb-2">
-                        <div class="col-md-4">
-                            <b class="">Metro Bank</b>
-                        </div>
-                        <div class="col-md-8">
-                            <input type="date" class="form-control" id="bank_approval_date" name="bank_approval_date">
-                        </div>
                     </div>
-                    <div class="row d-flex align-items-center mb-4">
-                        <div class="col-md-4">
-                            <b class="">Union Bank</b>
-                        </div>
-                        <div class="col-md-8">
-                            <input type="date" class="form-control" id="bank_approval_date" name="bank_approval_date">
-                        </div>
-                    </div>
-                    <div class="mb-2">
-                        {{-- <label for="exampleFormControlSelect1" class="form-label">Select Prefered Bank</label> --}}
-                        <select class="form-select" id="exampleFormControlSelect1" aria-label="Default select example">
-                          <option selected>Select Prefered Bank</option>
-                          <option value="1">Metro Bank</option>
-                          <option value="2">Union Bank</option>
-                        </select>
-                    </div>
+
+                    <select class="form-select" id="exampleFormControlSelect1" aria-label="Default select example" name="preferred_bank">
+                        <option selected>Select Prefered Bank</option>
+                    </select>                    
                 </form>
             </div>
             <div class="modal-footer">
@@ -1212,6 +1194,104 @@
                     xhr.responseJSON?.message || 'Something went wrong!',
                     'error'
                 );
+            }
+        });
+    });
+
+    // When bank approval date button is clicked
+    $(document).on('click', '.bank-approval-date-btn', function() {
+        const applicationId = $(this).data('id');
+        
+        // Update the form action with the application ID
+        $('#bankApprovalDateForm').attr('action', `/application/banks/approval/${applicationId}`);
+        
+        // Fetch banks associated with this application
+        $.ajax({
+            url: `/application/banks/${applicationId}`, // New route needed
+            type: 'GET',
+            success: function(response) {
+               
+                // Clear existing bank fields
+                $('#bankApprovalDateForm .bank-approval-row').remove();
+                
+                // Add fields for each bank
+                let bankFields = '';
+                response.banks.forEach(bank => {
+                    bankFields += `
+                        <div class="row d-flex align-items-center mb-2 bank-approval-row">
+                            <div class="col-md-4">
+                                <b class="">${bank.bank_name}</b>
+                                <input type="hidden" name="bank_ids[]" value="${bank.bank_id}">
+                            </div>
+                            <div class="col-md-8">
+                                <input type="date" 
+                                    class="form-control" 
+                                    name="approval_dates[]" 
+                                    value="${bank.approval_date || ''}"
+                                    ${bank.approval_date ? 'readonly' : ''}>
+                            </div>
+                        </div>
+                    `;
+                });
+                
+                // Insert bank fields before the preferred bank select
+                $(bankFields).insertBefore('#bankApprovalDateForm .mb-2');
+                
+                // Update preferred bank dropdown options
+                let preferredBankOptions = '<option value="">Select Preferred Bank</option>';
+                response.banks.forEach(bank => {
+                    preferredBankOptions += `<option value="${bank.bank_id}" ${bank.is_preferred ? 'selected' : ''}>${bank.bank_name}</option>`;
+                });
+                $('#preferredBankSelect').html(preferredBankOptions);
+
+
+                // Update the select with banks
+                let bankSelectOptions = '<option value="">Select Bank</option>';
+                response.banks.forEach(bank => {
+                    bankSelectOptions += `<option value="${bank.bank_id}" ${bank.is_preferred ? 'selected' : ''}>${bank.bank_name}</option>`;
+                });
+                $('#exampleFormControlSelect1').html(bankSelectOptions);
+                
+                $('#bankApprovalDateModal').modal('show');
+            },
+            error: function(xhr) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: xhr.responseJSON?.message || 'Could not fetch bank data.'
+                });
+            }
+        });
+    });
+
+    // Handle bank approval date form submission
+    $('#bankApprovalDateForm').on('submit', function(e) {
+        e.preventDefault();
+        
+        $.ajax({
+            url: $(this).attr('action'), // Use the updated form action
+            type: 'POST',
+            data: $(this).serialize(),
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            },
+            success: function(response) {
+                if (response.success) {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Success',
+                        text: response.message
+                    });
+                    $('#bankApprovalDateModal').modal('hide');
+                    applicationTable.ajax.reload();
+                }
+            },
+            error: function(xhr) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: xhr.responseJSON?.message || 'Something went wrong!'
+                });
             }
         });
     });
