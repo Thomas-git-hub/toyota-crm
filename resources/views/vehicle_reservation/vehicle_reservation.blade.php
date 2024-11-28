@@ -252,10 +252,10 @@
         columns: [
             { data: 'unit', name: 'unit', title: 'Unit' },
             { data: 'client_name', name: 'client_name', title: 'Customer Name' },
-            { data: 'year_model', name: 'year_model', title: 'Year Model' },
+            { data: 'year_model', name: 'year_model', title: 'Year Model', visible: false },
             { data: 'variant', name: 'variant', title: 'Variant' },
             { data: 'color', name: 'color', title: 'Color' },
-            { data: 'cs_number', name: 'cs_number', title: 'CS Number' },
+            { data: 'cs_number', name: 'cs_number', title: 'CS Number', visible: false },
             { data: 'trans_type', name: 'trans_type', title: 'Type' },
             { data: 'trans_bank', name: 'trans_bank', title: 'Trans Bank' },
             { data: 'agent', name: 'agent', title: 'Agent' },
@@ -269,7 +269,7 @@
                 searchable: false,
                 render: function(data, type, row) {
                         return `<div class="d-flex">
-                                    <button type="button" class="btn btn-icon me-2 btn-primary processing-btn" data-id="">
+                                    <button type="button" class="btn btn-icon me-2 btn-primary processing-btn" data-id="${data}">
                                         <span class="tf-icons bx bxs-check-circle bx-22px"></span>
                                     </button>
                                 </div>`;
@@ -286,10 +286,14 @@
 
     $('.btn-group .btn').on('click', function(e) {
         e.preventDefault();
-            // Clear the date range picker
-        $('#date-range-picker').val(''); // Clear the date range input
-        vehicleReservationTable.ajax.reload(null, false); // Reload the table without resetting the paging
-        var route = $(this).data('route'); // Get the route from the clicked button
+        $('#date-range-picker').val('');
+        
+        // Toggle column visibility based on the active tab
+        const isReservationTab = $(this).text().trim() === 'Reservation';
+        vehicleReservationTable.column(2).visible(isReservationTab); // year_model
+        vehicleReservationTable.column(5).visible(isReservationTab); // cs_number
+        
+        var route = $(this).data('route');
         vehicleReservationTable.ajax.url(route).load();
     });
 
@@ -302,6 +306,52 @@
             $(this).addClass('active');
         });
     });
+
+      //Process Data
+      $(document).on('click', '.processing-btn', function() {
+        const appID = $(this).data('id');
+
+        Swal.fire({
+            title: 'Are you sure?',
+            text: "Do you want to release this transaction?",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes, release it!'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                $.ajax({
+                    url: '{{ route("vehicle.reservation.processing") }}',
+                    type: 'POST',
+                    data: {
+                        id: appID
+                    },
+                    headers: {
+                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                    },
+                    success: function(response) {
+                        if (response.success) {
+                            Swal.fire(
+                                'Updated!',
+                                response.message,
+                                'success'
+                            );
+                            applicationTable.ajax.reload();
+                        }
+                    },
+                    error: function(xhr) {
+                        Swal.fire(
+                            'Error!',
+                            xhr.responseJSON?.message || 'Something went wrong!',
+                            'error'
+                        );
+                    }
+                });
+            }
+        });
+    });
+
 </script>
 
 

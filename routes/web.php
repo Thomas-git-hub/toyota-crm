@@ -57,8 +57,6 @@ Route::post('/application/banks/approval/{id}', [ApplicationController::class, '
 
 
 
-
-
 // VEHICLE RESERVATION
 Route::get('vehicle-reservation', [VehicleReservationController::class, 'index'])->name('vehicle.reservation');
 Route::get('vehicle-reservation/units/list', [VehicleReservationController::class, 'availableUnitsList'])->name('vehicle.reservation.units.list');
@@ -66,6 +64,7 @@ Route::get('vehicle-reservation/pending/list', [VehicleReservationController::cl
 Route::get('vehicle-reservation/released/list', [VehicleReservationController::class, 'list_released'])->name('vehicle.reservation.released.list');
 Route::get('vehicle-reservation/getReservedCount', [VehicleReservationController::class, 'getReservedCount'])->name('vehicle.reservation.getReservedCount');
 Route::get('vehicle-reservation/reservationPerTeam', [VehicleReservationController::class, 'reservationPerTeam'])->name('vehicle.reservation.reservationPerTeam');
+Route::post('vehicle-reservation/processing', [VehicleReservationController::class, 'processing'])->name('vehicle.reservation.processing');
 
 
 // VEHICLE RELEASES

@@ -134,7 +134,6 @@ class ApplicationController extends Controller
         $status = Status::where('status', 'like', 'approved')->first();
         $query = Application::with(['user', 'customer', 'vehicle','status', 'bank', 'transactions'])
                         ->whereNull('deleted_at')
-                        ->whereNotIn('transaction', ['cash', 'po'])
                         ->where('status_id', $status->id)
                         ;
 
@@ -332,7 +331,7 @@ class ApplicationController extends Controller
     public function list_cash(Request $request){
 
         // dd($request->start_date);
-        $statusIds = Status::whereIn('status', ['Denied', 'Cancel', 'Processing'])->pluck('id')->toArray();
+        $statusIds = Status::whereIn('status', ['Denied', 'Cancel', 'Processing', 'Approved', 'Reserved'])->pluck('id')->toArray();
         $query = Application::with(['user', 'customer', 'vehicle','status', 'bank', 'transactions'])
                         ->whereNull('deleted_at')
                         ->whereNotIn('status_id', $statusIds)
@@ -685,33 +684,26 @@ class ApplicationController extends Controller
 
                 foreach ($transactions as $transaction) {
 
-                    $inventory = Inventory::where('vehicle_id', $application->vehicle_id)
-                    ->where('CS_number_status', 'available')
-                    ->where('status', 'available')
-                    ->first();
+                    // $inventory = Inventory::where('vehicle_id', $application->vehicle_id)
+                    // ->where('CS_number_status', 'available')
+                    // ->where('status', 'available')
+                    // ->first();
 
-                    // Check if inventory is found
-                    if (!$inventory) {
-                        return response()->json([
-                            'success' => false,
-                            'message' => 'Low in inventory for this vehicle.',
-                        ], 400);
-                    }
+                    // // Check if inventory is found
+                    // if (!$inventory) {
+                    //     return response()->json([
+                    //         'success' => false,
+                    //         'message' => 'Low in inventory for this vehicle.',
+                    //     ], 400);
+                    // }
 
                     $transaction = Transactions::findOrFail($transaction->id);
                     $transaction->status = $approved_status;
                     $transaction->reservation_id = Transactions::max('reservation_id') + 1;
                     $transaction->reservation_transaction_status = $pending_status;
-                    $transaction->reservation_date = now();
-                    $transaction->inventory_id = $inventory->id;
                     $transaction->team_id = Auth::user()->team_id;
                     $transaction->save();
 
-                    $invt = Inventory::findOrFail($inventory->id);
-                    $invt->status = 'reserved';
-                    $invt->CS_number_status = 'reserved';
-                    $invt->updated_at = now();
-                    $invt->save();
                 }
 
                 $application->status_id = $processing_status;
