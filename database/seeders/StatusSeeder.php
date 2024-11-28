@@ -15,7 +15,7 @@ class StatusSeeder extends Seeder
     {
         Status::create(['status' => 'Pending']);
         Status::create(['status' => 'Approved']);
-        Status::create(['status' => 'Processing']);
+        Status::create(['status' => 'Processed']);
         Status::create(['status' => 'Cancel']);
         Status::create(['status' => 'Denied']);
         Status::create(['status' => 'Cash']);

@@ -331,7 +331,7 @@ class ApplicationController extends Controller
     public function list_cash(Request $request){
 
         // dd($request->start_date);
-        $statusIds = Status::whereIn('status', ['Denied', 'Cancel', 'Processing', 'Approved', 'Reserved'])->pluck('id')->toArray();
+        $statusIds = Status::whereIn('status', ['Denied', 'Cancel', 'Processed', 'Approved', 'Reserved'])->pluck('id')->toArray();
         $query = Application::with(['user', 'customer', 'vehicle','status', 'bank', 'transactions'])
                         ->whereNull('deleted_at')
                         ->whereNotIn('status_id', $statusIds)
@@ -666,7 +666,7 @@ class ApplicationController extends Controller
             $approved_status = Status::where('status', 'like', 'approved')->first()->id;
             $pending_status = Status::where('status', 'like', 'pending')->first()->id;
             $cancel_status = Status::where('status', 'like', 'cancel')->first()->id;
-            $processing_status = Status::where('status', 'like', 'Processing')->first()->id;
+            $processing_status = Status::where('status', 'like', 'Processed')->first()->id;
 
             $application = Application::findOrFail(decrypt($request->id));
 

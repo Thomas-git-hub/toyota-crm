@@ -135,7 +135,7 @@ class VehicleReservationController extends Controller
             return $data->inquiry->inquiryType->inquiry_type;
         })
         ->addColumn('trans_bank', function($data) {
-            return $data->application->bank->bank_name;
+            return $data->application->bank->bank_name ?? '';
         })
 
         ->addColumn('team', function($data) {
@@ -217,7 +217,7 @@ class VehicleReservationController extends Controller
             return $data->inquiry->inquiryType->inquiry_type;
         })
         ->addColumn('trans_bank', function($data) {
-            return $data->application->bank->bank_name;
+            return $data->application->bank->bank_name ?? '';
         })
 
         ->addColumn('team', function($data) {
@@ -274,7 +274,7 @@ class VehicleReservationController extends Controller
             $approved_status = Status::where('status', 'like', 'approved')->first()->id;
             $pending_status = Status::where('status', 'like', 'pending')->first()->id;
             $cancel_status = Status::where('status', 'like', 'cancel')->first()->id;
-            $processing_status = Status::where('status', 'like', 'Processing')->first()->id;
+            $processing_status = Status::where('status', 'like', 'Processed')->first()->id;
             $reserved_status = Status::where('status', 'like', 'Reserved')->first()->id;
             $pending_for_release_status = Status::where('status', 'like', 'Pending For Release')->first()->id;
 
@@ -288,18 +288,6 @@ class VehicleReservationController extends Controller
                 $transaction->reservation_transaction_status = $reserved_status;
                 $transaction->reservation_date = now();
                 $transaction->save();
-
-                $application = Application::findOrFail($transaction->application_id);
-                $application->status_id = $reserved_status;
-                $application->updated_by = Auth::user()->id;
-                $application->updated_at = now();
-                $application->save();
-
-                $inquiry = Inquiry::findOrFail($transaction->inquiry_id);
-                $inquiry->status_id= $reserved_status;
-                $inquiry->status_updated_by = Auth::user()->id;
-                $inquiry->status_updated_at = now();
-                $inquiry->save();
 
             }
 
@@ -322,7 +310,7 @@ class VehicleReservationController extends Controller
             $approved_status = Status::where('status', 'like', 'approved')->first()->id;
             $pending_status = Status::where('status', 'like', 'pending')->first()->id;
             $cancel_status = Status::where('status', 'like', 'cancel')->first()->id;
-            $processing_status = Status::where('status', 'like', 'Processing')->first()->id;
+            $processing_status = Status::where('status', 'like', 'Processed')->first()->id;
             $reserved_status = Status::where('status', 'like', 'Reserved')->first()->id;
             $pending_for_release_status = Status::where('status', 'like', 'Pending For Release')->first()->id;
         
@@ -336,18 +324,6 @@ class VehicleReservationController extends Controller
                 $transaction->reservation_transaction_status = $pending_for_release_status;
                 $transaction->reservation_date = now();
                 $transaction->save();
-
-                $application = Application::findOrFail($transaction->application_id);
-                $application->status_id = $pending_for_release_status;
-                $application->updated_by = Auth::user()->id;
-                $application->updated_at = now();
-                $application->save();
-
-                $inquiry = Inquiry::findOrFail($transaction->inquiry_id);
-                $inquiry->status_id= $pending_for_release_status;
-                $inquiry->status_updated_by = Auth::user()->id;
-                $inquiry->status_updated_at = now();
-                $inquiry->save();
 
             }
 

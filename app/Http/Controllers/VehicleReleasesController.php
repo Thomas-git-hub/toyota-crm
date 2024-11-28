@@ -171,7 +171,7 @@ class VehicleReleasesController extends Controller
             return $data->inquiry->inquiryType->inquiry_type;
         })
         ->addColumn('trans_bank', function($data) {
-            return $data->application->bank->bank_name;
+            return $data->application->bank->bank_name ?? '';
         })
 
         ->addColumn('team', function($data) {
@@ -205,37 +205,12 @@ class VehicleReleasesController extends Controller
                 $transaction->reservation_date = now();
                 $transaction->save();
 
-                $application = Application::findOrFail($transaction->application_id);
-                $application->status_id = $released_status;
-                $application->updated_by = Auth::id();
-                $application->updated_at = now();
-                $application->save();
-
-                $inquiry = Inquiry::findOrFail($transaction->inquiry_id);
-                $inquiry->status_id= $released_status;
-                $inquiry->status_updated_by = Auth::id();
-                $inquiry->status_updated_at = now();
-                $inquiry->save();
-
-                
-
             }else if($transaction->reservation_transaction_status == $released_status){
                 // $transaction->status = $pending_for_release_status;
                 // $transaction->reservation_transaction_status = $pending_for_release_status;
                 // $transaction->reservation_date = now();
                 // $transaction->save();
 
-                // $application = Application::findOrFail($transaction->application_id);
-                // $application->status_id = $pending_for_release_status;
-                // $application->updated_by = Auth::user()->id;
-                // $application->updated_at = now();
-                // $application->save();
-
-                // $inquiry = Inquiry::findOrFail($transaction->inquiry_id);
-                // $inquiry->status_id= $pending_for_release_status;
-                // $inquiry->status_updated_by = Auth::user()->id;
-                // $inquiry->status_updated_at = now();
-                // $inquiry->save();
                 dd($transaction->toArray());
             }
             
