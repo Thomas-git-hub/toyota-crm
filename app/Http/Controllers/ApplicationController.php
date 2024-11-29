@@ -757,18 +757,34 @@ class ApplicationController extends Controller
 
         $banksArray = $request->bank_id;
 
-        foreach ($banksArray as $bank) {
-            $bankTrans = new BankTransaction;
-            $bankTrans->application_id = decrypt($request->application_id);
-            $bankTrans->bank_id = $bank;
-            $bankTrans->created_by = Auth::id();
-            $bankTrans->updated_by = Auth::id();
-            $bankTrans->save();
+        // Fetch all existing bank transactions for the application
+        $existingBankTransactions = BankTransaction::where('application_id', decrypt($request->application_id))
+            ->pluck('bank_id');
 
+        // Check for banks that were removed from the array and soft delete them
+        foreach ($existingBankTransactions as $existingBank) {
+            if (!in_array($existingBank, $banksArray)) {
+                BankTransaction::where('application_id', decrypt($request->application_id))
+                    ->where('bank_id', $existingBank)
+                    ->first()
+                    ->delete();
+            }
         }
 
-        // $application->bank_id =json_encode($request->bank_id);
-        // $application->save();
+        // Process each bank in the request
+        foreach ($banksArray as $bank) {
+            // Check if the bank already exists for the application
+            if (!$existingBankTransactions->contains($bank)) {
+                $bankTrans = new BankTransaction;
+                $bankTrans->application_id = decrypt($request->application_id);
+                $bankTrans->bank_id = $bank;
+                $bankTrans->created_by = Auth::id();
+                $bankTrans->updated_by = Auth::id();
+                $bankTrans->save();
+            }
+        }
+
+       
 
         return response()->json([
             'success' => true,
@@ -849,6 +865,36 @@ class ApplicationController extends Controller
             return response()->json([
                 'success' => false,
                 'message' => 'Error updating bank approval dates: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    public function getApplicationBanks($id)
+    {
+        try {
+            $decryptedId = decrypt($id);
+            
+            // Get all bank transactions for this application
+            $bankTransactions = BankTransaction::with('bank')
+                ->where('application_id', $decryptedId)
+                ->get()
+                ->map(function($transaction) {
+                    return [
+                        'bank_id' => $transaction->bank_id,
+                        'bank_name' => $transaction->bank->bank_name,
+                        'approval_date' => $transaction->approval_date,
+                        'is_preferred' => $transaction->is_preferred
+                    ];
+                });
+            
+            return response()->json([
+                'success' => true,
+                'banks' => $bankTransactions
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Error fetching banks: ' . $e->getMessage()
             ], 500);
         }
     }

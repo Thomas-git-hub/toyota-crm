@@ -391,33 +391,39 @@
             { data: 'reservation_status', name: 'reservation_status', title: 'Reservation Status' },
             { data: 'source', name: 'source', title: 'Source' },
             { data: 'date', name: 'date', title: 'Date' },
+            
             {
                 data: 'id',
                 title: 'Bank',
                 orderable: false,
                 searchable: false,
-                render: function (data) {
-                    // Determine the active tab
-                    let activeTab = $('.btn-group .active').attr('id'); // Get the ID of the active tab
-                    let isPendingTab = activeTab === 'pending-tab';
-                    let isApprovedTab = activeTab === 'approved-tab';
-                    let isCashTab = activeTab === 'cash-tab';
-                    let isCanceledTab = activeTab === 'canceled-tab';
-                    
-                    // Hide or show buttons based on the active tab
-                    let bankBtnStyle =  isCashTab || isCanceledTab ? 'display: none;' : ''; // Hide for Approved and Cash tabs
-                    let approvalDateBtnStyle = isPendingTab || isCashTab || isCanceledTab ? 'display: none;' : ''; // Hide for Pending tab
+                render: function (data, type, row) {
+                    // Check if the transaction type is not 'cash'
+                    if (row.transaction !== 'cash') {
+                        // Determine the active tab
+                        let activeTab = $('.btn-group .active').attr('id'); // Get the ID of the active tab
+                        let isPendingTab = activeTab === 'pending-tab';
+                        let isApprovedTab = activeTab === 'approved-tab';
+                        let isCashTab = activeTab === 'cash-tab';
+                        let isCanceledTab = activeTab === 'canceled-tab';
+                        
+                        // Hide or show buttons based on the active tab
+                        let bankBtnStyle =  isCashTab || isCanceledTab ? 'display: none;' : ''; // Hide for Approved and Cash tabs
+                        let approvalDateBtnStyle = isPendingTab || isCashTab || isCanceledTab ? 'display: none;' : ''; // Hide for Pending tab
 
-                    return `
-                        <div class="d-flex">
-                            <button type="button" class="btn btn-icon me-2 btn-warning bank-btn" data-bs-toggle="modal" data-bs-target="#selectBankModal" data-id="${data}" style="${bankBtnStyle}">
-                                <span class="tf-icons bx bxs-bank bx-22px"></span>
-                            </button>
-                            <button type="button" class="btn btn-icon me-2 btn-info bank-approval-date-btn" data-bs-toggle="modal" data-bs-target="#bankApprovalDateModal" data-id="${data}" style="${approvalDateBtnStyle}">
-                                <span class="tf-icons bx bxs-calendar-plus bx-22px"></span>
-                            </button>
-                        </div>
-                    `;
+                        return `
+                            <div class="d-flex">
+                                <button type="button" class="btn btn-icon me-2 btn-warning bank-btn" data-bs-toggle="modal" data-bs-target="#selectBankModal" data-id="${data}" style="${bankBtnStyle}">
+                                    <span class="tf-icons bx bxs-bank bx-22px"></span>
+                                </button>
+                                <button type="button" class="btn btn-icon me-2 btn-info bank-approval-date-btn" data-bs-toggle="modal" data-bs-target="#bankApprovalDateModal" data-id="${data}" style="${approvalDateBtnStyle}">
+                                    <span class="tf-icons bx bxs-calendar-plus bx-22px"></span>
+                                </button>
+                            </div>
+                        `;
+                    } else {
+                        return ''; // Return empty string if transaction type is 'cash'
+                    }
                 }
             },
 
@@ -1060,55 +1066,61 @@
         const applicationId = $(this).data('id');
         $('#application_id').val(applicationId);
         
+        // Clear existing bank fields
+        $("#bankFieldsContainer .bank-field:not(:first)").remove();
+        $("select[name='bank_id[]']").val('');
+        
         // Fetch existing banks for this application
         $.ajax({
-            url: `/application/edit/${applicationId}`,
+            url: `/application/banks/${applicationId}`,
             type: 'GET',
             success: function(response) {
-                const application = response.application;
-                // Clear existing bank fields except the first one
-                $(".bank-field:not(:first)").remove();
-                
-                // If there are selected banks
-                if (application.bank_id) {
-                    const selectedBanks = JSON.parse(application.bank_id);
+                if (response.success) {
+                    const existingBanks = response.banks;
                     
-                    // Remove all existing fields first
-                    $(".bank-field").remove();
-                    
-                    // Add a field for each selected bank
-                    selectedBanks.forEach((bankId, index) => {
-                        const newBankField = `
-                            <div class="row mb-2 bank-field">
-                                <div class="col-md d-flex align-items-center gap-2">
-                                    <select class="form-control" name="bank_id[]">
-                                        <option value="">Select Banks...</option>
-                                    </select>
-                                    ${index > 0 ? `
-                                        <button type="button" class="btn btn-icon me-2 btn-label-danger removeBankFieldButton">
-                                            <span class="tf-icons bx bxs-trash bx-22px"></span>
-                                        </button>
-                                    ` : ''}
-                                </div>
-                            </div>
-                        `;
+                    // If there are existing banks, create fields for each one
+                    if (existingBanks.length > 0) {
+                        // Remove the default empty field if it exists
+                        $("#bankFieldsContainer .bank-field:first").remove();
                         
-                        $("#bankFieldsContainer").append(newBankField);
-                    });
-                    
-                    // Fetch and populate all bank options, then set selected values
-                    fetchBanks().then(() => {
-                        selectedBanks.forEach((bankId, index) => {
-                            $("select[name='bank_id[]']").eq(index).val(bankId);
+                        existingBanks.forEach((bank, index) => {
+                            const newBankField = `
+                                <div class="row mb-2 bank-field">
+                                    <div class="col-md d-flex align-items-center gap-2">
+                                        <select class="form-control" name="bank_id[]">
+                                            <option value="">Select Banks...</option>
+                                        </select>
+                                        ${index > 0 ? `
+                                            <button type="button" class="btn btn-icon me-2 btn-label-danger removeBankFieldButton">
+                                                <span class="tf-icons bx bxs-trash bx-22px"></span>
+                                            </button>
+                                        ` : ''}
+                                    </div>
+                                </div>
+                            `;
+                            
+                            $("#bankFieldsContainer").append(newBankField);
                         });
-                    });
-                } else {
-                    // If no banks selected, just fetch banks for the default single field
-                    fetchBanks();
+                        
+                        // Fetch and populate all bank options, then set selected values
+                        fetchBanks().then(() => {
+                            existingBanks.forEach((bank, index) => {
+                                $("select[name='bank_id[]']").eq(index).val(bank.bank_id);
+                            });
+                        });
+                    } else {
+                        // If no existing banks, just fetch banks for the default single field
+                        fetchBanks();
+                    }
                 }
             },
             error: function(xhr) {
-                console.error('Error fetching application data:', xhr);
+                console.error('Error fetching existing banks:', xhr);
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: xhr.responseJSON?.message || 'Could not fetch existing banks.'
+                });
             }
         });
     });
@@ -1207,10 +1219,9 @@
         
         // Fetch banks associated with this application
         $.ajax({
-            url: `/application/banks/${applicationId}`, // New route needed
+            url: `/application/banks/${applicationId}`,
             type: 'GET',
             success: function(response) {
-               
                 // Clear existing bank fields
                 $('#bankApprovalDateForm .bank-approval-row').remove();
                 
@@ -1238,17 +1249,12 @@
                 $(bankFields).insertBefore('#bankApprovalDateForm .mb-2');
                 
                 // Update preferred bank dropdown options
-                let preferredBankOptions = '<option value="">Select Preferred Bank</option>';
+                let bankSelectOptions = '<option value="">Select Preferred Bank</option>';
                 response.banks.forEach(bank => {
-                    preferredBankOptions += `<option value="${bank.bank_id}" ${bank.is_preferred ? 'selected' : ''}>${bank.bank_name}</option>`;
-                });
-                $('#preferredBankSelect').html(preferredBankOptions);
-
-
-                // Update the select with banks
-                let bankSelectOptions = '<option value="">Select Bank</option>';
-                response.banks.forEach(bank => {
-                    bankSelectOptions += `<option value="${bank.bank_id}" ${bank.is_preferred ? 'selected' : ''}>${bank.bank_name}</option>`;
+                    bankSelectOptions += `
+                        <option value="${bank.bank_id}" ${bank.is_preferred ? 'selected' : ''}>
+                            ${bank.bank_name}
+                        </option>`;
                 });
                 $('#exampleFormControlSelect1').html(bankSelectOptions);
                 
