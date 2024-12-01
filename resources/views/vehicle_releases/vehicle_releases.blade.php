@@ -12,8 +12,7 @@
     </div>
 </div>
 
-
-{{-- Datatables --}}
+{{-- Header Datatables --}}
 <div class="row mb-4">
     <div class="col-md">
         <div class="card">
@@ -45,8 +44,8 @@
                             </div>
                         </div>
                     </div>
-                    <div class="col-md ">
-                        <div class="card shadow-none bg-transparent border d-flex justify-content-center align-items-center">
+                    <div class="col-md">
+                        <div class="card shadow-none bg-transparent border d-flex justify-content-center align-items-center mb-2">
                             <div class="card-body text-center">
                                 <h3 class="text-primary"><b>Total Vehicle Released</b></h3>
                                 <h1 class="text-primary" style="font-size: clamp(8rem, 6vw, 3rem);"><b id="releasedCount" >0</b></h1>
@@ -75,6 +74,14 @@
                             <div class="input-group">
                                 <input type="text" id="date-range-picker" class="form-control" placeholder="Select date range">
                             </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md">
+                        <div class="btn-group w-100" role="group" aria-label="Basic example">
+                            <button id="forRelease" type="button" class="btn btn-label-dark active" data-route="">For Release Units</button>
+                            <button id="released" type="button" class="btn btn-label-dark" data-route="">Released Units</button>
                         </div>
                     </div>
                 </div>
@@ -162,6 +169,17 @@
             });
         }
     });
+
+    // datatables button tabs
+    $(document).ready(function() {
+        $('.btn-group .btn').on('click', function() {
+            // Remove 'active' class from all buttons in the group
+            $('.btn-group .btn').removeClass('active');
+            // Add 'active' class to the clicked button
+            $(this).addClass('active');
+        });
+     });
+
     // DataTable initialization
     const releasedUnitsTable = $('#releasedUnitsTable').DataTable({
         processing: true,
@@ -298,7 +316,6 @@
             // vehicleReleasesTable.ajax.url(route).load();
         });
     });
-
 
     //Process Data
     $(document).on('click', '.processing-btn', function() {
