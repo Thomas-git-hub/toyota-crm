@@ -197,6 +197,40 @@
     </div>
 </div>
 
+<!-- Select CS Number Modal -->
+<div class="modal fade" id="selectCSNumber" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel">Select CS Number</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+            </button>
+        </div>
+        <div class="modal-body">
+            <div class="mb-2">
+                <div class="">Customer: <b id="customerName">John Doe</b></div>
+                <div class="">Unit: <b id="customerName">John Doe</b></div>
+                <div class="">Year Model: <b id="customerName">John Doe</b></div>
+                <div class="">Variant: <b id="customerName">John Doe</b></div>
+                <div class="">Color: <b id="customerName">John Doe</b></div>
+            </div>
+            <div>
+                <select class="form-select" id="exampleFormControlSelect1" aria-label="Default select example">
+                    <option selected>CS Number</option>
+                    <option value="1">One</option>
+                    <option value="2">Two</option>
+                    <option value="3">Three</option>
+                </select>
+            </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-label-danger" data-bs-dismiss="modal">Close</button>
+          <button type="button" class="btn btn-dark">Save changes</button>
+        </div>
+      </div>
+    </div>
+</div>
+
 {{-- Datatables --}}
 <div class="row mb-4">
     <div class="col-md">
@@ -449,17 +483,36 @@
                 render: function(data, type, row) {
                     if (type === 'display') {
                         return `
-                            <div class="">
-                                <select class="form-select" id="selectCsNumber" aria-label="Default select example" data-vehicle-id="${row.vehicle_id}" onchange="vehicleReservationTable.ajax.reload();">
-                                    <option value="">Select CS Number</option>
-                                    ${data ? `<option value="${data}" selected>${data}</option>` : ''}
-                                </select>
+                            <div class="d-flex">
+                                <button type="button" class="badge btn me-2 btn-label-dark" data-bs-toggle="modal" data-bs-target="#selectCSNumber"  data-id="${data}">
+                                        ${data}
+                                </button>
                             </div>
                         `;
                     }
                     return data; // Default display for other types like export, search, etc.
                 }
             },
+            // {
+            //     data: 'cs_number',
+            //     name: 'cs_number',
+            //     title: 'CS Number',
+            //     orderable: false,
+            //     searchable: false,
+            //     render: function(data, type, row) {
+            //         if (type === 'display') {
+            //             return `
+            //                 <div class="">
+            //                     <select class="form-select" id="selectCsNumber" aria-label="Default select example" data-vehicle-id="${row.vehicle_id}" onchange="vehicleReservationTable.ajax.reload();">
+            //                         <option value="">Select CS Number</option>
+            //                         ${data ? `<option value="${data}" selected>${data}</option>` : ''}
+            //                     </select>
+            //                 </div>
+            //             `;
+            //         }
+            //         return data; // Default display for other types like export, search, etc.
+            //     }
+            // },
             { data: 'trans_type', name: 'trans_type', title: 'Type' },
             { data: 'trans_bank', name: 'trans_bank', title: 'Trans Bank' },
             { data: 'agent', name: 'agent', title: 'Agent' },

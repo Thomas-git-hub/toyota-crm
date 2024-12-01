@@ -210,7 +210,7 @@ class VehicleReservationController extends Controller
         })
 
         ->addColumn('cs_number', function($data) {
-            return $data->inventory->CS_number ?? '';
+            return $data->inventory->CS_number ?? 'Select cs number';
         })
 
         ->addColumn('trans_type', function($data) {

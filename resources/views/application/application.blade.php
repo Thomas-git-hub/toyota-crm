@@ -66,7 +66,6 @@
                 <form id="bankApprovalDateForm">
                     <div class="row d-flex align-items-center mb-2">
                     </div>
-
                     <select class="form-select" id="exampleFormControlSelect1" aria-label="Default select example" name="preferred_bank">
                         <option selected>Select Prefered Bank</option>
                     </select>                    
