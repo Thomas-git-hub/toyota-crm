@@ -10,26 +10,26 @@ use Illuminate\Http\Request;
 use Yajra\DataTables\Facades\DataTables;
 use Illuminate\Support\Facades\DB;
 use App\Models\Vehicle;
-use App\Models\Inventory;   
-use App\Models\Application;   
-use App\Models\Inquiry;   
+use App\Models\Inventory;
+use App\Models\Application;
+use App\Models\Inquiry;
 use Illuminate\Support\Facades\Auth;
 
 class VehicleReleasesController extends Controller
 {
     public function index() {
         if(Auth::check()){
-        
+
             return view('vehicle_releases.vehicle_releases');
         }else{
             return view('index');
         }
-      
+
     }
 
     public function releasedUnitsList(){
         DB::statement("SET SQL_MODE=''");
-        
+
         $query = Vehicle::with('inventory')
                         ->whereNull('deleted_at')
                         ->groupBy('unit');
@@ -52,7 +52,7 @@ class VehicleReleasesController extends Controller
             ->where('status', 'released')
             ->where('CS_number_status', 'released')
             ->count();
-          
+
             return $count;
         })
         ->make(true);
@@ -60,9 +60,9 @@ class VehicleReleasesController extends Controller
 
     public function releasedPerTeam(){
         DB::statement("SET SQL_MODE=''");
-        
+
         $query = Team::whereNull('deleted_at');
-                        
+
         $list = $query->get();
 
         return DataTables::of($list)
@@ -81,10 +81,10 @@ class VehicleReleasesController extends Controller
             ->whereNotNull('reservation_id')
             ->where('reservation_transaction_status', $released_status->id)
             ->count();
-           
+
             return $count;
         })
-        
+
         ->make(true);
     }
 
@@ -138,7 +138,19 @@ class VehicleReleasesController extends Controller
         ->editColumn('unit', function($data) {
             return $data->application->vehicle->unit;
         })
-        
+
+        ->addColumn('customer_name', function($data) {
+            if($data->inquiry->inquiryType->inquiry_type === 'Individual'){
+                return $data->inquiry->customer->customer_first_name . ' ' . $data->inquiry->customer->customer_last_name;
+            }else if($data->inquiry->inquiryType->inquiry_type === 'Fleet'){
+                return $data->inquiry->customer->company_name;
+            }else if($data->inquiry->inquiryType->inquiry_type === 'Company'){
+                return $data->inquiry->customer->company_name;
+            }else if($data->inquiry->inquiryType->inquiry_type === 'Government'){
+                return $data->inquiry->customer->department_name;
+            }
+        })
+
         ->editColumn('year_model', function($data) {
             return $data->inventory->year_model ?? '';
         })
@@ -175,6 +187,11 @@ class VehicleReleasesController extends Controller
             return $data->reservation_date;
         })
 
+        ->addColumn('status', function($data) {
+            $status = Status::where('id', $data->status)->first()->status;
+            return $status;
+        })
+
         ->make(true);
     }
 
@@ -201,7 +218,7 @@ class VehicleReleasesController extends Controller
 
                 dd($transaction->toArray());
             }
-            
+
 
             return response()->json([
                 'success' => true,
@@ -216,5 +233,5 @@ class VehicleReleasesController extends Controller
         }
     }
 
-   
+
 }

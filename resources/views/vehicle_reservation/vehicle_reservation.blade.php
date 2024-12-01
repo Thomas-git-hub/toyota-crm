@@ -201,32 +201,34 @@
 <div class="modal fade" id="selectCSNumber" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog" role="document">
       <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title" id="exampleModalLabel">Select CS Number</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
-            </button>
-        </div>
-        <div class="modal-body">
-            <div class="mb-2">
-                <div class="">Customer: <b id="customerName">John Doe</b></div>
-                <div class="">Unit: <b id="customerName">John Doe</b></div>
-                <div class="">Year Model: <b id="customerName">John Doe</b></div>
-                <div class="">Variant: <b id="customerName">John Doe</b></div>
-                <div class="">Color: <b id="customerName">John Doe</b></div>
-            </div>
-            <div>
-                <select class="form-select" id="exampleFormControlSelect1" aria-label="Default select example">
-                    <option selected>CS Number</option>
-                    <option value="1">One</option>
-                    <option value="2">Two</option>
-                    <option value="3">Three</option>
-                </select>
-            </div>
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-label-danger" data-bs-dismiss="modal">Close</button>
-          <button type="button" class="btn btn-dark">Save changes</button>
-        </div>
+        <form id="saveCSNumber">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Select CS Number</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+                  </button>
+              </div>
+              <div class="modal-body">
+                  <div class="mb-2">
+                      <div class="">Customer: <b id="customerName">John Doe</b></div>
+                      <div class="">Unit: <b id="customerName">John Doe</b></div>
+                      <div class="">Year Model: <b id="customerName">John Doe</b></div>
+                      <div class="">Variant: <b id="customerName">John Doe</b></div>
+                      <div class="">Color: <b id="customerName">John Doe</b></div>
+                  </div>
+                  <div>
+                     <input type="hidden" id="transaction_id" name="transaction_id">
+                      <select class="form-select" id="csNumberSelect" name="cs_number" aria-label="Default select example">
+                          <option selected>CS Number</option>
+                      </select>
+                  </div>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-label-danger" data-bs-dismiss="modal">Close</button>
+                <button type="submit" class="btn btn-dark ">Save changes</button>
+              </div>
+        </form>
+
+
       </div>
     </div>
 </div>
@@ -484,7 +486,7 @@
                     if (type === 'display') {
                         return `
                             <div class="d-flex">
-                                <button type="button" class="badge btn me-2 btn-label-dark" data-bs-toggle="modal" data-bs-target="#selectCSNumber"  data-id="${data}">
+                                <button type="button" class="badge btn me-2 btn-label-dark btn-csNumber" data-bs-toggle="modal" data-bs-target="#selectCSNumber"  data-vehicle-id="${row.vehicle_id}" data-transaction-id="${row.id}"">
                                         ${data}
                                 </button>
                             </div>
@@ -493,26 +495,6 @@
                     return data; // Default display for other types like export, search, etc.
                 }
             },
-            // {
-            //     data: 'cs_number',
-            //     name: 'cs_number',
-            //     title: 'CS Number',
-            //     orderable: false,
-            //     searchable: false,
-            //     render: function(data, type, row) {
-            //         if (type === 'display') {
-            //             return `
-            //                 <div class="">
-            //                     <select class="form-select" id="selectCsNumber" aria-label="Default select example" data-vehicle-id="${row.vehicle_id}" onchange="vehicleReservationTable.ajax.reload();">
-            //                         <option value="">Select CS Number</option>
-            //                         ${data ? `<option value="${data}" selected>${data}</option>` : ''}
-            //                     </select>
-            //                 </div>
-            //             `;
-            //         }
-            //         return data; // Default display for other types like export, search, etc.
-            //     }
-            // },
             { data: 'trans_type', name: 'trans_type', title: 'Type' },
             { data: 'trans_bank', name: 'trans_bank', title: 'Trans Bank' },
             { data: 'agent', name: 'agent', title: 'Agent' },
@@ -563,29 +545,73 @@
         ],
     });
 
-    // Fetch CS Number when the dropdown is rendered
-    $('#vehicleReservationTable tbody').on('click', '#selectCsNumber', function() {
-        const vehicleId = $(this).data('vehicle-id');
-        const selectElement = $(this);
-
-        // Clear the selection first
-        selectElement.empty();
-
+     // Example usage when a CS number is selected
+     $('#saveCSNumber').on('submit',  function(e) {
+        e.preventDefault();
+        const formData = $(this).serialize();
         $.ajax({
-            url: `/get-cs-number/${vehicleId}`, // Adjust the URL as necessary
-            type: 'GET',
+            url: '{{ route("vehicle.reservation.addCSNumber") }}',
+            type: 'POST',
+            data: formData,
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            },
             success: function(response) {
-                if (response.CS_numbers) {
-                    response.CS_numbers.forEach(csNumber => {
-                        selectElement.append(`<option value="${csNumber}">${csNumber}</option>`);
-                    });
-
+                if (response.success) {
+                    Swal.fire(
+                        'Success!',
+                        response.message,
+                        'success'
+                    );
+                    reservedCount();
+                    vehicleReservationTable.ajax.reload()
+                    statusTable.ajax.reload()
+                    availableUnitsTable.ajax.reload()
+                    $('#selectCSNumber').modal('hide'); // Close the modal upon successful save
+                } else {
+                    Swal.fire(
+                        'Error!',
+                        response.message,
+                        'error'
+                    );
                 }
             },
             error: function(xhr) {
-                console.error('Error fetching CS numbers:', xhr);
+                Swal.fire(
+                    'Error!',
+                    xhr.responseJSON?.message || 'Something went wrong!',
+                    'error'
+                );
             }
         });
+    });
+
+    $(document).on('click', '.btn-csNumber', function() {
+
+        const vehicleId = $(this).data('vehicle-id');
+        const transaction_id = $(this).data('transaction-id');
+        const selectElement = $(this);
+
+        $('#transaction_id').val(transaction_id);
+
+        $.ajax({
+            url: `/get-cs-number/${vehicleId}`,
+            type: 'GET',
+            dataType: 'json',
+            success: function(data) {
+                let numberSelect = $('#csNumberSelect');
+                numberSelect.empty();
+                numberSelect.append('<option value="">Select CS Number...</option>');
+                data.forEach(function(item) {
+                    numberSelect.append(`<option value="${item.CS_number}">${item.CS_number}</option>`);
+                });
+            },
+            error: function(error) {
+                console.error('Error loading CS Number:', error);
+            }
+        });
+
+
     });
 
     // button group active tabs
@@ -759,53 +785,6 @@
         $("#editReservationFormModal").on("hidden.bs.modal", function () {
             resetModalToInitialState();
         });
-    });
-
-    // Function to add CS Number
-    function addCSNumber(transactionId, csNumber) {
-        $.ajax({
-            url: '{{ route("vehicle.reservation.addCSNumber") }}', // Adjust the route as necessary
-            type: 'POST',
-            data: {
-                id: transactionId,
-                cs_number: csNumber,
-                _token: '{{ csrf_token() }}' // Include CSRF token for security
-            },
-            success: function(response) {
-                if (response.success) {
-                    Swal.fire(
-                        'Success!',
-                        response.message,
-                        'success'
-                    );
-                    vehicleReservationTable.ajax.reload(); // Reload the table to reflect changes
-                } else {
-                    Swal.fire(
-                        'Error!',
-                        response.message,
-                        'error'
-                    );
-                }
-            },
-            error: function(xhr) {
-                Swal.fire(
-                    'Error!',
-                    xhr.responseJSON?.message || 'Something went wrong!',
-                    'error'
-                );
-            }
-        });
-    }
-
-    // Example usage when a CS number is selected
-    $('#vehicleReservationTable tbody').on('change', '#selectCsNumber', function() {
-        const transactionId = $(this).closest('tr').find('.processing-reserved-btn').data('id'); // Get the transaction ID
-        const csNumber = $(this).val(); // Get the selected CS number
-        console.log(transactionId, csNumber);
-
-        if (csNumber) {
-            addCSNumber(transactionId, csNumber); // Call the function to add CS number
-        }
     });
 
 </script>

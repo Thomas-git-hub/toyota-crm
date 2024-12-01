@@ -263,7 +263,7 @@
             search: "",
             searchPlaceholder: "Search..."
         },
-    
+
         columns: [
             { data: 'unit', name: 'unit', title: 'Unit' },
             { data: 'customer_name', name: 'customer_name', title: 'Customer Name' },

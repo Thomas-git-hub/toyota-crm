@@ -64,6 +64,7 @@ class VehicleReservationController extends Controller
         $reserved_status = Status::where('status', 'like', 'Reserved')->first();
         $query = Transactions::with(['inquiry', 'inventory', 'application'])
             ->whereNull('deleted_at')
+            ->whereNotNull('inventory_id')
             ->whereNotNull('reservation_id')
             ->where('reservation_transaction_status', $reserved_status->id);
         $count = $query->count();
@@ -259,6 +260,7 @@ class VehicleReservationController extends Controller
         ->addColumn('quantity', function($data) {
             $reserved_status = Status::where('status', 'like', 'Reserved')->first();
             $count = Transactions::with(['inquiry', 'inventory', 'application'])
+            ->whereNotNull('inventory_id')
             ->whereNull('deleted_at')
             ->where('team_id', $data->id)
             ->whereNotNull('reservation_id')
@@ -344,16 +346,18 @@ class VehicleReservationController extends Controller
     }
 
     public function getCSNumberByVehicleId($vehicle_id) {
-        $inventories = Inventory::where('vehicle_id', $vehicle_id)
+        $inventories = Inventory::with('transaction')
+            ->where('vehicle_id', $vehicle_id)
             ->where('status', 'available')
-            ->where('CS_number_status', 'available')
-            ->pluck('CS_number')->toArray();
-        return response()->json(['CS_numbers' => $inventories]);
+            ->where('CS_number_status', 'available')->get()->toArray();
+        return response()->json($inventories);
     }
 
     public function addCSNumber(Request $request){
+
+        // dd($request->all());
         try {
-            $transaction = Transactions::FindOrFail(decrypt($request->id));
+            $transaction = Transactions::FindOrFail(decrypt($request->transaction_id));
             if ($transaction->inventory_id) {
                 $inventory = Inventory::find($transaction->inventory_id);
                 if ($inventory) {
