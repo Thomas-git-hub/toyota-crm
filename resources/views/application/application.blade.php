@@ -54,7 +54,6 @@
     </div>
 </div>
 
-
 {{-- Bank Approval Date Modal --}}
 <div class="modal fade" id="bankApprovalDateModal" tabindex="-1" role="dialog" aria-labelledby="bankApprovalDateModalLabel" aria-hidden="true">
     <div class="modal-dialog" role="document">
@@ -80,7 +79,6 @@
         </div>
     </div>
 </div>
-
 
 {{-- Edit Application Modal --}}
 <div class="modal fade" id="editApplicationFormModal" tabindex="-1" aria-labelledby="largeModalLabel" aria-hidden="true">
@@ -489,8 +487,8 @@
         });
     });
 
-     // Inquiry Form Validation
-     $(document).ready(function () {
+    // Application Form Validation
+    $(document).ready(function () {
         $.ajax({
             url: '{{ route('leads.getUnit') }}',
             type: 'GET',
@@ -1165,7 +1163,7 @@
         }
     });
 
-
+    // Selecting Bank on submit
     $('#selectBankForm').on('submit', function(e) {
         e.preventDefault();
 

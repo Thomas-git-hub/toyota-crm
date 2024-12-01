@@ -12,7 +12,6 @@
     </div>
 </div>
 
-
 {{-- Datatables --}}
 <div class="row mb-4">
     <div class="col-md">
@@ -67,6 +66,33 @@
                         </div>
                     </div>
                 </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+{{-- Vehicle Form --}}
+<div class="row mb-4 d-none">
+    <div class="col-md">
+        <div class="card" id="vehicleFormCard"">
+            <div class="card-header">
+                <h5 class="text-primary card-title">Vehicle Form</h5>
+            </div>
+            <div class="card-body">
+                <form id="vehicleFormData">
+                    <div class="row">
+                        <div class="col-md">
+                            hello
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md d-flex justify-content-end gap-2">
+                            <button type="button" class="btn btn-label-danger" id="cancelInquiryFormButton">Cancel</button>
+                            <button type="submit" class="btn btn-success">Add to Inventory</button>
+                        </div>
+                    </div>
+                </form>
             </div>
         </div>
     </div>

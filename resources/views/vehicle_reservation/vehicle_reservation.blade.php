@@ -12,6 +12,190 @@
     </div>
 </div>
 
+{{-- Edit Reservation Modal --}}
+<div class="modal fade" id="editReservationFormModal" tabindex="-1" aria-labelledby="largeModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="largeModalLabel">Reservation Details</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <form id="editReservationFormData">
+            <div class="mb-4">
+                {{-- Inquiry Type Field --}}
+                <div class="row mb-2">
+                    <div class="col-md">
+                        <label for="edit_inquiry_type" class="form-label required">Select Inquiry Type</label>
+                        <input type="text" class="form-control" id="edit_inquiry_type" name="edit_inquiry_type" placeholder="" / disabled>
+                        <small class="text-danger" id="validateInquiryType">Please Select Inquiry Type</small>
+                    </div>
+                </div>
+
+                <div class="row mb-2">
+                    <div class="col-md">
+                        <input type="hidden" class="form-control" id="edit_id" name="id" />
+                        <label for="edit_first_name" class="form-label required">First Name</label>
+                        <input type="text" class="form-control" id="edit_first_name" name="first_name" placeholder="" />
+                        <small class="text-danger" id="validateFirstname">Enter Customer First Name</small>
+                    </div>
+                    <div class="col-md">
+                        <label for="edit_last_name" class="form-label required">Last Name</label>
+                        <input type="text" class="form-control" id="edit_last_name" name="last_name" placeholder="" />
+                        <small class="text-danger" id="validateLastname">Enter Customer Last Name</small>
+                    </div>
+                </div>
+
+                 {{-- Fleet Field --}}
+                 <div class="row mb-2 d-none" id="editFleetColumnField">
+                    <div class="col-md">
+                        <label for="edit_fleet" class="form-label required">Fleet</label>
+                        <input type="text" class="form-control" id="edit_fleet" name="fleet" placeholder="" />
+                        <small class="text-danger" id="validateFleet">Enter Fleet Name</small>
+                    </div>
+                </div>
+                {{-- Company Field --}}
+                <div class="row mb-2 d-none" id="editCompanyColumnField">
+                    <div class="col-md">
+                        <label for="edit_company" class="form-label required">Company</label>
+                        <input type="text" class="form-control" id="edit_company" name="company" placeholder="" />
+                        <small class="text-danger" id="validateCompany">Enter Company Name</small>
+                    </div>
+                </div>
+                {{-- Government Field --}}
+                <div class="row mb-2 d-none" id="editGovernmentColumnField">
+                    <div class="col-md">
+                        <label for="edit_government" class="form-label required">Government</label>
+                        <input type="text" class="form-control" id="edit_government" name="government" placeholder="" />
+                        <small class="text-danger" id="validateGovernment">Enter Government Agency</small>
+                    </div>
+                </div>
+                {{-- Gender and Age Field --}}
+                <div class="row mb-2">
+                    <div class="col-md" id="editGenderColumnField">
+                        <label for="edit_gender" class="form-label required">Gender</label>
+                        <select class="form-control" id="edit_gender" name="gender">
+                            <option value="">Select Gender</option>
+                            <option value="Female">Female</option>
+                            <option value="Male">Male</option>
+                        </select>
+                        <small class="text-danger" id="validateGender">Please Select Gender</small>
+                    </div>
+                    <div class="col-md" id="editAgeColumnField">
+                        <label for="edit_age" class="form-label required">Age</label>
+                        <input type="number" class="form-control" id="edit_age" name="age" placeholder="" />
+                        <small class="text-danger" id="validateLastname">Enter Customer Age</small>
+                    </div>
+                </div>
+
+                <div class="row mb-2">
+                    <div class="col-md">
+                        <label for="mobile_number" class="form-label required">Mobile Number</label>
+                        <input type="text" class="form-control" id="edit_mobile_number" name="mobile_number" placeholder="09" />
+                        <small class="text-danger" id="validateMobileNumber">Enter Valid Mobile Number</small>
+                    </div>
+                    <div class="col-md">
+                        <label for="edit_address" class="form-label required">Address</label>
+                        <input type="text" class="form-control" id="edit_address" name="address" placeholder="" />
+                        <small class="text-danger" id="validateAddress">Enter <Address></Address></small>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mb-4">
+                <div class="row mb-2">
+                    <div class="col-md">
+                        <label for="car_unit" class="form-label required">Unit</label>
+                        <select class="form-control" id="edit_car_unit" name="car_unit">
+                            <option value="">Select Unit</option>
+                        </select>
+                        <small class="text-danger" id="validateUnit">Please Select Unit</small>
+                    </div>
+                    <div class="col-md">
+                        <label for="car_variant" class="form-label required">Variants</label>
+                        <select class="form-control" id="edit_car_variant" name="car_variant">
+                            <option value="">Select Variants</option>
+                        </select>
+                        <small class="text-danger" id="validateVariant required">Please Select Variant</small>
+                    </div>
+                    <div class="col-md">
+                        <label for="car_color" class="form-label required">Color</label>
+                        <select class="form-control" id="edit_car_color" name="car_color">
+                            <option value="">Select Color</option>
+                            <option value="any_color">Any Color</option>
+                        </select>
+                        <small class="text-danger" id="validateColor">Please Select Color</small>
+                    </div>
+                    <div class="col-md d-none" id="editQuantityColumnField">
+                        <label for="edit_quantity" class="form-label">Quantity</label>
+                        <input type="number" class="form-control" id="edit_quantity" name="quantity" placeholder="" readonly/>
+                    </div>
+                </div>
+            </div>
+            <div class="row mb-4">
+                <div class="col-md">
+                    <label for="transaction" class="form-label required">Transactions</label>
+                    <select class="form-control" id="edit_transaction" name="transaction">
+                        <option value="">Select Transactions</option>
+                        <option value="cash">Cash</option>
+                        <option value="po">PO</option>
+                        <option value="financing">Financing</option>
+                    </select>
+                    <small class="text-danger" id="validateTransaction">Please Select Transaction</small>
+                </div>
+                <div class="col-md">
+                    <label for="source" class="form-label required">Source</label>
+                    <select class="form-control" id="edit_source" name="source" >
+                        <option value="">Select Source</option>
+                        <option value="Social-Media">Social-Media</option>
+                        <option value="Referal">Referal</option>
+                        <option value="Mall Duty">Mall Duty</option>
+                        <option value="Show Room">Show Room</option>
+                        <option value="Saturation">Saturation</option>
+                    </select>
+                    <small class="text-danger" id="validateSource">Please Select Source</small>
+                </div>
+            </div>
+            <div class="row mb-2">
+                <div class="col-md">
+                    <label for="edit_category" class="form-label required">Category</label>
+                    <select class="form-control" id="edit_category" name="category">
+                        <option value="">Select Category</option>
+                        <option class="" value="Hot" style="color: #ff0000; font-weight: bold;">Hot</option>
+                        <option class="text-warning" value="Warm" style="font-weight: bold;">Warm</option>
+                        <option class="text-info" value="Cold" style="font-weight: bold;">Cold</option>
+                    </select>
+                    <small class="text-danger" id="validateCategory">Please Select Category</small>
+                </div>
+            </div>
+            <div class="row mb-4">
+                <div class="col-md">
+                    <label for="edit_payment_status" class="form-label required">Reservation Status</label>
+                    <select class="form-control" id="edit_payment_status" name="payment_status">
+                        <option value="none" selected>None</option>
+                        <option value="paid">Paid</option>
+                    </select>
+                    <small class="text-danger" id="validatePaymentStatus">Please Select Payment Status</small>
+                </div>
+            </div>
+            <div class="row mb-2">
+                <div class="col-md">
+                    <label for="additional_info" class="form-label">Remarks</label>
+                    <textarea class="form-control" placeholder="Message" id="edit_remarks" name="additional_info" rows="3"></textarea>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md d-flex justify-content-end gap-2">
+                    <button type="button" class="btn btn-success" id="editReservationModalButton">Edit Details</button>
+                    <button type="button" class="btn btn-label-danger d-none" id="cancelReservationModalButton">Cancel</button>
+                    <button type="submit" class="btn btn-primary d-none" id="saveEditReservationModalButton">Save Changes</button>
+                </div>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+</div>
 
 {{-- Datatables --}}
 <div class="row mb-4">
@@ -59,6 +243,7 @@
     </div>
 </div>
 
+{{-- button group --}}
 <div class="row mb-2">
     <div class="col">
         <div class="card custom-card">
@@ -97,9 +282,12 @@
 @section('components.specific_page_scripts')
 
 <script>
+
+    // button group
     $(document).ready(function() {
         $('.btn-group .btn.active').click();
     });
+
 
     function reservedCount() {
         $.ajax({
@@ -165,7 +353,7 @@
                     instance.close(); // Close the flatpickr calendar
                 });
             }
-        });
+    });
 
     // DataTable initialization
     const availableUnitsTable = $('#availableUnitsTable').DataTable({
@@ -247,12 +435,32 @@
         },
         
         columns: [
-            { data: 'unit', name: 'unit', title: 'Unit' },
             { data: 'client_name', name: 'client_name', title: 'Customer Name' },
+            { data: 'unit', name: 'unit', title: 'Unit' },
             { data: 'year_model', name: 'year_model', title: 'Year Model', visible: false },
             { data: 'variant', name: 'variant', title: 'Variant' },
             { data: 'color', name: 'color', title: 'Color' },
-            { data: 'cs_number', name: 'cs_number', title: 'CS Number', visible: false },
+            {
+                data: 'cs_number',
+                name: 'cs_number',
+                title: 'CS Number',
+                visible: true, // Ensure the column is visible
+                render: function(data, type, row) {
+                    if (type === 'display') {
+                        return `
+                            <div class="">
+                                <select class="form-select" id="selectCsNumber" aria-label="Default select example">
+                                    <option selected>Select CS Number</option>
+                                    <option value="1">One</option>
+                                    <option value="2">Two</option>
+                                    <option value="3">Three</option>
+                                </select>
+                            </div>
+                        `;
+                    }
+                    return data; // Default display for other types like export, search, etc.
+                }
+            },
             { data: 'trans_type', name: 'trans_type', title: 'Type' },
             { data: 'trans_bank', name: 'trans_bank', title: 'Trans Bank' },
             { data: 'agent', name: 'agent', title: 'Agent' },
@@ -267,8 +475,14 @@
                 visible: false,
                 render: function(data, type, row) {
                         return `<div class="d-flex">
+                                    <button type="button" class="btn btn-icon me-2 btn-success edit-btn" data-bs-toggle="modal" data-bs-target="#editReservationFormModal"  data-id="${data}">
+                                        <span class="tf-icons bx bxs-show bx-22px"></span>
+                                    </button>
                                     <button type="button" class="btn btn-icon me-2 btn-primary processing-pending-btn" data-id="${data}">
                                         <span class="tf-icons bx bxs-check-circle bx-22px"></span>
+                                    </button>
+                                    <button type="button" class="btn btn-icon me-2 btn-danger cancel-btn" data-id="${data}">
+                                        <span class="tf-icons bx bxs-x-circle bx-22px"></span>
                                     </button>
                                 </div>`;
                     }
@@ -297,6 +511,7 @@
         ],
     });
 
+    // button group active tabs
     $('.btn-group .btn').on('click', function(e) {
         e.preventDefault();
         $('#date-range-picker').val('');
@@ -420,6 +635,52 @@
                     }
                 });
             }
+        });
+    });
+
+     // Edit Reservation Modal Fields disabled state -> Editable State
+     $(document).ready(function () {
+        // Function to reset the modal to its initial uneditable state
+        function resetModalToInitialState() {
+            // Disable all input fields except the Edit button
+            $("#editReservationFormData :input").not("#editReservationModalButton").prop("disabled", true);
+
+            // Show the Edit button
+            $("#editReservationModalButton").removeClass("d-none");
+
+            // Hide the Save and Cancel buttons
+            $("#saveEditReservationModalButton").addClass("d-none");
+            $("#cancelReservationModalButton").addClass("d-none");
+        }
+
+        // Initially, reset the modal to its initial state when the page is ready
+        resetModalToInitialState();
+
+        // When the Edit button is clicked
+        $("#editReservationModalButton").on("click", function () {
+            // Enable all input fields except hidden fields
+            $("#editReservationFormData :input").not("[type='hidden']").prop("disabled", false);
+
+            // Hide the Edit button
+            $(this).addClass("d-none");
+
+            // Show the Save Changes and Cancel buttons
+            $("#saveEditReservationModalButton").removeClass("d-none");
+            $("#cancelReservationModalButton").removeClass("d-none");
+        });
+
+        // When the Cancel button is clicked
+        $("#cancelReservationModalButton").on("click", function () {
+            // Close the modal properly
+            $("#editReservationFormModal").modal("hide");
+
+            // Reset the modal to its initial uneditable state when reopened
+            resetModalToInitialState();
+        });
+
+        // Reset the modal when it's closed (using Bootstrap modal `hidden.bs.modal` event)
+        $("#editReservationFormModal").on("hidden.bs.modal", function () {
+            resetModalToInitialState();
         });
     });
 
