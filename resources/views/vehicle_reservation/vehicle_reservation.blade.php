@@ -433,7 +433,7 @@
             search: "",
             searchPlaceholder: "Search..."
         },
-        
+
         columns: [
             { data: 'client_name', name: 'client_name', title: 'Customer Name' },
             { data: 'unit', name: 'unit', title: 'Unit' },
@@ -444,16 +444,15 @@
                 data: 'cs_number',
                 name: 'cs_number',
                 title: 'CS Number',
-                visible: true, // Ensure the column is visible
+                orderable: false,
+                searchable: false,
                 render: function(data, type, row) {
                     if (type === 'display') {
                         return `
                             <div class="">
-                                <select class="form-select" id="selectCsNumber" aria-label="Default select example">
-                                    <option selected>Select CS Number</option>
-                                    <option value="1">One</option>
-                                    <option value="2">Two</option>
-                                    <option value="3">Three</option>
+                                <select class="form-select" id="selectCsNumber" aria-label="Default select example" data-vehicle-id="${row.vehicle_id}" onchange="vehicleReservationTable.ajax.reload();">
+                                    <option value="">Select CS Number</option>
+                                    ${data ? `<option value="${data}" selected>${data}</option>` : ''}
                                 </select>
                             </div>
                         `;
@@ -511,11 +510,36 @@
         ],
     });
 
+    // Fetch CS Number when the dropdown is rendered
+    $('#vehicleReservationTable tbody').on('click', '#selectCsNumber', function() {
+        const vehicleId = $(this).data('vehicle-id');
+        const selectElement = $(this);
+
+        // Clear the selection first
+        selectElement.empty();
+
+        $.ajax({
+            url: `/get-cs-number/${vehicleId}`, // Adjust the URL as necessary
+            type: 'GET',
+            success: function(response) {
+                if (response.CS_numbers) {
+                    response.CS_numbers.forEach(csNumber => {
+                        selectElement.append(`<option value="${csNumber}">${csNumber}</option>`);
+                    });
+
+                }
+            },
+            error: function(xhr) {
+                console.error('Error fetching CS numbers:', xhr);
+            }
+        });
+    });
+
     // button group active tabs
     $('.btn-group .btn').on('click', function(e) {
         e.preventDefault();
         $('#date-range-picker').val('');
-        
+
         // Toggle column visibility based on the active tab
         const isReservationTab = $(this).text().trim() === 'Reservation';
         vehicleReservationTable.column(2).visible(isReservationTab); // year_model
@@ -524,7 +548,7 @@
 
         const isPendingTab = $(this).text().trim() === 'Pending';
         vehicleReservationTable.column(11).visible(isPendingTab); // id
-        
+
         var route = $(this).data('route');
         vehicleReservationTable.ajax.url(route).load();
     });
@@ -682,6 +706,53 @@
         $("#editReservationFormModal").on("hidden.bs.modal", function () {
             resetModalToInitialState();
         });
+    });
+
+    // Function to add CS Number
+    function addCSNumber(transactionId, csNumber) {
+        $.ajax({
+            url: '{{ route("vehicle.reservation.addCSNumber") }}', // Adjust the route as necessary
+            type: 'POST',
+            data: {
+                id: transactionId,
+                cs_number: csNumber,
+                _token: '{{ csrf_token() }}' // Include CSRF token for security
+            },
+            success: function(response) {
+                if (response.success) {
+                    Swal.fire(
+                        'Success!',
+                        response.message,
+                        'success'
+                    );
+                    vehicleReservationTable.ajax.reload(); // Reload the table to reflect changes
+                } else {
+                    Swal.fire(
+                        'Error!',
+                        response.message,
+                        'error'
+                    );
+                }
+            },
+            error: function(xhr) {
+                Swal.fire(
+                    'Error!',
+                    xhr.responseJSON?.message || 'Something went wrong!',
+                    'error'
+                );
+            }
+        });
+    }
+
+    // Example usage when a CS number is selected
+    $('#vehicleReservationTable tbody').on('change', '#selectCsNumber', function() {
+        const transactionId = $(this).closest('tr').find('.processing-reserved-btn').data('id'); // Get the transaction ID
+        const csNumber = $(this).val(); // Get the selected CS number
+        console.log(transactionId, csNumber);
+
+        if (csNumber) {
+            addCSNumber(transactionId, csNumber); // Call the function to add CS number
+        }
     });
 
 </script>

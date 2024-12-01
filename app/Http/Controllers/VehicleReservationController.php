@@ -27,7 +27,7 @@ class VehicleReservationController extends Controller
 
     public function availableUnitsList(){
         DB::statement("SET SQL_MODE=''");
-        
+
         $query = Vehicle::with('inventory')
                         ->whereNull('deleted_at')
                         ->whereHas('inventory', function($subQuery) {
@@ -54,7 +54,7 @@ class VehicleReservationController extends Controller
             ->where('status', 'available')
             ->where('CS_number_status', 'available')
             ->count();
-          
+
             return $count;
         })
         ->make(true);
@@ -107,14 +107,14 @@ class VehicleReservationController extends Controller
             if($data->inquiry->inquiryType->inquiry_type === 'Individual'){
                 return $data->inquiry->customer->customer_first_name . ' ' . $data->inquiry->customer->customer_last_name;
             }else if($data->inquiry->inquiryType->inquiry_type === 'Fleet'){
-                return $data->inquiry->customer->company_name; 
+                return $data->inquiry->customer->company_name;
             }else if($data->inquiry->inquiryType->inquiry_type === 'Company'){
-                return $data->inquiry->customer->company_name; 
+                return $data->inquiry->customer->company_name;
             }else if($data->inquiry->inquiryType->inquiry_type === 'Government'){
-                return $data->inquiry->customer->department_name; 
-            } 
+                return $data->inquiry->customer->department_name;
+            }
         })
-        
+
         ->editColumn('year_model', function($data) {
             return '';
         })
@@ -189,14 +189,14 @@ class VehicleReservationController extends Controller
             if($data->inquiry->inquiryType->inquiry_type === 'Individual'){
                 return $data->inquiry->customer->customer_first_name . ' ' . $data->inquiry->customer->customer_last_name;
             }else if($data->inquiry->inquiryType->inquiry_type === 'Fleet'){
-                return $data->inquiry->customer->company_name; 
+                return $data->inquiry->customer->company_name;
             }else if($data->inquiry->inquiryType->inquiry_type === 'Company'){
-                return $data->inquiry->customer->company_name; 
+                return $data->inquiry->customer->company_name;
             }else if($data->inquiry->inquiryType->inquiry_type === 'Government'){
-                return $data->inquiry->customer->department_name; 
-            } 
+                return $data->inquiry->customer->department_name;
+            }
         })
-        
+
         ->editColumn('year_model', function($data) {
             return $data->inventory->year_model ?? '';
         })
@@ -232,16 +232,19 @@ class VehicleReservationController extends Controller
         ->addColumn('date_assigned', function($data) {
             return $data->reservation_date;
         })
+        ->addColumn('vehicle_id', function($data) {
+            return $data->application->vehicle_id ?? '';
+        })
 
         ->make(true);
     }
 
-    
+
     public function reservationPerTeam(){
         DB::statement("SET SQL_MODE=''");
-        
+
         $query = Team::whereNull('deleted_at');
-                        
+
 
         $list = $query->get();
 
@@ -261,10 +264,10 @@ class VehicleReservationController extends Controller
             ->whereNotNull('reservation_id')
             ->where('reservation_transaction_status', $reserved_status->id)
             ->count();
-           
+
             return $count;
         })
-        
+
         ->make(true);
     }
 
@@ -313,7 +316,7 @@ class VehicleReservationController extends Controller
             $processing_status = Status::where('status', 'like', 'Processed')->first()->id;
             $reserved_status = Status::where('status', 'like', 'Reserved')->first()->id;
             $pending_for_release_status = Status::where('status', 'like', 'Pending For Release')->first()->id;
-        
+
             $transaction_pendings = Transactions::where('id', decrypt($request->id))
             ->where('reservation_transaction_status', $reserved_status)
             ->whereNull('deleted_at')
@@ -340,8 +343,53 @@ class VehicleReservationController extends Controller
         }
     }
 
+    public function getCSNumberByVehicleId($vehicle_id) {
+        $inventories = Inventory::where('vehicle_id', $vehicle_id)
+            ->where('status', 'available')
+            ->where('CS_number_status', 'available')
+            ->pluck('CS_number')->toArray();
+        return response()->json(['CS_numbers' => $inventories]);
+    }
 
+    public function addCSNumber(Request $request){
+        try {
+            $transaction = Transactions::FindOrFail(decrypt($request->id));
+            if ($transaction->inventory_id) {
+                $inventory = Inventory::find($transaction->inventory_id);
+                if ($inventory) {
+                    $inventory->CS_number_status = 'available';
+                    $inventory->status = 'available';
+                    $inventory->save();
+                }
+            }
 
+            $inventory = Inventory::where('CS_number', $request->cs_number)->first();
 
+            if ($inventory) {
+                $transaction->inventory_id = $inventory->id;
+                $transaction->save();
+
+                $inventory->CS_number_status = 'reserved';
+                $inventory->status = 'reserved';
+                $inventory->save();
+
+                return response()->json([
+                    'success' => true,
+                    'message' => 'CS number successfully added'
+                ]);
+            } else {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'CS number not found'
+                ], 404);
+            }
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Error updating CS number: ' . $e->getMessage()
+            ], 500);
+        }
+    }
 
 }
