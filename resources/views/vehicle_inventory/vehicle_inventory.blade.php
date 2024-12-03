@@ -121,32 +121,34 @@
                 <form id="inventoryFormData">
                     @csrf
                     <div class="row mb-3">
-                        <div class="col-md">
-                            <label for="exampleFormControlSelect1" class="form-label">Select Unit</label>
-                            <select class="form-select" id="unit" aria-label="Default select example">
-                                <option selected>Open this select menu</option>
-                                <option value="1">One</option>
-                                <option value="2">Two</option>
-                                <option value="3">Three</option>
-                            </select>
-                        </div>
-                        <div class="col-md">
-                            <label for="exampleFormControlSelect1" class="form-label">Select Variant</label>
-                            <select class="form-select" id="variant" aria-label="Default select example">
-                                <option selected>Open this select menu</option>
-                                <option value="1">One</option>
-                                <option value="2">Two</option>
-                                <option value="3">Three</option>
-                            </select>
-                        </div>
-                        <div class="col-md">
-                            <label for="exampleFormControlSelect1" class="form-label">Select Color</label>
-                            <select class="form-select" id="color" aria-label="Default select example">
-                                <option selected>Open this select menu</option>
-                                <option value="1">One</option>
-                                <option value="2">Two</option>
-                                <option value="3">Three</option>
-                            </select>
+                        <div class="mb-4">
+                            <div class="row mb-2">
+                                <div class="col-md">
+                                    <label for="car_unit" class="form-label required">Unit</label>
+                                    <select class="form-control" id="car_unit" name="car_unit">
+                                        <option value="">Select Unit</option>
+                                    </select>
+                                    <small class="text-danger" id="validateUnit">Please Select Unit</small>
+                                </div>
+                                <div class="col-md">
+                                    <label for="car_variant" class="form-label required">Variants</label>
+                                    <select class="form-control" id="car_variant" name="car_variant">
+                                        <option value="">Select Variants</option>
+                                    </select>
+                                    <small class="text-danger" id="validateVariant required">Please Select Variant</small>
+                                </div>
+                                <div class="col-md">
+                                    <label for="car_color" class="form-label required">Color</label>
+                                    <select class="form-control" id="car_color" name="car_color">
+                                        <option value="">Select Color</option>
+                                    </select>
+                                    <small class="text-danger" id="validateColor">Please Select Color</small>
+                                </div>
+                                <div class="col-md d-none" id="quantityColumnField">
+                                    <label for="quantity" class="form-label">Quantity</label>
+                                    <input type="number" class="form-control" id="quantity" name="quantity" placeholder="" value="1" />
+                                </div>
+                            </div>
                         </div>
                     </div>
                     <div class="row mb-3">
@@ -368,14 +370,32 @@
         // Show the #vehicleFormCard when #addVehicleButton is clicked
         $('#addVehicleButton').click(function() {
             $('#vehicleFormCard').show();
+            $('#addVehicleButton').hide();
         });
 
         // Reset all inputs inside #vehicleFormData and hide #vehicleFormCard when #cancelVehicleFormButton is clicked
         $('#cancelVehicleFormButton').click(function() {
             $('#vehicleFormData').find('input').val(''); // Reset all input fields
+            $('#addVehicleButton').show();
             $('#vehicleFormCard').hide(); // Hide the form card
         });
     });
+    $(document).ready(function () {
+        // When #addInventoryButton is clicked
+        $("#addInventoryButton").on("click", function () {
+            $("#inventoryFormCard").show(); // Display the inventory form card
+            $("#addInventoryButton").hide(); // Hide the add inventory button
+            $("#vehicleFormCard").hide(); // Hide the vehicle form card
+        });
+
+        // When #cancelInventoryFormButton is clicked
+        $("#cancelInventoryFormButton").on("click", function () {
+            $("#inventoryFormData")[0].reset(); // Clear all fields in the form
+            $("#inventoryFormCard").hide(); // Hide the inventory form card
+            $("#addInventoryButton").show(); // Display the add inventory button
+        });
+    });
+
 
     // DataTable initialization
     const availableUnitsTable = $('#availableUnitsTable').DataTable({
@@ -548,6 +568,112 @@
 
         });
     });
+
+
+    // Load variants and colors based on selected unit
+    $('#car_unit, #edit_car_unit').on('change', function() {
+            const selectedUnit = $(this).val();
+            if (selectedUnit) {
+                $.ajax({
+                    url: '{{ route("leads.getVariants") }}',
+                    type: 'GET',
+                    data: { unit: selectedUnit },
+                    dataType: 'json',
+                    success: function(data) {
+                        let variantSelect = $('#car_variant, #edit_car_variant');
+                        variantSelect.empty();
+                        variantSelect.append('<option value="">Select Variants...</option>');
+                        // Check if data.variants is an array or a single value
+                        if (Array.isArray(data.variants)) {
+                            data.variants.forEach(function(variant) {
+                                variantSelect.append(`<option value="${variant}">${variant}</option>`);
+                            });
+                        } else {
+                            variantSelect.append(`<option value="${data.variants}">${data.variants}</option>`);
+                        }
+                    },
+                    error: function(error) {
+                        console.error('Error loading variants and colors:', error);
+                    }
+                });
+            } else {
+                // Clear the selects if no unit is selected
+                $('#car_variant').empty().append('<option value="">Select Variants...</option>');
+            }
+        });
+
+        $('#car_variant').on('change', function() {
+            const selectedVariant = $(this).val();
+            if (selectedVariant) {
+                $.ajax({
+                    url: '{{ route("leads.getColor") }}',
+                    type: 'GET',
+                    data: { variant: selectedVariant },
+                    dataType: 'json',
+                    success: function(data) {
+
+                        let colorSelect = $('#car_color');
+                        colorSelect.empty();
+                        colorSelect.append('<option value="">Select Color...</option>');
+                        // Check if data.colors is an array or a single value
+                        if (Array.isArray(data.colors)) {
+                            data.colors.forEach(function(color) {
+                                colorSelect.append(`<option value="${color}">${color}</option>`);
+                            });
+                        } else {
+                            colorSelect.append(`<option value="${data.colors}">${data.colors}</option>`);
+                        }
+
+                        if (!Array.isArray(data.colors) || !data.colors.includes('Any Color')) {
+                            colorSelect.append('<option value="Any Color">Any Color</option>');
+                        }
+                    },
+                    error: function(error) {
+                        console.error('Error loading variants and colors:', error);
+                    }
+                });
+            } else {
+                // Clear the selects if no unit is selected
+                $('#car_color').empty().append('<option value="">Select Color...</option>');
+            }
+        });
+
+        $('#edit_car_variant').on('change', function() {
+            const selectedVariant = $(this).val();
+            if (selectedVariant) {
+                $.ajax({
+                    url: '{{ route("leads.getColor") }}',
+                    type: 'GET',
+                    data: { variant: selectedVariant },
+                    dataType: 'json',
+                    success: function(data) {
+
+                        let colorSelect = $('#edit_car_color');
+                        colorSelect.empty();
+                        colorSelect.append('<option value="">Select Color...</option>');
+                        // Check if data.colors is an array or a single value
+                        if (Array.isArray(data.colors)) {
+                            data.colors.forEach(function(color) {
+                                colorSelect.append(`<option value="${color}">${color}</option>`);
+                            });
+                        } else {
+                            colorSelect.append(`<option value="${data.colors}">${data.colors}</option>`);
+                        }
+
+                        if (!Array.isArray(data.colors) || !data.colors.includes('Any Color')) {
+                            colorSelect.append('<option value="Any Color">Any Color</option>');
+                        }
+
+                    },
+                    error: function(error) {
+                        console.error('Error loading variants and colors:', error);
+                    }
+                });
+            } else {
+                // Clear the selects if no unit is selected
+                $('#car_color').empty().append('<option value="">Select Color...</option>');
+            }
+        });
 </script>
 
 

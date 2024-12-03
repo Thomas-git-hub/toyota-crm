@@ -499,7 +499,7 @@
             { data: 'trans_bank', name: 'trans_bank', title: 'Trans Bank' },
             { data: 'agent', name: 'agent', title: 'Agent' },
             { data: 'team', name: 'team', title: 'Team' },
-            { data: 'date_assigned', name: 'date_assigned', title: 'Date Assigned' },
+            // { data: 'date_assigned', name: 'date_assigned', title: 'Date Assigned' },
             {
                 data: 'application_id',
                 name: 'application_id',
