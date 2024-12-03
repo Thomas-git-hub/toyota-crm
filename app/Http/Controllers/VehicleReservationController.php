@@ -345,6 +345,44 @@ class VehicleReservationController extends Controller
         }
     }
 
+    public function cancel_pending(Request $request){
+        try {
+
+            $pending_status = Status::where('status', 'like', 'pending')->first()->id;
+            $cancel_status = Status::where('status', 'like', 'cancel')->first()->id;
+
+            $transaction_pendings = Transactions::where('application_id', $request->id)
+            ->where('reservation_transaction_status', $pending_status)
+            ->whereNull('deleted_at')
+            ->get();
+
+            foreach ($transaction_pendings as $transaction) {
+                $transaction->status = $cancel_status;
+                $transaction->reservation_transaction_status = $cancel_status;
+                $transaction->reservation_date = now();
+                $transaction->save();
+
+                $application = Application::findOrFail($transaction->application_id);
+                $application->status_id =  $cancel_status;
+                $application->updated_by = Auth::user()->id;
+                $application->updated_at = now();
+                $application->save();
+
+            }
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Vehicle reservation request successfully processed'
+            ]);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Error updating reservation process: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
     public function getCSNumberByVehicleId($vehicle_id) {
         $inventories = Inventory::with('transaction')
             ->where('vehicle_id', $vehicle_id)

@@ -684,19 +684,6 @@ class ApplicationController extends Controller
 
                 foreach ($transactions as $transaction) {
 
-                    // $inventory = Inventory::where('vehicle_id', $application->vehicle_id)
-                    // ->where('CS_number_status', 'available')
-                    // ->where('status', 'available')
-                    // ->first();
-
-                    // // Check if inventory is found
-                    // if (!$inventory) {
-                    //     return response()->json([
-                    //         'success' => false,
-                    //         'message' => 'Low in inventory for this vehicle.',
-                    //     ], 400);
-                    // }
-
                     $transaction = Transactions::findOrFail($transaction->id);
                     $transaction->status = $approved_status;
                     $transaction->reservation_id = Transactions::max('reservation_id') + 1;
@@ -898,5 +885,8 @@ class ApplicationController extends Controller
             ], 500);
         }
     }
+
+
+   
 
 }

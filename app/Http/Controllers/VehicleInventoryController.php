@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Inventory;
+use App\Models\Transactions;
+use App\Models\User;
 use Yajra\DataTables\Facades\DataTables;
 use Carbon\Carbon;
 use App\Models\Vehicle;
@@ -24,7 +26,7 @@ class VehicleInventoryController extends Controller
     public function inventoryList(Request $request){
 
          // dd($request->start_date);
-         $query = Inventory::with(['vehicle'])
+         $query = Inventory::with(['vehicle', 'transaction'])
                         //  ->whereNull('deleted_at')
                         ;
 
@@ -62,6 +64,11 @@ class VehicleInventoryController extends Controller
          })
 
          ->addColumn('tags', function($data) {
+
+            $transaction = Transactions::with(['application'])->where('inventory_id', $data->id)->first();
+            if($transaction){
+                return $transaction->application->updatedBy->first_name . ' ' . $transaction->application->updatedBy->last_name;
+            }
             return '';
         })
 
