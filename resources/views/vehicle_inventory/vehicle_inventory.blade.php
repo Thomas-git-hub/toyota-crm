@@ -256,6 +256,7 @@
             }
         });
     }
+
     totalInventory();
 
     //Date filter
@@ -570,8 +571,28 @@
     });
 
 
-    // Load variants and colors based on selected unit
-    $('#car_unit, #edit_car_unit').on('change', function() {
+    // Load units, variants and colors
+
+    $(document).ready(function() { 
+
+        $.ajax({
+            url: '{{ route('leads.getUnit') }}',
+            type: 'GET',
+            dataType: 'json',
+            success: function(data) {
+                let unitSelect = $('#car_unit, #edit_car_unit');
+                unitSelect.empty();
+                unitSelect.append('<option value="">Select Unit...</option>');
+                data.forEach(function(item) {
+                    unitSelect.append(`<option value="${item.unit}">${item.unit}</option>`);
+                });
+            },
+            error: function(error) {
+                console.error('Error loading unit:', error);
+            }
+        });
+        // Load variants and colors based on selected unit
+        $('#car_unit, #edit_car_unit').on('change', function() {
             const selectedUnit = $(this).val();
             if (selectedUnit) {
                 $.ajax({
@@ -580,7 +601,7 @@
                     data: { unit: selectedUnit },
                     dataType: 'json',
                     success: function(data) {
-                        let variantSelect = $('#car_variant, #edit_car_variant');
+                        let variantSelect = $('#car_variant');
                         variantSelect.empty();
                         variantSelect.append('<option value="">Select Variants...</option>');
                         // Check if data.variants is an array or a single value
@@ -674,6 +695,15 @@
                 $('#car_color').empty().append('<option value="">Select Color...</option>');
             }
         });
+
+     })
+
+
+      
+
+      
+
+      
 </script>
 
 
