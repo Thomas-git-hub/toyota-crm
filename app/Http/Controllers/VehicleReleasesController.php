@@ -195,6 +195,92 @@ class VehicleReleasesController extends Controller
         ->make(true);
     }
 
+    public function list_release(Request $request){
+
+        // dd($request->start_date);
+        $release_status = Status::where('status', 'like', 'Released')->first();
+        $query = Transactions::with(['inquiry', 'inventory', 'application'])
+                        ->whereNull('deleted_at')
+                        ->where('reservation_transaction_status', $release_status->id)
+                        ->whereNotNull('reservation_id')
+                       ;
+
+        if ($request->has('date_range') && !empty($request->date_range)) {
+            [$startDate, $endDate] = explode(' to ', $request->date_range);
+            $startDate = Carbon::createFromFormat('m/d/Y', $startDate)->startOfDay();
+            $endDate = Carbon::createFromFormat('m/d/Y', $endDate)->endOfDay();
+
+            $query->whereBetween('created_at', [$startDate, $endDate]);
+        }
+
+        $list = $query->get();
+
+        // dd($list->toArray());
+
+        return DataTables::of($list)
+        ->editColumn('id', function($data) {
+            return encrypt($data->id);
+        })
+
+        ->editColumn('unit', function($data) {
+            return $data->application->vehicle->unit;
+        })
+
+        ->addColumn('customer_name', function($data) {
+            if($data->inquiry->inquiryType->inquiry_type === 'Individual'){
+                return $data->inquiry->customer->customer_first_name . ' ' . $data->inquiry->customer->customer_last_name;
+            }else if($data->inquiry->inquiryType->inquiry_type === 'Fleet'){
+                return $data->inquiry->customer->company_name;
+            }else if($data->inquiry->inquiryType->inquiry_type === 'Company'){
+                return $data->inquiry->customer->company_name;
+            }else if($data->inquiry->inquiryType->inquiry_type === 'Government'){
+                return $data->inquiry->customer->department_name;
+            }
+        })
+
+        ->editColumn('year_model', function($data) {
+            return $data->inventory->year_model ?? '';
+        })
+
+        ->addColumn('variant', function($data) {
+            return $data->application->vehicle->variant;
+        })
+
+        ->addColumn('color', function($data) {
+            return $data->application->vehicle->color;
+        })
+
+        ->addColumn('cs_number', function($data) {
+            return $data->inventory->CS_number ?? '';
+        })
+
+        ->addColumn('trans_type', function($data) {
+            return $data->inquiry->inquiryType->inquiry_type;
+        })
+        ->addColumn('trans_bank', function($data) {
+            return $data->application->bank->bank_name ?? '';
+        })
+
+        ->addColumn('team', function($data) {
+            $team = Team::where('id',  $data->application->updatedBy->team_id)->first();
+            return $team->name;
+        })
+
+        ->addColumn('agent', function($data) {
+            return $data->application->updatedBy->first_name . ' ' . $data->application->updatedBy->last_name;
+        })
+
+        ->addColumn('date_assigned', function($data) {
+            return $data->reservation_date;
+        })
+
+        ->addColumn('status', function($data) {
+            $status = Status::where('id', $data->status)->first()->status;
+            return $status;
+        })
+
+        ->make(true);
+    }
 
     public function processing(Request $request){
         try {
@@ -205,21 +291,19 @@ class VehicleReleasesController extends Controller
             $transaction = Transactions::findOrFail(decrypt($request->id));
 
             if($transaction->reservation_transaction_status == $pending_for_release_status){
+
+                $inventory = Inventory::findOrFail($transaction->inventory_id);
+                $inventory->CS_number_status = 'released';
+                $inventory->status = 'released';
+                $inventory->save();
+
                 $transaction->status = $released_status;
                 $transaction->reservation_transaction_status = $released_status;
-                $transaction->reservation_date = now();
+                $transaction->released_date = now();
+                $transaction->updated_at = now();
                 $transaction->save();
 
-            }else if($transaction->reservation_transaction_status == $released_status){
-                // $transaction->status = $pending_for_release_status;
-                // $transaction->reservation_transaction_status = $pending_for_release_status;
-                // $transaction->reservation_date = now();
-                // $transaction->save();
-
-                dd($transaction->toArray());
             }
-
-
             return response()->json([
                 'success' => true,
                 'message' => 'Vehicle release request successfully processed'
@@ -232,6 +316,4 @@ class VehicleReleasesController extends Controller
             ], 500);
         }
     }
-
-
 }

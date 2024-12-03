@@ -73,23 +73,35 @@
 
 
 {{-- Vehicle Form --}}
-<div class="row mb-4 d-none">
+<div class="row mb-4">
     <div class="col-md">
-        <div class="card" id="vehicleFormCard"">
+        <div class="card" id="vehicleFormCard" style="display: none;">
             <div class="card-header">
                 <h5 class="text-primary card-title">Vehicle Form</h5>
             </div>
             <div class="card-body">
                 <form id="vehicleFormData">
-                    <div class="row">
+                    @csrf
+                    <div class="row mb-2">
                         <div class="col-md">
-                            hello
+                            <label for="unit" class="form-label">Unit</label>
+                            <input type="text" class="form-control" id="unit" name="unit" required />
+                        </div>
+                    </div>
+                    <div class="row mb-2">
+                        <div class="col-md">
+                            <label for="variant" class="form-label">Variant</label>
+                            <input type="text" class="form-control" id="variant" name="variant" required />
+                        </div>
+                        <div class="col-md">
+                            <label for="color" class="form-label">Color</label>
+                            <input type="text" class="form-control" id="color" name="color" required />
                         </div>
                     </div>
                     <div class="row">
                         <div class="col-md d-flex justify-content-end gap-2">
-                            <button type="button" class="btn btn-label-danger" id="cancelInquiryFormButton">Cancel</button>
-                            <button type="submit" class="btn btn-success">Add to Inventory</button>
+                            <button type="button" class="btn btn-label-danger" id="cancelVehicleFormButton">Cancel</button>
+                            <button type="submit" class="btn btn-dark">Add Vehicle</button>
                         </div>
                     </div>
                 </form>
@@ -98,13 +110,92 @@
     </div>
 </div>
 
-{{-- Trigger Inquiry Form Button --}}
-<div class="row mb-2">
-    <div class="col-md d-flex justify-content-end">
-        <button class="btn btn-primary" id="addVehicleButton">Add Vehicle</button>
+{{-- Inventory Form --}}
+<div class="row mb-4">
+    <div class="col-md">
+        <div class="card" id="inventoryFormCard" style="display: none;">
+            <div class="card-header">
+                <h5 class="text-primary card-title">Inventory Form</h5>
+            </div>
+            <div class="card-body">
+                <form id="inventoryFormData">
+                    @csrf
+                    <div class="row mb-3">
+                        <div class="col-md">
+                            <label for="exampleFormControlSelect1" class="form-label">Select Unit</label>
+                            <select class="form-select" id="unit" aria-label="Default select example">
+                                <option selected>Open this select menu</option>
+                                <option value="1">One</option>
+                                <option value="2">Two</option>
+                                <option value="3">Three</option>
+                            </select>
+                        </div>
+                        <div class="col-md">
+                            <label for="exampleFormControlSelect1" class="form-label">Select Variant</label>
+                            <select class="form-select" id="variant" aria-label="Default select example">
+                                <option selected>Open this select menu</option>
+                                <option value="1">One</option>
+                                <option value="2">Two</option>
+                                <option value="3">Three</option>
+                            </select>
+                        </div>
+                        <div class="col-md">
+                            <label for="exampleFormControlSelect1" class="form-label">Select Color</label>
+                            <select class="form-select" id="color" aria-label="Default select example">
+                                <option selected>Open this select menu</option>
+                                <option value="1">One</option>
+                                <option value="2">Two</option>
+                                <option value="3">Three</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-md">
+                            <label for="exampleFormControlInput1" class="form-label">CS Number</label>
+                            <input type="email" class="form-control" id="exampleFormControlInput1" placeholder="" />
+                        </div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-md">
+                            <label for="flatpickr-date" class="form-label">Actual Invoice Date</label>
+                            <input type="text" class="form-control" placeholder="YYYY-MM-DD" id="actualInvoiceDate" />
+                        </div>
+                        <div class="col-md">
+                            <label for="flatpickr-date" class="form-label">Delivery Date</label>
+                            <input type="text" class="form-control" placeholder="YYYY-MM-DD" id="deliveryDate" />
+                        </div>
+                        <div class="col-md">
+                            <label for="exampleFormControlInput1" class="form-label">Invoice Number</label>
+                            <input type="email" class="form-control" id="invoiceNumber" placeholder="" />
+                        </div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-md">
+                            <label for="exampleFormControlTextarea1" class="form-label">Remarks</label>
+                            <textarea class="form-control" id="exampleFormControlTextarea1" rows="3"></textarea>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md d-flex justify-content-end gap-2">
+                            <button type="button" class="btn btn-label-danger" id="cancelInventoryFormButton">Cancel</button>
+                            <button type="submit" class="btn btn-dark" id="addInventoryFormButton">Add to Inventory</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
     </div>
 </div>
 
+{{-- Trigger Vehicle and Inventory Form - Button --}}
+<div class="row mb-2">
+    <div class="col-md d-flex justify-content-end gap-2">
+        <button class="btn btn-primary" id="addVehicleButton">Add New Vehicle</button>
+        <button class="btn btn-primary" id="addInventoryButton">Add to Inventory</button>
+    </div>
+</div>
+
+{{-- Datatable --}}
 <div class="row mb-2">
     <div class="col">
         <div class="card custom-card">
@@ -119,7 +210,7 @@
                     </div>
                 </div>
                 <div class="table-responsive">
-                    <table id="vehicleInventoryTable" class="table table-striped table-hover" style="width:100%">
+                    <table id="vehicleInventoryTable" class="table table-bordered table-hover" style="width:100%">
                         <tbody>
                         </tbody>
                     </table>
@@ -136,6 +227,19 @@
 
 <script>
 
+    // actual invoice date picker
+    var flatpickrDate = document.querySelector("#actualInvoiceDate");
+        flatpickrDate.flatpickr({
+        monthSelectorType: "static"
+    });
+
+    // delivery date picker
+    var flatpickrDate = document.querySelector("#deliveryDate");
+        flatpickrDate.flatpickr({
+        monthSelectorType: "static"
+    });
+
+    // Count of Total Inventory
     function totalInventory() {
         $.ajax({
             url: '{{ route("vehicle.inventory.getTotalInventory") }}', // Adjust the route as necessary
@@ -150,7 +254,6 @@
             }
         });
     }
-
     totalInventory();
 
     //Date filter
@@ -200,6 +303,78 @@
                 instance.close(); // Close the flatpickr calendar
             });
         }
+    });
+
+    // Vehicle Form Submission
+    $(document).ready(function() {
+        $('#vehicleFormData').on('submit', function(e) {
+            e.preventDefault();
+
+            let formData = {
+                unit: $('#unit').val(),
+                variant: $('#variant').val(),
+                color: $('#color').val(),
+            };
+
+            $.ajax({
+                url: '{{ route("vehicle.store") }}', // Adjust to your route name
+                type: 'POST',
+                data: formData,
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                },
+                success: function(response) {
+                    if (response.success) {
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Success',
+                            text: response.message,
+                        }).then(() => {
+                        // Hide the form card after success alert is closed
+                        $('#vehicleFormCard').hide();
+
+                        // Reset the form
+                        $('#vehicleFormData')[0].reset();
+
+                        // Optionally reload your vehicle table or UI component
+                        if (typeof vehicleTable !== 'undefined') {
+                            vehicleTable.ajax.reload();
+                        }
+                    });
+                    }
+                },
+                error: function(xhr) {
+                    let errorMessage = xhr.responseJSON?.message || 'Something went wrong!';
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: errorMessage
+                    });
+
+                    // Highlight validation errors if any
+                    if (xhr.responseJSON?.errors) {
+                        for (const [field, messages] of Object.entries(xhr.responseJSON.errors)) {
+                            $(`#${field}`).addClass('is-invalid border-danger');
+                            $(`#${field}`).after(`<small class="text-danger">${messages[0]}</small>`);
+                        }
+                    }
+                }
+            });
+        });
+    });
+
+    // Vehicle Form Hide Show
+    $(document).ready(function() {
+        // Show the #vehicleFormCard when #addVehicleButton is clicked
+        $('#addVehicleButton').click(function() {
+            $('#vehicleFormCard').show();
+        });
+
+        // Reset all inputs inside #vehicleFormData and hide #vehicleFormCard when #cancelVehicleFormButton is clicked
+        $('#cancelVehicleFormButton').click(function() {
+            $('#vehicleFormData').find('input').val(''); // Reset all input fields
+            $('#vehicleFormCard').hide(); // Hide the form card
+        });
     });
 
     // DataTable initialization
@@ -361,7 +536,6 @@
             }
         ],
     });
-
 
     // datatables button tabs
     $(document).ready(function() {

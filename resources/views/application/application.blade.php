@@ -68,7 +68,7 @@
                     </div>
                     <select class="form-select" id="exampleFormControlSelect1" aria-label="Default select example" name="preferred_bank">
                         <option selected>Select Prefered Bank</option>
-                    </select>                    
+                    </select>
                 </form>
             </div>
             <div class="modal-footer">
@@ -327,7 +327,7 @@
                 }
             }
         },
-        // Add clear button 
+        // Add clear button
         onReady: function(selectedDates, dateStr, instance) {
             // Create a "Clear" button
             const clearButton = document.createElement("button");
@@ -388,7 +388,7 @@
             { data: 'reservation_status', name: 'reservation_status', title: 'Reservation Status' },
             { data: 'source', name: 'source', title: 'Source' },
             { data: 'date', name: 'date', title: 'Date' },
-            
+
             {
                 data: 'id',
                 title: 'Bank',
@@ -403,7 +403,7 @@
                         let isApprovedTab = activeTab === 'approved-tab';
                         let isCashTab = activeTab === 'cash-tab';
                         let isCanceledTab = activeTab === 'canceled-tab';
-                        
+
                         // Hide or show buttons based on the active tab
                         let bankBtnStyle =  isCashTab || isCanceledTab ? 'display: none;' : ''; // Hide for Approved and Cash tabs
                         let approvalDateBtnStyle = isPendingTab || isCashTab || isCanceledTab ? 'display: none;' : ''; // Hide for Pending tab
@@ -1057,16 +1057,16 @@
             });
         });
     }
-    
+
     // Display selected banks on modal
     $(document).on('click', '.bank-btn', function () {
         const applicationId = $(this).data('id');
         $('#application_id').val(applicationId);
-        
+
         // Clear existing bank fields
         $("#bankFieldsContainer .bank-field:not(:first)").remove();
         $("select[name='bank_id[]']").val('');
-        
+
         // Fetch existing banks for this application
         $.ajax({
             url: `/application/banks/${applicationId}`,
@@ -1074,12 +1074,12 @@
             success: function(response) {
                 if (response.success) {
                     const existingBanks = response.banks;
-                    
+
                     // If there are existing banks, create fields for each one
                     if (existingBanks.length > 0) {
                         // Remove the default empty field if it exists
                         $("#bankFieldsContainer .bank-field:first").remove();
-                        
+
                         existingBanks.forEach((bank, index) => {
                             const newBankField = `
                                 <div class="row mb-2 bank-field">
@@ -1095,10 +1095,10 @@
                                     </div>
                                 </div>
                             `;
-                            
+
                             $("#bankFieldsContainer").append(newBankField);
                         });
-                        
+
                         // Fetch and populate all bank options, then set selected values
                         fetchBanks().then(() => {
                             existingBanks.forEach((bank, index) => {
@@ -1210,10 +1210,10 @@
     // When bank approval date button is clicked
     $(document).on('click', '.bank-approval-date-btn', function() {
         const applicationId = $(this).data('id');
-        
+
         // Update the form action with the application ID
         $('#bankApprovalDateForm').attr('action', `/application/banks/approval/${applicationId}`);
-        
+
         // Fetch banks associated with this application
         $.ajax({
             url: `/application/banks/${applicationId}`,
@@ -1221,7 +1221,7 @@
             success: function(response) {
                 // Clear existing bank fields
                 $('#bankApprovalDateForm .bank-approval-row').remove();
-                
+
                 // Add fields for each bank
                 let bankFields = '';
                 response.banks.forEach(bank => {
@@ -1232,19 +1232,19 @@
                                 <input type="hidden" name="bank_ids[]" value="${bank.bank_id}">
                             </div>
                             <div class="col-md-8">
-                                <input type="date" 
-                                    class="form-control" 
-                                    name="approval_dates[]" 
+                                <input type="date"
+                                    class="form-control"
+                                    name="approval_dates[]"
                                     value="${bank.approval_date || ''}"
                                     ${bank.approval_date ? 'readonly' : ''}>
                             </div>
                         </div>
                     `;
                 });
-                
+
                 // Insert bank fields before the preferred bank select
                 $(bankFields).insertBefore('#bankApprovalDateForm .mb-2');
-                
+
                 // Update preferred bank dropdown options
                 let bankSelectOptions = '<option value="">Select Preferred Bank</option>';
                 response.banks.forEach(bank => {
@@ -1254,7 +1254,7 @@
                         </option>`;
                 });
                 $('#exampleFormControlSelect1').html(bankSelectOptions);
-                
+
                 $('#bankApprovalDateModal').modal('show');
             },
             error: function(xhr) {
@@ -1270,7 +1270,7 @@
     // Handle bank approval date form submission
     $('#bankApprovalDateForm').on('submit', function(e) {
         e.preventDefault();
-        
+
         $.ajax({
             url: $(this).attr('action'), // Use the updated form action
             type: 'POST',

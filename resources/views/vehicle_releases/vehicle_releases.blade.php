@@ -80,8 +80,8 @@
                 <div class="row">
                     <div class="col-md">
                         <div class="btn-group w-100" role="group" aria-label="Basic example">
-                            <button id="forRelease" type="button" class="btn btn-label-dark active" data-route="">For Release Units</button>
-                            <button id="released" type="button" class="btn btn-label-dark" data-route="">Released Units</button>
+                            <button id="forRelease" type="button" class="btn btn-label-dark active" data-route="{{ route("vehicle.releases.pending.list") }}">For Release Units</button>
+                            <button id="released" type="button" class="btn btn-label-dark" data-route="{{ route("vehicle.releases.list") }}">Released Units</button>
                         </div>
                     </div>
                 </div>
@@ -284,6 +284,7 @@
                 title: 'Action',
                 orderable: false,
                 searchable: false,
+                visible:false,
                 render: function(data, type, row) {
                         return `<div class="d-flex">
                                     <button type="button" class="btn btn-icon me-2 btn-primary processing-btn" data-id="${data}">
@@ -299,6 +300,18 @@
                 targets: [0, 1], // Columns to apply additional formatting (if needed)
             }
         ],
+    });
+
+    // button group active tabs
+    $('.btn-group .btn').on('click', function(e) {
+        e.preventDefault();
+        $('#date-range-picker').val('');
+
+        // Toggle column visibility based on the active tab
+        const isFoReleasedTab = $(this).text().trim() === 'For Release Units';
+        vehicleReleasesTable.column(12).visible(isFoReleasedTab);
+        var route = $(this).data('route');
+        vehicleReleasesTable.ajax.url(route).load();
     });
 
 
