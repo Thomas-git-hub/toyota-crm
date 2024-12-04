@@ -429,13 +429,13 @@
                 title: 'Action',
                 orderable: false,
                 searchable: false,
-                render: function(data) {
+                render: function(data, type, row) {
                     return `
                         <div class="d-flex">
                             <button type="button" class="btn btn-icon me-2 btn-success edit-btn" data-bs-toggle="modal" data-bs-target="#editApplicationFormModal"  data-id="${data}">
                                 <span class="tf-icons bx bxs-show bx-22px"></span>
                             </button>
-                            <button type="button" class="btn btn-icon me-2 btn-primary processing-btn" data-id="${data}">
+                            <button type="button" class="btn btn-icon me-2 btn-primary processing-btn" data-id="${data}" data-transaction="${row.transaction}">
                                 <span class="tf-icons bx bxs-check-circle bx-22px"></span>
                             </button>
                             <button type="button" class="btn btn-icon me-2 btn-danger cancel-btn" data-id="${data}">
@@ -881,7 +881,8 @@
      //Process Data
     $(document).on('click', '.processing-btn', function() {
         const appID = $(this).data('id');
-
+        const transaction = $(this).data('transaction');
+        console.log(transaction);
         Swal.fire({
             title: 'Are you sure?',
             text: "Do you want to update its status?",
@@ -896,7 +897,8 @@
                     url: '{{ route("application.processing") }}',
                     type: 'POST',
                     data: {
-                        id: appID
+                        id: appID,
+                        transaction: transaction,
                     },
                     headers: {
                         'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')

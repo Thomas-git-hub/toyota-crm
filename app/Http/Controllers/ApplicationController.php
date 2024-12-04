@@ -677,6 +677,15 @@ class ApplicationController extends Controller
                 $application->save();
 
             }else if( $application->status_id == $approved_status){
+                if($request->transaction === 'financing'){
+                    $bankId = $application->bank_id;
+                    if (!$bankId) {
+                        return response()->json([
+                            'success' => false,
+                            'message' => 'Bank is required for financing transactions.'
+                        ], 500);
+                    }
+                   }
                 $transactions = Transactions::where('application_id', $application->id)
                 ->whereNull('inventory_id')
                 ->whereNull('deleted_at')

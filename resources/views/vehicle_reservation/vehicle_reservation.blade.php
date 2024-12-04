@@ -627,9 +627,13 @@
                 let numberSelect = $('#csNumberSelect');
                 numberSelect.empty();
                 numberSelect.append('<option value="">Select CS Number...</option>');
-                data.forEach(function(item) {
-                    numberSelect.append(`<option value="${item.CS_number}">${item.CS_number}</option>`);
-                });
+                if (data.length > 0) {
+                    data.forEach(function(item) {
+                        numberSelect.append(`<option value="${item.CS_number}">${item.CS_number}</option>`);
+                    });
+                } else {
+                    numberSelect.append('<option value="">Insufficient inventory for this unit</option>');
+                }
             },
             error: function(error) {
                 console.error('Error loading CS Number:', error);
@@ -657,8 +661,6 @@
         var route = $(this).data('route');
         vehicleReservationTable.ajax.url(route).load();
     });
-
-
 
     // datatables button tabs
     $(document).ready(function() {
