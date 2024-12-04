@@ -322,15 +322,22 @@ class VehicleReservationController extends Controller
             $transaction_pendings = Transactions::where('id', decrypt($request->id))
             ->where('reservation_transaction_status', $reserved_status)
             ->whereNull('deleted_at')
-            ->get();
+            ->first();
 
-            foreach ($transaction_pendings as $transaction) {
-                $transaction->status = $pending_for_release_status;
-                $transaction->reservation_transaction_status = $pending_for_release_status;
-                $transaction->reservation_date = now();
-                $transaction->save();
-
+            if (empty($transaction_pendings->inventory_id)) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'CS Number is required for this transaction.'
+                ], 500);
             }
+            // foreach ($transaction_pendings as $transaction) {
+
+            $transaction_pendings->status = $pending_for_release_status;
+            $transaction_pendings->reservation_transaction_status = $pending_for_release_status;
+            $transaction_pendings->reservation_date = now();
+            $transaction_pendings->save();
+
+            // }
 
             return response()->json([
                 'success' => true,

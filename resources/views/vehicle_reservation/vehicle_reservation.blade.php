@@ -602,8 +602,6 @@
     });
 
     $(document).on('click', '.btn-csNumber', function() {
-
-
         const vehicleId = $(this).data('vehicle-id');
         const transaction_id = $(this).data('transaction-id');
         const selectElement = $(this);
