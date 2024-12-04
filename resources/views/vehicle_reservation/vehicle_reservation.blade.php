@@ -486,7 +486,7 @@
                     if (type === 'display') {
                         return `
                             <div class="d-flex">
-                                <button type="button" class="badge btn me-2 btn-label-dark btn-csNumber" data-bs-toggle="modal" data-bs-target="#selectCSNumber"  data-vehicle-id="${row.vehicle_id}" data-transaction-id="${row.id}"">
+                                <button type="button" class="badge btn me-2 btn-label-dark btn-csNumber" data-bs-toggle="modal" data-bs-target="#selectCSNumber"  data-vehicle-id="${row.vehicle_id}" data-transaction-id="${row.id}" data-unit="${row.unit}" data-variant="${row.variant}" data-color="${row.color}">
                                         ${data}
                                 </button>
                             </div>
@@ -522,6 +522,21 @@
                     }
             },
             {
+                data: 'application_id',
+                name: 'application_id',
+                title: 'Action',
+                orderable: false,
+                searchable: false,
+                visible: false,
+                render: function(data, type, row) {
+                        return `<div class="d-flex">
+                                    <button type="button" class="btn btn-icon me-2 btn-primary processing-pending-btn" data-id="${data}">
+                                        <span class="tf-icons bx bxs-check-circle bx-22px"></span>
+                                    </button>
+                                </div>`;
+                    }
+            },
+            {
                 data: 'id',
                 name: 'id',
                 title: 'Action',
@@ -545,8 +560,8 @@
         ],
     });
 
-     // Example usage when a CS number is selected
-     $('#saveCSNumber').on('submit',  function(e) {
+    // Example usage when a CS number is selected
+    $('#saveCSNumber').on('submit',  function(e) {
         e.preventDefault();
         const formData = $(this).serialize();
         $.ajax({
@@ -593,11 +608,20 @@
         const transaction_id = $(this).data('transaction-id');
         const selectElement = $(this);
 
+        const unit = selectElement.data('unit');
+        const variant = selectElement.data('variant');
+        const color = selectElement.data('color');
+
         $('#transaction_id').val(transaction_id);
 
         $.ajax({
             url: `/get-cs-number/${vehicleId}`,
             type: 'GET',
+            data: {
+                unit: unit,
+                variant: variant,
+                color: color
+            },
             dataType: 'json',
             success: function(data) {
                 let numberSelect = $('#csNumberSelect');

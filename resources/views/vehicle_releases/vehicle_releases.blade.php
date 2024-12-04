@@ -102,6 +102,9 @@
 @section('components.specific_page_scripts')
 
 <script>
+     $(document).ready(function() {
+        $('.btn-group .btn.active').click();
+    });
 
     function releasedCount() {
         $.ajax({
