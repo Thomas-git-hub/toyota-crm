@@ -383,7 +383,10 @@ class VehicleReservationController extends Controller
         }
     }
 
-    public function getCSNumberByVehicleId($vehicle_id) {
+    public function getCSNumberByVehicleId($vehicle_id, Request $request) {
+
+        dd($request->all());
+
         $inventories = Inventory::with('transaction')
             ->where('vehicle_id', $vehicle_id)
             ->where('status', 'available')

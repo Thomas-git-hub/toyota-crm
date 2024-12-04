@@ -20,9 +20,9 @@ return new class extends Migration
             $table->date('delivery_date');
             $table->string('invoice_number');
             $table->integer('age');
-            $table->string('status');
+            $table->string('status')->default('available');
             $table->string('CS_number_status')->default('available');
-            $table->text('remarks');
+            $table->text('remarks')->nullable();
             $table->timestamps();
         });
     }

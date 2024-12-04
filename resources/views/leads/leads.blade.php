@@ -686,7 +686,6 @@
             }
         });
 
-
         $('#edit_car_variant').on('change', function() {
             const selectedVariant = $(this).val();
             if (selectedVariant) {

@@ -588,6 +588,7 @@
 
     $(document).on('click', '.btn-csNumber', function() {
 
+
         const vehicleId = $(this).data('vehicle-id');
         const transaction_id = $(this).data('transaction-id');
         const selectElement = $(this);
@@ -614,6 +615,7 @@
 
     });
 
+
     // button group active tabs
     $('.btn-group .btn').on('click', function(e) {
         e.preventDefault();
@@ -631,6 +633,8 @@
         var route = $(this).data('route');
         vehicleReservationTable.ajax.url(route).load();
     });
+
+
 
     // datatables button tabs
     $(document).ready(function() {

@@ -84,3 +84,4 @@ Route::get('vehicle-inventory', [VehicleInventoryController::class, 'index'])->n
 Route::get('vehicle-inventory/list', [VehicleInventoryController::class, 'inventoryList'])->name('vehicle.inventory.list');
 Route::get('vehicle-inventory/getTotalInventory', [VehicleInventoryController::class, 'getTotalInventory'])->name('vehicle.inventory.getTotalInventory');
 Route::post('/vehicle/store', [VehicleInventoryController::class, 'store'])->name('vehicle.store');
+Route::post('/inventory/store', [VehicleInventoryController::class, 'inventoryStore'])->name('inventory.store');

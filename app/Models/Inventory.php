@@ -11,6 +11,22 @@ class Inventory extends Model
 
     protected $table = 'inventory';
 
+    protected $fillable = [
+        'id',
+        'year_model',
+        'vehicle_id',
+        'CS_number',
+        'actual_invoice_date',
+        'delivery_date',
+        'invoice_number',
+        'age',
+        'status',
+        'CS_number_status',
+        'remarks',
+        'created_at',
+        'updated_at',
+    ];
+
     public function vehicle(){
         return $this->belongsTo(Vehicle::class, 'vehicle_id', 'id');
     }

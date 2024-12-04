@@ -394,6 +394,7 @@ class LeadController extends Controller
             'variants' => $variants,
         ]);
     }
+
     public function getColor(Request $request)
     {
         $unit = $request->input('unit');
@@ -658,7 +659,7 @@ class LeadController extends Controller
                         $transaction->save();
                     }
                 }else{
-                    
+
                     $transaction = new Transactions();
                     $transaction->inquiry_id = $inquiry->id;
                     $transaction->status = $pending_status->id;
@@ -668,7 +669,7 @@ class LeadController extends Controller
                     $transaction->transaction_updated_date = now();
                     $transaction->save();
                 }
-                    
+
             }
 
             return response()->json([

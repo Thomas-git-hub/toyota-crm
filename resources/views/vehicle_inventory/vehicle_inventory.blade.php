@@ -121,60 +121,65 @@
                 <form id="inventoryFormData">
                     @csrf
                     <div class="row mb-3">
-                        <div class="mb-4">
-                            <div class="row mb-2">
-                                <div class="col-md">
-                                    <label for="car_unit" class="form-label required">Unit</label>
-                                    <select class="form-control" id="car_unit" name="car_unit">
-                                        <option value="">Select Unit</option>
-                                    </select>
-                                    <small class="text-danger" id="validateUnit">Please Select Unit</small>
-                                </div>
-                                <div class="col-md">
-                                    <label for="car_variant" class="form-label required">Variants</label>
-                                    <select class="form-control" id="car_variant" name="car_variant">
-                                        <option value="">Select Variants</option>
-                                    </select>
-                                    <small class="text-danger" id="validateVariant required">Please Select Variant</small>
-                                </div>
-                                <div class="col-md">
-                                    <label for="car_color" class="form-label required">Color</label>
-                                    <select class="form-control" id="car_color" name="car_color">
-                                        <option value="">Select Color</option>
-                                    </select>
-                                    <small class="text-danger" id="validateColor">Please Select Color</small>
-                                </div>
-                                <div class="col-md d-none" id="quantityColumnField">
-                                    <label for="quantity" class="form-label">Quantity</label>
-                                    <input type="number" class="form-control" id="quantity" name="quantity" placeholder="" value="1" />
-                                </div>
-                            </div>
+                        <div class="col-md">
+                            <label for="car_unit" class="form-label required">Unit</label>
+                            <select class="form-control" id="car_unit" name="car_unit">
+                                <option value="">Select Unit</option>
+                            </select>
+                            <small class="text-danger" id="validateUnit">Please Select Unit</small>
+                        </div>
+                        <div class="col-md">
+                            <label for="car_variant" class="form-label required">Variants</label>
+                            <select class="form-control" id="car_variant" name="car_variant">
+                                <option value="">Select Variants</option>
+                            </select>
+                            <small class="text-danger" id="validateVariant">Please Select Variant</small>
+                        </div>
+                        <div class="col-md">
+                            <label for="car_color" class="form-label required">Color</label>
+                            <select class="form-control" id="car_color" name="car_color">
+                                <option value="">Select Color</option>
+                            </select>
+                            <small class="text-danger" id="validateColor">Please Select Color</small>
+                        </div>
+                    </div>
+                    <div class="row mb-2">
+                        <div class="col-md">
+                            <label for="car_unit" class="form-label required">Year Model</label>
+                            <select class="form-control" id="yearModel" name="year_model">
+                                <option value="">Select Year</option>
+                            </select>
+                            <small class="text-danger" id="validateYearModel">Please Select Year Model</small>
+                        </div>
+                        <div class="col-md">
+                            <label for="exampleFormControlInput1" class="form-label required">CS Number</label>
+                            <input type="email" class="form-control" id="csNumber" placeholder="" />
+                            <small class="text-danger" id="validateCSNumber">Input CS Number</small>
                         </div>
                     </div>
                     <div class="row mb-3">
                         <div class="col-md">
-                            <label for="exampleFormControlInput1" class="form-label">CS Number</label>
-                            <input type="email" class="form-control" id="exampleFormControlInput1" placeholder="" />
-                        </div>
-                    </div>
-                    <div class="row mb-3">
-                        <div class="col-md">
-                            <label for="flatpickr-date" class="form-label">Actual Invoice Date</label>
+                            <label for="flatpickr-date" class="form-label required">Actual Invoice Date</label>
                             <input type="text" class="form-control" placeholder="YYYY-MM-DD" id="actualInvoiceDate" />
+                            <small class="text-danger" id="validateInvoiceDate">Pick Actual Invoice Date</small>
+
                         </div>
                         <div class="col-md">
-                            <label for="flatpickr-date" class="form-label">Delivery Date</label>
+                            <label for="flatpickr-date" class="form-label required">Delivery Date</label>
                             <input type="text" class="form-control" placeholder="YYYY-MM-DD" id="deliveryDate" />
+                            <small class="text-danger" id="validateDeliveryDate">Pick Delivery Date</small>
+
                         </div>
                         <div class="col-md">
-                            <label for="exampleFormControlInput1" class="form-label">Invoice Number</label>
+                            <label for="exampleFormControlInput1" class="form-label required">Invoice Number</label>
                             <input type="email" class="form-control" id="invoiceNumber" placeholder="" />
+                            <small class="text-danger" id="validateInvoiceNumber">Input Invoice Number</small>
                         </div>
                     </div>
                     <div class="row mb-3">
                         <div class="col-md">
                             <label for="exampleFormControlTextarea1" class="form-label">Remarks</label>
-                            <textarea class="form-control" id="exampleFormControlTextarea1" rows="3"></textarea>
+                            <textarea class="form-control" id="remarks" rows="3"></textarea>
                         </div>
                     </div>
                     <div class="row">
@@ -522,8 +527,9 @@
         //     { unit: "Unit5", model: "Model 5", color: "Purple", cs_number: "CS005", actual_invoice_date: "2024-05-01", delivery_date: "2024-05-15", invoice_no: "INV005", tags: "Tag 5", team: "Team 5", date_assigned: "2024-05-01", age: "5 years", status: "Active", remarks: "Remark 5", action: "<button class='process-btn'>Process</button>" },
         // ],
         columns: [
+            { data: 'year_model', name: 'year_model', title: 'Year Model' },
             { data: 'unit', name: 'unit', title: 'Unit' },
-            { data: 'model', name: 'model', title: 'Model' },
+            { data: 'model', name: 'model', title: 'Variant' },
             { data: 'color', name: 'color', title: 'Color' },
             { data: 'cs_number', name: 'cs_number', title: 'CS Number' },
             { data: 'actual_invoice_date', name: 'actual_invoice_date', title: 'Actual Invoice Date' },
@@ -570,10 +576,8 @@
         });
     });
 
-
     // Load units, variants and colors
-
-    $(document).ready(function() { 
+    $(document).ready(function() {
 
         $.ajax({
             url: '{{ route('leads.getUnit') }}',
@@ -645,9 +649,9 @@
                             colorSelect.append(`<option value="${data.colors}">${data.colors}</option>`);
                         }
 
-                        if (!Array.isArray(data.colors) || !data.colors.includes('Any Color')) {
-                            colorSelect.append('<option value="Any Color">Any Color</option>');
-                        }
+                        // if (!Array.isArray(data.colors) || !data.colors.includes('Any Color')) {
+                        //     colorSelect.append('<option value="Any Color">Any Color</option>');
+                        // }
                     },
                     error: function(error) {
                         console.error('Error loading variants and colors:', error);
@@ -696,14 +700,197 @@
             }
         });
 
-     })
+    })
+
+    $(document).ready(function() {
+        // Get the current year
+        const currentYear = new Date().getFullYear();
+        const startYear = 2015;
+        const endYear = currentYear + 2; // Add two extra years
+
+        // Populate the year dropdown
+        for (let year = startYear; year <= endYear; year++) {
+            $("#yearModel").append(new Option(year, year));
+        }
+    })
+
+    // Inventory Form Validation
+    $(document).ready(function () {
+            // Hide all validation messages initially
+            $(".text-danger").hide();
+
+            $("#addInventoryFormButton").on("click", function (e) {
+                e.preventDefault(); // Prevent form submission
+                let isValid = true;
+
+                // Validate car unit
+                if ($("#yearModel").val() === "") {
+                    isValid = false;
+                    $("#yearModel").addClass("border-danger");
+                    $("#validateYearModel").show();
+                } else {
+                    $("#yearModel").removeClass("border-danger");
+                    $("#validateYearModel").hide();
+                }
+
+                // Validate car unit
+                if ($("#car_unit").val() === "") {
+                    isValid = false;
+                    $("#car_unit").addClass("border-danger");
+                    $("#validateUnit").show();
+                } else {
+                    $("#car_unit").removeClass("border-danger");
+                    $("#validateUnit").hide();
+                }
+
+                // Validate car variant
+                if ($("#car_variant").val() === "") {
+                    isValid = false;
+                    $("#car_variant").addClass("border-danger");
+                    $("#validateVariant").show();
+                } else {
+                    $("#car_variant").removeClass("border-danger");
+                    $("#validateVariant").hide();
+                }
+
+                // Validate car color
+                if ($("#car_color").val() === "") {
+                    isValid = false;
+                    $("#car_color").addClass("border-danger");
+                    $("#validateColor").show();
+                } else {
+                    $("#car_color").removeClass("border-danger");
+                    $("#validateColor").hide();
+                }
+
+                // Validate CS Number
+                if ($("#yearModel").val() === "") {
+                    isValid = false;
+                    $("#yearModel").addClass("border-danger");
+                    $("#validateYearModel").show();
+                } else {
+                    $("#yearModel").removeClass("border-danger");
+                    $("#validateYearModel").hide();
+                }
+
+                // Validate CS Number
+                if ($("#csNumber").val() === "") {
+                    isValid = false;
+                    $("#csNumber").addClass("border-danger");
+                    $("#validateCSNumber").show();
+                } else {
+                    $("#csNumber").removeClass("border-danger");
+                    $("#validateCSNumber").hide();
+                }
+
+                // Validate Actual Invoice Date
+                if ($("#actualInvoiceDate").val() === "") {
+                    isValid = false;
+                    $("#actualInvoiceDate").addClass("border-danger");
+                    $("#validateInvoiceDate").show();
+                } else {
+                    $("#actualInvoiceDate").removeClass("border-danger");
+                    $("#validateInvoiceDate").hide();
+                }
+
+                // Validate Actual Invoice Date
+                if ($("#deliveryDate").val() === "") {
+                    isValid = false;
+                    $("#deliveryDate").addClass("border-danger");
+                    $("#validateDeliveryDate").show();
+                } else {
+                    $("#deliveryDate").removeClass("border-danger");
+                    $("#validateDeliveryDate").hide();
+                }
+
+                // Validate Actual Invoice Date
+                if ($("#invoiceNumber").val() === "") {
+                    isValid = false;
+                    $("#invoiceNumber").addClass("border-danger");
+                    $("#validateInvoiceNumber").show();
+                } else {
+                    $("#invoiceNumber").removeClass("border-danger");
+                    $("#validateInvoiceNumber").hide();
+                }
+
+                // Additional validations for other fields can be added here
+
+                // Submit the form if all validations pass
+                if (isValid) {
+                    $("#inventoryFormData").submit();
+                }
+            });
+    });
+
+    // Inventory Form Submission
+    $(document).ready(function() {
+        $('#inventoryFormData').on('submit', function(e) {
+            e.preventDefault();
+
+            let formData = {
+                car_unit: $('#car_unit').val(),
+                car_variant: $('#car_variant').val(),
+                car_color: $('#car_color').val(),
+                year_model: $('#yearModel').val(),
+                cs_number: $('#csNumber').val(),
+                actual_invoice_date: $('#actualInvoiceDate').val(),
+                delivery_date: $('#deliveryDate').val(),
+                invoice_number: $('#invoiceNumber').val(),
+                // Add other fields as necessary
+            };
+
+            $.ajax({
+                url: '{{ route("inventory.store") }}', // Adjust to your route name
+                type: 'POST',
+                data: formData,
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                },
+                success: function(response) {
+                    if (response.success) {
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Success',
+                            text: response.message,
+                        }).then(() => {
+                            // Hide the form card after success alert is closed
+                            $('#inventoryFormCard').hide();
+
+                            // Reset the form
+                            $('#inventoryFormData')[0].reset();
+
+                            // Optionally reload your inventory table or UI component
+                            if (typeof vehicleInventoryTable !== 'undefined') {
+                                vehicleInventoryTable.ajax.reload();
+                            }
+                        });
+                    }
+                },
+                error: function(xhr) {
+                    let errorMessage = xhr.responseJSON?.message || 'Something went wrong!';
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: errorMessage
+                    });
+
+                    // Highlight validation errors if any
+                    if (xhr.responseJSON?.errors) {
+                        for (const [field, messages] of Object.entries(xhr.responseJSON.errors)) {
+                            $(`#${field}`).addClass('is-invalid border-danger');
+                            $(`#${field}`).after(`<small class="text-danger">${messages[0]}</small>`);
+                        }
+                    }
+                }
+            });
+        });
+    });
 
 
-      
 
-      
 
-      
+
+
 </script>
 
 

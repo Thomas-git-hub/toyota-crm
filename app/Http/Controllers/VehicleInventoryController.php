@@ -130,4 +130,46 @@ class VehicleInventoryController extends Controller
         ]);
     }
 
+    public function inventoryStore(Request $request) {
+        // Validate the incoming request data
+        $request->validate([
+            'car_unit' => 'required|string|max:255',
+            'car_variant' => 'required|string|max:255',
+            'car_color' => 'required|string|max:255',
+            'year_model' => 'required|string|max:255',
+            'cs_number' => 'required|string|max:255',
+            'actual_invoice_date' => 'required|date',
+            'delivery_date' => 'required|date',
+            'invoice_number' => 'required|string|max:255',
+            // Add other fields as necessary
+        ]);
+
+        $vehicle = Vehicle::where('unit', $request->car_unit)
+                           ->where('variant', $request->car_variant)
+                           ->where('color', $request->car_color)
+                           ->first()->id;
+
+        $deliveryDate = Carbon::parse($request->input('delivery_date'));
+        $currentDate = Carbon::now();
+        $age = $deliveryDate->diffInYears($currentDate);
+
+
+        // Create a new inventory record
+        Inventory::create([
+            'vehicle_id' => $vehicle,
+            'year_model' => $request->year_model,
+            'CS_number' => $request->cs_number,
+            'actual_invoice_date' => $request->actual_invoice_date,
+            'delivery_date' => $request->delivery_date,
+            'invoice_number' => $request->invoice_number,
+            'age' => $age,
+            'status' => 'available',
+            // Add other fields as necessary
+            'created_by' => Auth::id(), // Assuming you want to track who created the inventory
+            'created_at' => now(),
+        ]);
+
+        return response()->json(['success' => true, 'message' => 'New unit added to inventory!']);
+    }
+
 }
