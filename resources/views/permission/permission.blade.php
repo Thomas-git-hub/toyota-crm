@@ -38,14 +38,14 @@
                     <div class="row mb-2">
                         <div class="col-md">
                             <label for="name" class="form-label required">Name</label>
-                            <input type="text" class="form-control" id="name" name="name" required />
+                            <input type="text" class="form-control" id="permissionName" name="permission_name" required />
                             <small class="text-danger" id="validateName">Please enter permission name</small>
                         </div>
                     </div>
                     <div class="row mb-2">
                         <div class="col-md">
                             <label for="description" class="form-label">Description</label>
-                            <textarea class="form-control" id="description" name="description" rows="3"></textarea>
+                            <textarea class="form-control" id="permissionDescription" name="permission_description" rows="3"></textarea>
                         </div>
                     </div>
                     <div class="row">
@@ -106,23 +106,7 @@ const permissionTable = $('#permissionTable').DataTable({
         },
         { data: 'permission_name', name: 'permission_name', title: 'Name' },
         { data: 'permission_description', name: 'permission_description', title: 'Description' },
-        {
-            data: 'id',
-            name: 'actions',
-            title: 'Actions',
-            orderable: false,
-            searchable: false,
-            render: function(data, type, row) {
-                return `<div class="d-flex">
-                    <button type="button" class="btn btn-icon me-2 btn-success edit-btn" data-id="${data}">
-                        <span class="tf-icons bx bx-pencil"></span>
-                    </button>
-                    <button type="button" class="btn btn-icon btn-danger delete-btn" data-id="${data}">
-                        <span class="tf-icons bx bx-trash"></span>
-                    </button>
-                </div>`;
-            }
-        },
+       
     ],
     order: [[1, 'asc']], // Order by name
     paging: false, // Disable pagination
@@ -156,8 +140,8 @@ const permissionTable = $('#permissionTable').DataTable({
             e.preventDefault();
 
             let formData = {
-                name: $('#name').val(),
-                description: $('#description').val(),
+                name: $('#permissionName').val(),
+                description: $('#permissionDescription').val(),
             };
 
             $.ajax({

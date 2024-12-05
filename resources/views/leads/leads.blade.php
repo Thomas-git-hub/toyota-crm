@@ -489,6 +489,7 @@
         }
     });
 
+
     // DataTable initialization
     const inquiryTable = $('#inquiryTable').DataTable({
             processing: true,

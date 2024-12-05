@@ -16,9 +16,9 @@ class Permission extends Model
         'permission_name',
         'permission_description',
     ];
-    
-    public function roles()
+
+    public function usertypes()
     {
-        return $this->belongsToMany(Usertype::class, 'permission_role', 'permission_id', 'usertype_id');
+        return $this->belongsToMany(Usertype::class, 'permission_usertype', 'permission_id', 'usertype_id');
     }
 }

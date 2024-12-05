@@ -27,15 +27,19 @@ class PermissionController extends Controller
             ->addColumn('id', function ($permission) {
                 return $permission->id;
             })
-            ->addColumn('actions', function ($permission) {
-                return '';
-            })
             ->make(true);
     }
 
     public function store(Request $request)
     {
-        dd($request->all());
+       $permission = Permission::create([
+        'permission_name' => $request->name,
+        'permission_description' => $request->description,
+        'created_at' => now(),
+        'updated_at' => now(),
+       ]);
+
+       return response()->json(['success' => true, 'message' => 'Permission created successfully']);
     }
 
     public function updatePermissions(Request $request)

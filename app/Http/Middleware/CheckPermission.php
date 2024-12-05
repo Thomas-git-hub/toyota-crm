@@ -21,7 +21,7 @@ class CheckPermission
             return $next($request);
         }
 
-        if (!Auth::user()->usertype->hasPermission($permissions)) {
+        if (Auth::check()  && !Auth::user()->usertype->hasPermission($permissions)) {
             // If not, return a 403 Forbidden response
             abort(403, 'Unauthorized action.');
         }
