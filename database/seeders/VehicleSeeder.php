@@ -13,22 +13,22 @@ class VehicleSeeder extends Seeder
      */
     public function run(): void
     {
-        // $units = ['Vios', 'Wigo', 'Lancer', 'Fortuner'];
-        // $variants = ['1.5E', '1.0E', 'EX', '2.4G'];
-        // $colors = ['Silver', 'Red', 'Black', 'White'];
+        $units = ['Vios', 'Wigo', 'Lancer', 'Fortuner'];
+        $variants = ['1.5E', '1.0E', 'EX', '2.4G'];
+        $colors = ['Silver', 'Red', 'Black', 'White'];
 
-        // foreach ($units as $unit) {
-        //     foreach ($variants as $variant) {
-        //         foreach ($colors as $color) {
-        //             Vehicle::create([
-        //                 'unit' => $unit,
-        //                 'variant' => $variant,
-        //                 'color' => $color,
-        //                 'created_by' => 1,
-        //                 'updated_by' => 1,
-        //             ]);
-        //         }
-        //     }
-        // }
+        foreach ($units as $unit) {
+            foreach ($variants as $variant) {
+                foreach ($colors as $color) {
+                    Vehicle::create([
+                        'unit' => $unit,
+                        'variant' => $variant,
+                        'color' => $color,
+                        'created_by' => 1,
+                        'updated_by' => 1,
+                    ]);
+                }
+            }
+        }
     }
 }

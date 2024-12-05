@@ -384,12 +384,13 @@
         });
     });
 
+    //Cancel Transaction
     $(document).on('click', '.cancel-btn', function() {
         const ID = $(this).data('id');
 
         Swal.fire({
             title: 'Are you sure?',
-            text: "Do you want to cancel this transaction?",
+            text: "Do you want to cancel this unit?",
             icon: 'warning',
             showCancelButton: true,
             confirmButtonColor: '#d33',
