@@ -86,7 +86,7 @@
                     </div>
                 </div>
                 <div class="table-responsive">
-                    <table id="vehicleReleasesTable" class="table table-striped table-hover" style="width:100%">
+                    <table id="vehicleReleasesTable" class="table table-bordered table-hover" style="width:100%">
                         <tbody>
                         </tbody>
                     </table>

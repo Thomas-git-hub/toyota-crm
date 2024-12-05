@@ -36,6 +36,7 @@ class ApplicationController extends Controller
             $validated = $request->validate([
                 'first_name' => 'required|string',
                 'last_name' => 'required|string',
+                'birthdate' => 'nullable|date',
                 'age' => 'required|integer',
                 'mobile_number' => 'required|string',
                 'car_unit' => 'required|string',
@@ -55,6 +56,7 @@ class ApplicationController extends Controller
             $customer->contact_number = $validated['mobile_number'];
             $customer->gender = $validated['gender'];
             $customer->address = $validated['address'];
+            $customer->birthdate = $validated['birthdate'];
             $customer->age = $validated['age'];
             $customer->source = $validated['source'];
             $customer->created_by = Auth::id();
@@ -182,14 +184,14 @@ class ApplicationController extends Controller
                 if($inquirytype === 'Individual'){
                     return $data->customer->customer_first_name . ' ' . $data->customer->customer_last_name;
                 }else if($inquirytype === 'Fleet'){
-                    return $data->customer->company_name; 
+                    return $data->customer->company_name;
                 }else if($inquirytype === 'Company'){
-                    return $data->customer->company_name; 
+                    return $data->customer->company_name;
                 }else if($inquirytype === 'Government'){
-                    return $data->customer->department_name; 
-                } 
+                    return $data->customer->department_name;
+                }
             }
-           
+
         })
 
         ->addColumn('contact_number', function($data) {
@@ -216,7 +218,7 @@ class ApplicationController extends Controller
         ->addColumn('transaction', function($data) {
             return $data->transaction;
         })
-        
+
         ->addColumn('reservation_status', function($data) {
             $transaction = $data->transactions->first();
             return $transaction ? $transaction->reservation_status : 'N/A';
@@ -282,14 +284,14 @@ class ApplicationController extends Controller
                 if($inquirytype === 'Individual'){
                     return $data->customer->customer_first_name . ' ' . $data->customer->customer_last_name;
                 }else if($inquirytype === 'Fleet'){
-                    return $data->customer->company_name; 
+                    return $data->customer->company_name;
                 }else if($inquirytype === 'Company'){
-                    return $data->customer->company_name; 
+                    return $data->customer->company_name;
                 }else if($inquirytype === 'Government'){
-                    return $data->customer->department_name; 
-                } 
+                    return $data->customer->department_name;
+                }
             }
-           
+
         })
 
         ->addColumn('contact_number', function($data) {
@@ -315,7 +317,7 @@ class ApplicationController extends Controller
         ->addColumn('transaction', function($data) {
             return $data->transaction;
         })
-        
+
         ->addColumn('reservation_status', function($data) {
             $transaction = $data->transactions->first();
             return $transaction ? $transaction->reservation_status : 'N/A';
@@ -382,14 +384,14 @@ class ApplicationController extends Controller
                 if($inquirytype === 'Individual'){
                     return $data->customer->customer_first_name . ' ' . $data->customer->customer_last_name;
                 }else if($inquirytype === 'Fleet'){
-                    return $data->customer->company_name; 
+                    return $data->customer->company_name;
                 }else if($inquirytype === 'Company'){
-                    return $data->customer->company_name; 
+                    return $data->customer->company_name;
                 }else if($inquirytype === 'Government'){
-                    return $data->customer->department_name; 
-                } 
+                    return $data->customer->department_name;
+                }
             }
-           
+
         })
 
         ->addColumn('contact_number', function($data) {
@@ -482,14 +484,14 @@ class ApplicationController extends Controller
                 if($inquirytype === 'Individual'){
                     return $data->customer->customer_first_name . ' ' . $data->customer->customer_last_name;
                 }else if($inquirytype === 'Fleet'){
-                    return $data->customer->company_name; 
+                    return $data->customer->company_name;
                 }else if($inquirytype === 'Company'){
-                    return $data->customer->company_name; 
+                    return $data->customer->company_name;
                 }else if($inquirytype === 'Government'){
-                    return $data->customer->department_name; 
-                } 
+                    return $data->customer->department_name;
+                }
             }
-           
+
         })
 
         ->addColumn('contact_number', function($data) {
@@ -515,7 +517,7 @@ class ApplicationController extends Controller
         ->addColumn('transaction', function($data) {
             return $data->transaction;
         })
-        
+
         ->addColumn('reservation_status', function($data) {
             $transaction = $data->transactions->first();
             return $transaction ? $transaction->reservation_status : 'N/A';
@@ -534,7 +536,7 @@ class ApplicationController extends Controller
         $data = Application::with(['user', 'customer', 'vehicle', 'status', 'bank', 'transactions'])
             ->where('id', $decryptedId)
             ->first();
-        
+
         $firstTransaction = $data->transactions->first();
         if ($firstTransaction) {
             $inquiry = Inquiry::where('id', $firstTransaction->inquiry_id)->first();
@@ -608,7 +610,7 @@ class ApplicationController extends Controller
                     'reservation_status' => $validated['payment_status'],
             ]);
 
-         
+
 
             $inquiry->category = $validated['category'];
             $inquiry->quantity = $validated['quantity'];
@@ -780,7 +782,7 @@ class ApplicationController extends Controller
             }
         }
 
-       
+
 
         return response()->json([
             'success' => true,
@@ -800,7 +802,7 @@ class ApplicationController extends Controller
     {
         try {
             $decryptedId = decrypt($id);
-            
+
             // Get all bank transactions for this application
             $bankTransactions = BankTransaction::with('bank')
                 ->where('application_id', $decryptedId)
@@ -813,7 +815,7 @@ class ApplicationController extends Controller
                         'is_preferred' => $transaction->is_preferred
                     ];
                 });
-            
+
             return response()->json([
                 'success' => true,
                 'banks' => $bankTransactions,
@@ -869,7 +871,7 @@ class ApplicationController extends Controller
     {
         try {
             $decryptedId = decrypt($id);
-            
+
             // Get all bank transactions for this application
             $bankTransactions = BankTransaction::with('bank')
                 ->where('application_id', $decryptedId)
@@ -882,7 +884,7 @@ class ApplicationController extends Controller
                         'is_preferred' => $transaction->is_preferred
                     ];
                 });
-            
+
             return response()->json([
                 'success' => true,
                 'banks' => $bankTransactions
@@ -896,6 +898,6 @@ class ApplicationController extends Controller
     }
 
 
-   
+
 
 }

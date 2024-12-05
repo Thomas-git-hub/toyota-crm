@@ -2756,16 +2756,16 @@
         },
         {
             "name": "phpoffice/phpspreadsheet",
-            "version": "2.3.0",
+            "version": "2.3.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/PHPOffice/PhpSpreadsheet.git",
-                "reference": "c972c146ddd5e8350ea839355b9bb0ce6a8fa33e"
+                "reference": "91a4b42e41976a0b2f839720c3e20a12a84f6852"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/PHPOffice/PhpSpreadsheet/zipball/c972c146ddd5e8350ea839355b9bb0ce6a8fa33e",
-                "reference": "c972c146ddd5e8350ea839355b9bb0ce6a8fa33e",
+                "url": "https://api.github.com/repos/PHPOffice/PhpSpreadsheet/zipball/91a4b42e41976a0b2f839720c3e20a12a84f6852",
+                "reference": "91a4b42e41976a0b2f839720c3e20a12a84f6852",
                 "shasum": ""
             },
             "require": {
@@ -2854,9 +2854,9 @@
             ],
             "support": {
                 "issues": "https://github.com/PHPOffice/PhpSpreadsheet/issues",
-                "source": "https://github.com/PHPOffice/PhpSpreadsheet/tree/2.3.0"
+                "source": "https://github.com/PHPOffice/PhpSpreadsheet/tree/2.3.3"
             },
-            "time": "2024-09-29T07:06:02+00:00"
+            "time": "2024-11-22T06:11:37+00:00"
         },
         {
             "name": "phpoption/phpoption",
@@ -6373,16 +6373,16 @@
         },
         {
             "name": "yajra/laravel-datatables-export",
-            "version": "v11.3.1",
+            "version": "v11.3.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/yajra/laravel-datatables-export.git",
-                "reference": "1346be103562fc96a65da6856c39d9927ed8d9c0"
+                "reference": "72d5e44c342d6faebf99853a0fd445d5cbe26434"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/yajra/laravel-datatables-export/zipball/1346be103562fc96a65da6856c39d9927ed8d9c0",
-                "reference": "1346be103562fc96a65da6856c39d9927ed8d9c0",
+                "url": "https://api.github.com/repos/yajra/laravel-datatables-export/zipball/72d5e44c342d6faebf99853a0fd445d5cbe26434",
+                "reference": "72d5e44c342d6faebf99853a0fd445d5cbe26434",
                 "shasum": ""
             },
             "require": {
@@ -6390,7 +6390,7 @@
                 "livewire/livewire": "^2.11.2|^3.5.6",
                 "openspout/openspout": "^4.24.5",
                 "php": "^8.2",
-                "phpoffice/phpspreadsheet": "2.3.0",
+                "phpoffice/phpspreadsheet": "2.3.3",
                 "yajra/laravel-datatables-buttons": "^11.0"
             },
             "require-dev": {
@@ -6438,7 +6438,7 @@
             ],
             "support": {
                 "issues": "https://github.com/yajra/laravel-datatables-export/issues",
-                "source": "https://github.com/yajra/laravel-datatables-export/tree/v11.3.1"
+                "source": "https://github.com/yajra/laravel-datatables-export/tree/v11.3.2"
             },
             "funding": [
                 {
@@ -6446,7 +6446,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2024-11-29T14:44:49+00:00"
+            "time": "2024-12-04T03:30:59+00:00"
         },
         {
             "name": "yajra/laravel-datatables-fractal",

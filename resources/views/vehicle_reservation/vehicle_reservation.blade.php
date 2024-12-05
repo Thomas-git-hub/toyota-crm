@@ -302,7 +302,7 @@
                     </div>
                 </div>
                 <div class="table-responsive">
-                    <table id="vehicleReservationTable" class="table table-striped table-hover" style="width:100%">
+                    <table id="vehicleReservationTable" class="table table-bordered table-hover" style="width:100%">
                         <tbody>
                         </tbody>
                     </table>
@@ -553,8 +553,8 @@
                                     </button>
                                 </div>`;
                     }
-            }, 
-           
+            },
+
         ],
         order: [[0, 'desc']],  // Sort by 'unit' column by default
         columnDefs: [

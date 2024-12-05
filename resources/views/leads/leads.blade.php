@@ -59,23 +59,8 @@
                     </div>
                     <input type="hidden" class="form-control" id="edit_inquiry_type_id" name="inquiry_type_id" placeholder="" />
                 </div>
-
-                <div class="row mb-2">
-                    <div class="col-md">
-                        <input type="hidden" class="form-control" id="edit_id" name="id" />
-                        <label for="edit_first_name" class="form-label required">First Name</label>
-                        <input type="text" class="form-control" id="edit_first_name" name="first_name" placeholder="" />
-                        <small class="text-danger" id="validateFirstname">Enter Customer First Name</small>
-                    </div>
-                    <div class="col-md">
-                        <label for="edit_last_name" class="form-label required">Last Name</label>
-                        <input type="text" class="form-control" id="edit_last_name" name="last_name" placeholder="" />
-                        <small class="text-danger" id="validateLastname">Enter Customer Last Name</small>
-                    </div>
-                </div>
-
-                 {{-- Fleet Field --}}
-                 <div class="row mb-2 d-none" id="editFleetColumnField">
+                {{-- Fleet Field --}}
+                <div class="row mb-2 d-none" id="editFleetColumnField">
                     <div class="col-md">
                         <label for="edit_fleet" class="form-label required">Fleet</label>
                         <input type="text" class="form-control" id="edit_fleet" name="fleet" placeholder="" />
@@ -98,6 +83,20 @@
                         <small class="text-danger" id="validateGovernment">Enter Government Agency</small>
                     </div>
                 </div>
+                <div class="row mb-2">
+                    <div class="col-md">
+                        <input type="hidden" class="form-control" id="edit_id" name="id" />
+                        <label for="edit_first_name" class="form-label required">First Name</label>
+                        <input type="text" class="form-control" id="edit_first_name" name="first_name" placeholder="" />
+                        <small class="text-danger" id="validateFirstname">Enter Customer First Name</small>
+                    </div>
+                    <div class="col-md">
+                        <label for="edit_last_name" class="form-label required">Last Name</label>
+                        <input type="text" class="form-control" id="edit_last_name" name="last_name" placeholder="" />
+                        <small class="text-danger" id="validateLastname">Enter Customer Last Name</small>
+                    </div>
+                </div>
+
                 {{-- Gender and Age Field --}}
                 <div class="row mb-2">
                     <div class="col-md" id="editGenderColumnField">
@@ -108,6 +107,11 @@
                             <option value="Male">Male</option>
                         </select>
                         <small class="text-danger" id="validateGender">Please Select Gender</small>
+                    </div>
+                    <div class="col-md" id="birthdateColumnField">
+                        <label for="age" class="form-label required">Birthdate</label>
+                        <input type="date" class="form-control" id="edit_birthdate" name="birthdate" placeholder="" />
+                        <small class="text-danger" id="validateEditBirthdate">Enter Customer Birthdate</small>
                     </div>
                     <div class="col-md" id="editAgeColumnField">
                         <label for="edit_age" class="form-label required">Age</label>
@@ -237,19 +241,6 @@
                             </div>
                             <input type="hidden" class="form-control" id="inquiry_type_id" name="inquiry_type_id" placeholder="" />
                         </div>
-                        {{-- Customer First and Last Name Field --}}
-                        <div class="row mb-2">
-                            <div class="col-md">
-                                <label for="first_name" class="form-label required">First Name</label>
-                                <input type="text" class="form-control" id="first_name" name="first_name" placeholder="" />
-                                <small class="text-danger" id="validateFirstname">Enter Customer First Name</small>
-                            </div>
-                            <div class="col-md">
-                                <label for="last_name" class="form-label required">Last Name</label>
-                                <input type="text" class="form-control" id="last_name" name="last_name" placeholder="" />
-                                <small class="text-danger" id="validateLastname">Enter Customer Last Name</small>
-                            </div>
-                        </div>
                         {{-- Fleet Field --}}
                         <div class="row mb-2 d-none" id="fleetColumnField">
                             <div class="col-md">
@@ -272,6 +263,19 @@
                                 <label for="government" class="form-label required">Government</label>
                                 <input type="text" class="form-control" id="government" name="government" placeholder="" />
                                 <small class="text-danger" id="validateGovernment">Enter Government Agency</small>
+                            </div>
+                        </div>
+                        {{-- Customer First and Last Name Field --}}
+                        <div class="row mb-2">
+                            <div class="col-md">
+                                <label for="first_name" class="form-label required">First Name</label>
+                                <input type="text" class="form-control" id="first_name" name="first_name" placeholder="Contact Person First Name" />
+                                <small class="text-danger" id="validateFirstname">Enter Customer First Name</small>
+                            </div>
+                            <div class="col-md">
+                                <label for="last_name" class="form-label required">Last Name</label>
+                                <input type="text" class="form-control" id="last_name" name="last_name" placeholder="Contact Person Last Name" />
+                                <small class="text-danger" id="validateLastname">Enter Customer Last Name</small>
                             </div>
                         </div>
                         {{-- Gender and Age Field --}}
@@ -760,7 +764,7 @@
                 $('#fleetColumnField').addClass('d-none');
             } else if (inquiryType === 'Fleet' || inquiryType === 'Company') {
                 // Hide first and last name, show quantity
-                $('#first_name, #last_name').closest('.row').hide();
+                $('#first_name, #last_name').closest('.row').show();
                 $('#quantityColumnField').removeClass('d-none');
                 $('#companyColumnField').toggleClass('d-none', inquiryType !== 'Company');
                 $('#fleetColumnField').toggleClass('d-none', inquiryType !== 'Fleet');
@@ -769,7 +773,7 @@
             } else if (inquiryType === 'Government') {
                 // Hide first name, last name, and company, show government field
                 $('#fleetColumnField').addClass('d-none');
-                $('#first_name, #last_name').closest('.row').hide();
+                $('#first_name, #last_name').closest('.row').show();
                 $('#quantityColumnField').removeClass('d-none');
                 $('#companyColumnField').addClass('d-none');
                 $('#governmentColumnField').removeClass('d-none');
@@ -812,17 +816,24 @@
             if (inquiryType === 'Individual' || inquiryType === '') {
                 isValid = validateField('#first_name', 'Enter Customer First Name') && isValid;
                 isValid = validateField('#last_name', 'Enter Customer Last Name') && isValid;
+                isValid = validateField('#birthdate', 'Enter Customer birthdate') && isValid;
                 isValid = validateField('#age', 'Enter Customer Age') && isValid;
                 isValid = validateField('#gender', 'Please Select Gender') && isValid;
 
             } else if (inquiryType === 'Fleet') {
                 isValid = validateField('#fleet', 'Enter Fleet Name') && isValid;
+                isValid = validateField('#first_name', 'Enter Customer First Name') && isValid;
+                isValid = validateField('#last_name', 'Enter Customer Last Name') && isValid;
 
             } else if (inquiryType === 'Company') {
                 isValid = validateField('#company', 'Enter Company Name') && isValid;
+                isValid = validateField('#first_name', 'Enter Customer First Name') && isValid;
+                isValid = validateField('#last_name', 'Enter Customer Last Name') && isValid;
 
             } else if (inquiryType === 'Government') {
                 isValid = validateField('#government', 'Enter Government Agency') && isValid;
+                isValid = validateField('#first_name', 'Enter Customer First Name') && isValid;
+                isValid = validateField('#last_name', 'Enter Customer Last Name') && isValid;
             }
 
             // Validate shared required fields
@@ -898,12 +909,15 @@
 
             } else if (edit_inquiryType === 'Fleet') {
                 isValid = validateField('#edit_fleet', 'Enter Fleet Name') && isValid;
+                isValid = validateField('#edit_last_name', 'Enter Customer Last Name') && isValid;
 
             } else if (edit_inquiryType === 'Company') {
                 isValid = validateField('#edit_company', 'Enter Company Name') && isValid;
+                isValid = validateField('#edit_last_name', 'Enter Customer Last Name') && isValid;
 
             } else if (edit_inquiryType === 'Government') {
                 isValid = validateField('#edit_government', 'Enter Government Agency') && isValid;
+                isValid = validateField('#edit_last_name', 'Enter Customer Last Name') && isValid;
             }
 
             // Validate required fields
@@ -1057,6 +1071,12 @@
                 $('#edit_category').val(data.category).trigger('change');
                 $('#edit_inquiry_type').val(data.inquiry_type.inquiry_type);
                 $('#edit_quantity').val(data.quantity);
+                $('#edit_birthdate').val(data.customer.birthdate).trigger('change');
+
+                $('#edit_first_name').val(data.customer.customer_first_name);
+                $('#edit_last_name').val(data.customer.customer_last_name);
+                $('#edit_gender').val(data.customer.gender);
+                $('#edit_age').val(data.customer.age);
 
                 const edit_inquiry_type =  $('#edit_inquiry_type').val();
 
@@ -1068,21 +1088,17 @@
                     $('#editCompanyColumnField, #editGovernmentColumnField, #editQuantityColumnField').addClass('d-none');
                     $('#editQuantityColumnField').addClass('d-none');
                     $('#editCompanyColumnField').addClass('d-none');
-                    $('#edit_gender, #edit_age').closest('.row').show();
+                    $('#edit_gender, #edit_birthdate, #edit_age').closest('.row').show();
                     $('#editFleetColumnField').addClass('d-none');
 
-                    $('#edit_first_name').val(data.customer.customer_first_name);
-                    $('#edit_last_name').val(data.customer.customer_last_name);
-                    $('#edit_gender').val(data.customer.gender);
-                    $('#edit_age').val(data.customer.age);
 
                 } else if (edit_inquiry_type === 'Fleet' || edit_inquiry_type === 'Company') {
                     // Hide first and last name, show quantity
-                    $('#edit_first_name, #edit_first_name').closest('.row').hide();
+                    $('#edit_first_name, #edit_first_name').closest('.row').show();
                     $('#editQuantityColumnField').removeClass('d-none');
                     $('#editCompanyColumnField').toggleClass('d-none', edit_inquiry_type !== 'Company');
                     $('#editFleetColumnField').toggleClass('d-none', edit_inquiry_type !== 'Fleet');
-                    $('#edit_gender, #edit_age').closest('.row').hide(); // Hide gender and age for fleet and company
+                    $('#edit_gender, #edit_birthdate, #edit_age').closest('.row').hide(); // Hide gender and age for fleet and company
                     $('#editGovernmentColumnField').addClass('d-none');
 
                     $('#edit_fleet').val(edit_inquiry_type === 'Company' ? '' : data.customer.company_name);
@@ -1091,11 +1107,11 @@
                 } else if (edit_inquiry_type === 'Government') {
                     // Hide first name, last name, and company, show government field
                     $('#editFleetColumnField').addClass('d-none');
-                    $('#edit_first_name, #edit_first_name').closest('.row').hide();
+                    $('#edit_first_name, #edit_first_name').closest('.row').show();
                     $('#editQuantityColumnField').removeClass('d-none');
                     $('#editCompanyColumnField').addClass('d-none');
                     $('#editGovernmentColumnField').removeClass('d-none');
-                    $('#edit_gender, #edit_age').closest('.row').hide(); // Hide gender and age for fleet and company
+                    $('#edit_gender, #edit_birthdate, #edit_age').closest('.row').hide(); // Hide gender and age for fleet and company
 
                     $('#edit_government').val(data.customer.department_name);
 
@@ -1156,6 +1172,7 @@
                     firstName: data.customer.customer_first_name,
                     lastName: data.customer.customer_last_name,
                     gender: data.customer.gender,
+                    birthdate: data.customer.birthdate,
                     age: data.customer.age,
                     mobileNumber: data.customer.contact_number,
                     address: data.customer.address,
@@ -1279,6 +1296,7 @@
         });
     });
 
+    // Save Remark
     $(document).on('click', '.save-remark', function() {
         const ID =  $('#remarks_id').val();
         const remarksData =  $('#remarks').val();

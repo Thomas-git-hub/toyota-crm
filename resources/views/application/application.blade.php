@@ -148,6 +148,11 @@
                         </select>
                         <small class="text-danger" id="validateGender">Please Select Gender</small>
                     </div>
+                    <div class="col-md" id="birthdateColumnField">
+                        <label for="age" class="form-label required">Birthdate</label>
+                        <input type="date" class="form-control" id="birthdate" name="birthdate" placeholder="" />
+                        <small class="text-danger" id="validateBirthdate">Enter Customer Birthdate</small>
+                    </div>
                     <div class="col-md" id="editAgeColumnField">
                         <label for="edit_age" class="form-label required">Age</label>
                         <input type="number" class="form-control" id="edit_age" name="age" placeholder="" />
@@ -214,6 +219,7 @@
                     <label for="source" class="form-label required">Source</label>
                     <select class="form-control" id="edit_source" name="source" >
                         <option value="">Select Source</option>
+                        <option value="Repeat-Customer">Repeat Customer</option>
                         <option value="Social-Media">Social-Media</option>
                         <option value="Referal">Referal</option>
                         <option value="Mall Duty">Mall Duty</option>
