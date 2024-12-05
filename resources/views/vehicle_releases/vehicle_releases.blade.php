@@ -293,6 +293,9 @@
                                     <button type="button" class="btn btn-icon me-2 btn-primary processing-btn" data-id="${data}">
                                         <span class="tf-icons bx bxs-check-circle bx-22px"></span>
                                     </button>
+                                     <button type="button" class="btn btn-icon me-2 btn-danger cancel-btn" data-id="${data}">
+                                        <span class="tf-icons bx bxs-x-circle bx-22px"></span>
+                                    </button>
                                 </div>`;
                     }
             },
@@ -360,6 +363,51 @@
                         if (response.success) {
                             Swal.fire(
                                 'Updated!',
+                                response.message,
+                                'success'
+                            );
+                            vehicleReleasesTable.ajax.reload();
+                            statusTable.ajax.reload();
+                            releasedUnitsTable.ajax.reload();
+                            releasedCount();
+                        }
+                    },
+                    error: function(xhr) {
+                        Swal.fire(
+                            'Error!',
+                            xhr.responseJSON?.message || 'Something went wrong!',
+                            'error'
+                        );
+                    }
+                });
+            }
+        });
+    });
+
+    $(document).on('click', '.cancel-btn', function() {
+        const ID = $(this).data('id');
+
+        Swal.fire({
+            title: 'Are you sure?',
+            text: "Do you want to cancel this transaction?",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#3085d6',
+            confirmButtonText: 'Yes, cancel it!'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                $.ajax({
+                    url: '{{ route("vehicle.releases.cancel") }}', // Ensure this route is defined in your routes
+                    type: 'POST',
+                    data: {
+                        id: ID,
+                        _token: '{{ csrf_token() }}' // Include CSRF token
+                    },
+                    success: function(response) {
+                        if (response.success) {
+                            Swal.fire(
+                                'Deleted!',
                                 response.message,
                                 'success'
                             );

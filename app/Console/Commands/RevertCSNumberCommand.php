@@ -33,7 +33,7 @@ class RevertCSNumberCommand extends Command
             $twoDaysAgo = Carbon::now()->subDays(2);
             $reservation = Status::where('status', 'like', 'Reserved')->first()->id;
             // Fetch transactions that are not released and older than 2 days
-            $transactions = Transactions::whereI('status', $reservation)
+            $transactions = Transactions::where('status', $reservation)
                 ->whereNotNull('inventory_id')
                 ->where('updated_at', '<=', $twoDaysAgo)
                 ->get();

@@ -533,6 +533,9 @@
                                     <button type="button" class="btn btn-icon me-2 btn-primary processing-pending-btn" data-id="${data}">
                                         <span class="tf-icons bx bxs-check-circle bx-22px"></span>
                                     </button>
+                                      <button type="button" class="btn btn-icon me-2 btn-danger cancel-pending-btn" data-id="${data}">
+                                        <span class="tf-icons bx bxs-trash bx-22px"></span>
+                                    </button>
                                 </div>`;
                     }
             },
@@ -550,7 +553,8 @@
                                     </button>
                                 </div>`;
                     }
-            },
+            }, 
+           
         ],
         order: [[0, 'desc']],  // Sort by 'unit' column by default
         columnDefs: [
@@ -755,6 +759,49 @@
                             statusTable.ajax.reload();
                             availableUnitsTable.ajax.reload();
                             reservedCount();
+                        }
+                    },
+                    error: function(xhr) {
+                        Swal.fire(
+                            'Error!',
+                            xhr.responseJSON?.message || 'Something went wrong!',
+                            'error'
+                        );
+                    }
+                });
+            }
+        });
+    });
+
+    $(document).on('click', '.cancel-pending-btn', function() {
+        const appID = $(this).data('id');
+        console.log(appID);
+
+        Swal.fire({
+            title: 'Are you sure?',
+            text: "Do you want to cancel this application?",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#3085d6',
+            confirmButtonText: 'Yes, cancel it!'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                $.ajax({
+                    url: '{{ route("vehicle.reservation.cancel.pending") }}', // Ensure this route is defined in your routes
+                    type: 'POST',
+                    data: {
+                        id: appID,
+                        _token: '{{ csrf_token() }}' // Include CSRF token
+                    },
+                    success: function(response) {
+                        if (response.success) {
+                            Swal.fire(
+                                'Deleted!',
+                                response.message,
+                                'success'
+                            );
+                            vehicleReservationTable.ajax.reload(); // Reload the DataTable
                         }
                     },
                     error: function(xhr) {

@@ -316,4 +316,33 @@ class VehicleReleasesController extends Controller
             ], 500);
         }
     }
+
+    public function cancel_release(Request $request){
+        try {
+
+            $pending_for_release_status = Status::where('status', 'like', 'Pending For Release')->first()->id;
+            $reserved_status = Status::where('status', 'like', 'Reserved')->first()->id;
+
+            $transaction = Transactions::findOrFail(decrypt($request->id));
+
+            if($transaction->reservation_transaction_status == $pending_for_release_status){
+               
+                $transaction->status = $reserved_status;
+                $transaction->reservation_transaction_status = $reserved_status;
+                $transaction->released_date = null;
+                $transaction->updated_at = now();
+                $transaction->save();
+
+            }
+            return response()->json([
+                'success' => true,
+                'message' => 'Vehicle release request successfully processed'
+            ]);
+
+
+        } catch (\Exception $e) {
+
+        }
+
+    }
 }

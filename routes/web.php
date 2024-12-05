@@ -68,6 +68,7 @@ Route::post('vehicle-reservation/processing_pending', [VehicleReservationControl
 Route::post('vehicle-reservation/processing_reserved', [VehicleReservationController::class, 'processing_reserved'])->name('vehicle.reservation.processing_reserved');
 Route::get('get-cs-number/{id}', [VehicleReservationController::class, 'getCSNumberByVehicleId'])->name('get-cs-number');
 Route::post('vehicle/reservation/addCSNumber', [VehicleReservationController::class, 'addCSNumber'])->name('vehicle.reservation.addCSNumber');
+Route::post('vehicle/reservation/cancel/pending', [VehicleReservationController::class, 'cancel_pending'])->name('vehicle.reservation.cancel.pending');
 
 
 // VEHICLE RELEASES
@@ -78,6 +79,7 @@ Route::get('vehicle-releases/releasedUnitsList', [VehicleReleasesController::cla
 Route::get('vehicle-releases/releasedPerTeam', [VehicleReleasesController::class, 'releasedPerTeam'])->name('vehicle.releases.releasedPerTeam');
 Route::get('vehicle-releases/getReleasedCount', [VehicleReleasesController::class, 'getReleasedCount'])->name('vehicle.releases.getReleasedCount');
 Route::post('vehicle-releases/processing', [VehicleReleasesController::class, 'processing'])->name('vehicle.releases.processing');
+Route::post('vehicle-releases/cancel', [VehicleReleasesController::class, 'cancel_release'])->name('vehicle.releases.cancel');
 
 // VEHICLE INVENTORY
 Route::get('vehicle-inventory', [VehicleInventoryController::class, 'index'])->name('vehicle.inventory');

@@ -365,17 +365,17 @@ class VehicleReservationController extends Controller
 
             foreach ($transaction_pendings as $transaction) {
                 $transaction->status = $cancel_status;
+                $transaction->reservation_id = null;
                 $transaction->reservation_transaction_status = $cancel_status;
-                $transaction->reservation_date = now();
+                $transaction->reservation_date = null;
                 $transaction->save();
-
-                $application = Application::findOrFail($transaction->application_id);
-                $application->status_id =  $cancel_status;
-                $application->updated_by = Auth::user()->id;
-                $application->updated_at = now();
-                $application->save();
-
             }
+
+            $application = Application::findOrFail($transaction->application_id);
+            $application->status_id =  $cancel_status;
+            $application->updated_by = Auth::user()->id;
+            $application->updated_at = now();
+            $application->save();
 
             return response()->json([
                 'success' => true,
@@ -389,7 +389,7 @@ class VehicleReservationController extends Controller
             ], 500);
         }
     }
-
+    
     public function getCSNumberByVehicleId(Request $request, $vehicle_id) {
 
         if($request->color === 'Any Color'){
