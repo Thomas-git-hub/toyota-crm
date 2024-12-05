@@ -427,6 +427,7 @@ class LeadController extends Controller
                 'company' => 'nullable',
                 'fleet' => 'nullable',
                 'gender' => 'nullable',
+                'birthdate' => 'nullable|date',
                 'age' => 'nullable',
                 'mobile_number' => 'required|string',
                 'car_unit' => 'required|string',
@@ -451,6 +452,7 @@ class LeadController extends Controller
             $customer->contact_number = $validated['mobile_number'];
             $customer->gender = $validated['gender'];
             $customer->address = $validated['address'];
+            $customer->birthdate = $validated['birthdate'];
             $customer->age = $validated['age'];
             $customer->source = $validated['source'];
             $customer->created_by = Auth::id();

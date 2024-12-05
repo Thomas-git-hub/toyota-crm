@@ -175,6 +175,7 @@
                     <label for="source" class="form-label required">Source</label>
                     <select class="form-control" id="edit_source" name="source" >
                         <option value="">Select Source</option>
+                        <option value="Repeat-Customer">Repeat Customer</option>
                         <option value="Social-Media">Social-Media</option>
                         <option value="Referal">Referal</option>
                         <option value="Mall Duty">Mall Duty</option>
@@ -284,9 +285,14 @@
                                 </select>
                                 <small class="text-danger" id="validateGender">Please Select Gender</small>
                             </div>
+                            <div class="col-md" id="birthdateColumnField">
+                                <label for="age" class="form-label required">Birthdate</label>
+                                <input type="date" class="form-control" id="birthdate" name="birthdate" placeholder="" />
+                                <small class="text-danger" id="validateBirthdate">Enter Customer Birthdate</small>
+                            </div>
                             <div class="col-md" id="ageColumnField">
-                                <label for="age" class="form-label required">Age</label>
-                                <input type="number" class="form-control" id="age" name="age" placeholder="" />
+                                <label for="age" class="form-label">Age</label>
+                                <input type="number" class="form-control" id="age" name="age" placeholder=""/>
                                 <small class="text-danger" id="validateLastname">Enter Customer Age</small>
                             </div>
                         </div>
@@ -347,6 +353,7 @@
                             <label for="source" class="form-label required">Source</label>
                             <select class="form-control" id="source" name="source" >
                                 <option value="">Select Source</option>
+                                <option value="Repeat-Customer">Repeat Customer</option>
                                 <option value="Social-Media">Social-Media</option>
                                 <option value="Referal">Referal</option>
                                 <option value="Mall Duty">Mall Duty</option>
@@ -1416,6 +1423,37 @@
             // Show the textarea and save button
             $("#remarks").removeClass("d-none");
             $("#saveEditRemarksButton").removeClass("d-none");
+        });
+    });
+
+
+    // Compute Birthdate store to age
+    $(document).ready(function () {
+        // Attach an event listener to the birthdate field
+        $('#birthdate').on('change', function () {
+            // Get the entered birthdate value
+            const birthdate = $(this).val();
+
+            // Check if a valid date is provided
+            if (birthdate) {
+                // Calculate the age
+                const birthDateObj = new Date(birthdate);
+                const today = new Date();
+
+                let age = today.getFullYear() - birthDateObj.getFullYear();
+                const monthDiff = today.getMonth() - birthDateObj.getMonth();
+
+                // Adjust age if the current date is before the birthdate this year
+                if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDateObj.getDate())) {
+                    age--;
+                }
+
+                // Set the age field value
+                $('#age').val(age);
+            } else {
+                // Clear the age field if the birthdate is invalid
+                $('#age').val('');
+            }
         });
     });
 

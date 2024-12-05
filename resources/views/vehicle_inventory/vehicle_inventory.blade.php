@@ -12,6 +12,92 @@
     </div>
 </div>
 
+{{-- Edit Inventory Data Modal --}}
+<div class="modal fade" id="editInventoryFormModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+            </button>
+        </div>
+        <div class="modal-body">
+            <form id="editInventoryFormData">
+                @csrf
+                <div class="row mb-3">
+                    <div class="col-md">
+                        <label for="car_unit" class="form-label required">Unit</label>
+                        <select class="form-control" id="edit_car_unit" name="car_unit">
+                            <option value="">Select Unit</option>
+                        </select>
+                        <small class="text-danger" id="validateUnit">Please Select Unit</small>
+                    </div>
+                    <div class="col-md">
+                        <label for="car_variant" class="form-label required">Variants</label>
+                        <select class="form-control" id="edit_car_variant" name="car_variant">
+                            <option value="">Select Variants</option>
+                        </select>
+                        <small class="text-danger" id="validateVariant">Please Select Variant</small>
+                    </div>
+                    <div class="col-md">
+                        <label for="car_color" class="form-label required">Color</label>
+                        <select class="form-control" id="edit_car_color" name="car_color">
+                            <option value="">Select Color</option>
+                        </select>
+                        <small class="text-danger" id="validateColor">Please Select Color</small>
+                    </div>
+                </div>
+                <div class="row mb-2">
+                    <div class="col-md">
+                        <label for="car_unit" class="form-label required">Year Model</label>
+                        <select class="form-control" id="editYearModel" name="year_model">
+                            <option value="">Select Year</option>
+                        </select>
+                        <small class="text-danger" id="validateYearModel">Please Select Year Model</small>
+                    </div>
+                    <div class="col-md">
+                        <label for="exampleFormControlInput1" class="form-label required">CS Number</label>
+                        <input type="email" class="form-control" id="editCsNumber" placeholder="" />
+                        <small class="text-danger" id="validateCSNumber">Input CS Number</small>
+                    </div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-md">
+                        <label for="flatpickr-date" class="form-label required">Actual Invoice Date</label>
+                        <input type="text" class="form-control" placeholder="YYYY-MM-DD" id="editActualInvoiceDate" />
+                        <small class="text-danger" id="validateInvoiceDate">Pick Actual Invoice Date</small>
+
+                    </div>
+                    <div class="col-md">
+                        <label for="flatpickr-date" class="form-label required">Delivery Date</label>
+                        <input type="text" class="form-control" placeholder="YYYY-MM-DD" id="editDeliveryDate" />
+                        <small class="text-danger" id="validateDeliveryDate">Pick Delivery Date</small>
+
+                    </div>
+                    <div class="col-md">
+                        <label for="exampleFormControlInput1" class="form-label required">Invoice Number</label>
+                        <input type="email" class="form-control" id="editInvoiceNumber" placeholder="" />
+                        <small class="text-danger" id="validateInvoiceNumber">Input Invoice Number</small>
+                    </div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-md">
+                        <label for="exampleFormControlTextarea1" class="form-label">Remarks</label>
+                        <textarea class="form-control" id="editRemarks" rows="3"></textarea>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md d-flex justify-content-end gap-2">
+                        <button type="button" class="btn btn-label-danger" id="cancelEditInventoryFormButton">Cancel</button>
+                        <button type="submit" class="btn btn-dark" id="addEditInventoryFormButton">Add to Inventory</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+      </div>
+    </div>
+</div>
+
 {{-- Datatables --}}
 <div class="row mb-4">
     <div class="col-md">
@@ -315,74 +401,66 @@
 
     // Vehicle Form Submission
     $(document).ready(function() {
-        $('#vehicleFormData').on('submit', function(e) {
-            e.preventDefault();
+    $('#vehicleFormData').on('submit', function(e) {
+        e.preventDefault();
 
-            let formData = {
-                unit: $('#unit').val(),
-                variant: $('#variant').val(),
-                color: $('#color').val(),
-            };
+        let formData = {
+            unit: $('#unit').val(),
+            variant: $('#variant').val(),
+            color: $('#color').val(),
+        };
 
-            $.ajax({
-                url: '{{ route("vehicle.store") }}', // Adjust to your route name
-                type: 'POST',
-                data: formData,
-                headers: {
-                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                },
-                success: function(response) {
-                    if (response.success) {
-                        Swal.fire({
-                            icon: 'success',
-                            title: 'Success',
-                            text: response.message,
-                        }).then(() => {
-                        // Hide the form card after success alert is closed
-                        $('#vehicleFormCard').hide();
-
-                        // Reset the form
-                        $('#vehicleFormData')[0].reset();
-
-                        // Optionally reload your vehicle table or UI component
-                        if (typeof vehicleTable !== 'undefined') {
-                            vehicleTable.ajax.reload();
-                        }
-                    });
-                    }
-                },
-                error: function(xhr) {
-                    let errorMessage = xhr.responseJSON?.message || 'Something went wrong!';
+        $.ajax({
+            url: '{{ route("vehicle.store") }}', // Adjust to your route name
+            type: 'POST',
+            data: formData,
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            },
+            success: function(response) {
+                if (response.success) {
                     Swal.fire({
-                        icon: 'error',
-                        title: 'Error',
-                        text: errorMessage
+                        icon: 'success',
+                        title: 'Success',
+                        text: response.message,
+                    }).then(() => {
+                        // Reload the page after success alert is closed
+                        location.reload();
                     });
+                }
+            },
+            error: function(xhr) {
+                let errorMessage = xhr.responseJSON?.message || 'Something went wrong!';
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: errorMessage
+                });
 
-                    // Highlight validation errors if any
-                    if (xhr.responseJSON?.errors) {
-                        for (const [field, messages] of Object.entries(xhr.responseJSON.errors)) {
-                            $(`#${field}`).addClass('is-invalid border-danger');
-                            $(`#${field}`).after(`<small class="text-danger">${messages[0]}</small>`);
-                        }
+                // Highlight validation errors if any
+                if (xhr.responseJSON?.errors) {
+                    for (const [field, messages] of Object.entries(xhr.responseJSON.errors)) {
+                        $(`#${field}`).addClass('is-invalid border-danger');
+                        $(`#${field}`).after(`<small class="text-danger">${messages[0]}</small>`);
                     }
                 }
-            });
+            }
         });
     });
+});
+
 
     // Vehicle Form Hide Show
     $(document).ready(function() {
         // Show the #vehicleFormCard when #addVehicleButton is clicked
         $('#addVehicleButton').click(function() {
             $('#vehicleFormCard').show();
-            $('#addVehicleButton').hide();
+            $("#inventoryFormCard").hide(); // Hide the inventory form card
         });
 
         // Reset all inputs inside #vehicleFormData and hide #vehicleFormCard when #cancelVehicleFormButton is clicked
         $('#cancelVehicleFormButton').click(function() {
             $('#vehicleFormData').find('input').val(''); // Reset all input fields
-            $('#addVehicleButton').show();
             $('#vehicleFormCard').hide(); // Hide the form card
         });
     });
@@ -390,7 +468,6 @@
         // When #addInventoryButton is clicked
         $("#addInventoryButton").on("click", function () {
             $("#inventoryFormCard").show(); // Display the inventory form card
-            $("#addInventoryButton").hide(); // Hide the add inventory button
             $("#vehicleFormCard").hide(); // Hide the vehicle form card
         });
 
@@ -398,7 +475,6 @@
         $("#cancelInventoryFormButton").on("click", function () {
             $("#inventoryFormData")[0].reset(); // Clear all fields in the form
             $("#inventoryFormCard").hide(); // Hide the inventory form card
-            $("#addInventoryButton").show(); // Display the add inventory button
         });
     });
 
@@ -527,14 +603,14 @@
         //     { unit: "Unit5", model: "Model 5", color: "Purple", cs_number: "CS005", actual_invoice_date: "2024-05-01", delivery_date: "2024-05-15", invoice_no: "INV005", tags: "Tag 5", team: "Team 5", date_assigned: "2024-05-01", age: "5 years", status: "Active", remarks: "Remark 5", action: "<button class='process-btn'>Process</button>" },
         // ],
         columns: [
-            { data: 'year_model', name: 'year_model', title: 'Year Model' },
             { data: 'unit', name: 'unit', title: 'Unit' },
             { data: 'model', name: 'model', title: 'Variant' },
             { data: 'color', name: 'color', title: 'Color' },
+            { data: 'year_model', name: 'year_model', title: 'Year Model' },
             { data: 'cs_number', name: 'cs_number', title: 'CS Number' },
             { data: 'actual_invoice_date', name: 'actual_invoice_date', title: 'Actual Invoice Date' },
-            { data: 'delivery_date', name: 'delivery_date', title: 'Delivery Date' },
             { data: 'invoice_number', name: 'invoice_number', title: 'Invoice No.' },
+            { data: 'delivery_date', name: 'delivery_date', title: 'Delivery Date' },
             { data: 'tags', name: 'tags', title: 'TAGs' },
             // { data: 'team', name: 'team', title: 'Team' },
             // { data: 'date_assigned', name: 'date_assigned', title: 'Date Assigned' },
@@ -549,7 +625,7 @@
                 searchable: false,
                 render: function(data, type, row) {
                         return `<div class="d-flex">
-                                    <button type="button" class="btn btn-icon me-2 btn-success edit-btn" data-bs-toggle="modal" data-bs-target="#editInquiryFormModal" data-id="">
+                                    <button type="button" class="btn btn-icon me-2 btn-success edit-btn" data-bs-toggle="modal" data-bs-target="#editInventoryFormModal" data-id="">
                                     <span class="tf-icons bx bx-pencil bx-22px"></span>
                                 </button>
                                 </div>`;
