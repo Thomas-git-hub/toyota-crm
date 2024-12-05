@@ -74,8 +74,8 @@
         <li class="menu-item">
           <div style="margin-left: 5%; margin-top: 5%; color: #b4b0c4;">Bank</div>
         </li>
-        <li class="menu-item {{ request()->is('') ? 'active' : '' }}">
-            <a href="" class="menu-link">
+        <li class="menu-item {{ request()->is('banks') ? 'active' : '' }}">
+            <a href="/banks" class="menu-link">
                 <i class='menu-icon tf-icons bx bxs-bank'></i>
               <div class="text-truncate" data-i18n="Page 2">Banks</div>
             </a>

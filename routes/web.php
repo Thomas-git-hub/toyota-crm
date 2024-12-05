@@ -9,6 +9,7 @@ use App\Http\Controllers\PermissionController;
 use App\Http\Controllers\VehicleReservationController;
 use App\Http\Controllers\VehicleReleasesController;
 use App\Http\Controllers\VehicleInventoryController;
+use App\Http\Controllers\BankController;
 
 
 //LOGIN
@@ -28,12 +29,12 @@ Route::get('/leads/company/list', [LeadController::class, 'companyList'])->name(
 Route::get('/leads/government/list', [LeadController::class, 'governmentList'])->name('leads.government.list')->middleware('permission:view_government_leads');
 Route::post('/leads/processing', [LeadController::class, 'processing'])->name('leads.processing')->middleware('permission:process_leads');
 Route::delete('/leads/destroy', [LeadController::class, 'destroy'])->name('leads.destroy')->middleware('permission:delete_leads');
-Route::get('/getProvince', [LeadController::class, 'getProvince'])->name('leads.getProvince')->middleware('permission:get_province');
-Route::get('/getUnit', [LeadController::class, 'getUnit'])->name('leads.getUnit')->middleware('permission:get_unit');
-Route::get('/getInquiryType', [LeadController::class, 'getInquiryType'])->name('leads.getInquiryType')->middleware('permission:get_inquiry_type');
-Route::get('/leads/get-variants-and-colors', [LeadController::class, 'getVariantsAndColors'])->name('leads.getVariantsAndColors')->middleware('permission:get_variants_and_colors');
-Route::get('/leads/get-variants', [LeadController::class, 'getVariants'])->name('leads.getVariants')->middleware('permission:get_variants');
-Route::get('/leads/get-colors', [LeadController::class, 'getColor'])->name('leads.getColor')->middleware('permission:get_colors');
+Route::get('/getProvince', [LeadController::class, 'getProvince'])->name('leads.getProvince');
+Route::get('/getUnit', [LeadController::class, 'getUnit'])->name('leads.getUnit');
+Route::get('/getInquiryType', [LeadController::class, 'getInquiryType'])->name('leads.getInquiryType');
+Route::get('/leads/get-variants-and-colors', [LeadController::class, 'getVariantsAndColors']);
+Route::get('/leads/get-variants', [LeadController::class, 'getVariants'])->name('leads.getVariants');
+Route::get('/leads/get-colors', [LeadController::class, 'getColor'])->name('leads.getColor');
 Route::get('leads/edit/{id}', [LeadController::class, 'edit'])->name('leads.edit')->middleware('permission:edit_lead');
 Route::post('/leads/update/{id}', [LeadController::class, 'update'])->name('leads.update')->middleware('permission:update_lead'); 
 Route::post('/leads/updateRemarks/', [LeadController::class, 'updateRemarks'])->name('leads.updateRemarks')->middleware('permission:update_remarks');
@@ -49,7 +50,7 @@ Route::post('/application/store', [ApplicationController::class, 'store'])->name
 Route::get('application/edit/{id}', [ApplicationController::class, 'edit'])->name('application.edit')->middleware('permission:edit_application');
 Route::post('/application/update/{id}', [ApplicationController::class, 'update'])->name('application.update')->middleware('permission:update_application');
 Route::get('/getBanks', [ApplicationController::class, 'getBanks'])->name('application.getBanks')->middleware('permission:get_banks');
-Route::get('/getStatus', [ApplicationController::class, 'getStatus'])->name('application.getStatus')->middleware('permission:get_status');
+Route::get('/getStatus', [ApplicationController::class, 'getStatus'])->name('application.getStatus');
 Route::post('/application/processing', [ApplicationController::class, 'processing'])->name('application.processing')->middleware('permission:process_applications');
 Route::post('/application/cancel', [ApplicationController::class, 'cancel'])->name('application.status.cancel')->middleware('permission:cancel_application');
 Route::post('/application/store/banks', [ApplicationController::class, 'updateBanks'])->name('application.store.banks')->middleware('permission:update_banks');
@@ -97,3 +98,13 @@ Route::post('permissions/update', [PermissionController::class, 'updatePermissio
 Route::get('permissions/user-types', [PermissionController::class, 'getUserTypes'])->name('permissions.user-types');
 Route::get('/permissions/usertype/{usertypeId}', [PermissionController::class, 'getUserTypePermissions'])
     ->name('permissions.usertype.permissions');
+
+
+
+// BANKS
+Route::get('banks', [BankController::class, 'index'])->name('banks');
+Route::post('banks/store', [BankController::class, 'store'])->name('banks.store');
+Route::get('banks/edit/{id}', [BankController::class, 'edit'])->name('banks.edit');
+Route::match(['post', 'put'], 'banks/update/{id}', [BankController::class, 'update'])->name('banks.update');
+Route::delete('banks/destroy/{id}', [BankController::class, 'destroy'])->name('banks.destroy');
+Route::get('banks/list', [BankController::class, 'list'])->name('banks.list');

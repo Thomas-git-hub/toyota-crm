@@ -38,6 +38,11 @@ class LeadController extends Controller
                         })
                         ->where('status_id', '<>', $status);
 
+                        if(!Auth::user()->usertype->name === 'SuperAdmin'){
+
+                            $query->where('created_by', Auth::user()->id);
+                        }
+
         if ($request->has('date_range') && !empty($request->date_range)) {
             [$startDate, $endDate] = explode(' to ', $request->date_range);
             $startDate = Carbon::createFromFormat('m/d/Y', $startDate)->startOfDay();
@@ -112,6 +117,11 @@ class LeadController extends Controller
                             $subQuery->where('inquiry_type', 'Fleet');
                         })
                         ->where('status_id', '<>', $status);
+
+                        if(!Auth::user()->usertype->name === 'SuperAdmin'){
+
+                            $query->where('created_by', Auth::user()->id);
+                        }
 
         if ($request->has('date_range') && !empty($request->date_range)) {
             [$startDate, $endDate] = explode(' to ', $request->date_range);
@@ -188,6 +198,11 @@ class LeadController extends Controller
                         })
                         ->where('status_id', '<>', $status);
 
+                        if(!Auth::user()->usertype->name === 'SuperAdmin'){
+
+                            $query->where('created_by', Auth::user()->id);
+                        }
+
 
         if ($request->has('date_range') && !empty($request->date_range)) {
             [$startDate, $endDate] = explode(' to ', $request->date_range);
@@ -263,6 +278,11 @@ class LeadController extends Controller
                             $subQuery->where('inquiry_type', 'Government');
                         })
                         ->where('status_id', '<>', $status);
+
+                        if(!Auth::user()->usertype->name === 'SuperAdmin'){
+
+                            $query->where('created_by', Auth::user()->id);
+                        }
 
 
         if ($request->has('date_range') && !empty($request->date_range)) {
