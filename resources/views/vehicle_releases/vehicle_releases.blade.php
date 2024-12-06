@@ -12,6 +12,41 @@
     </div>
 </div>
 
+{{-- Add Profit Modal --}}
+<div class="modal fade" id="addProfitModal" tabindex="-1" aria-labelledby="addProfitModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel">Total Profit</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+            </button>
+        </div>
+        <div class="modal-body">
+          <form action="profitForm">
+            <div class="row mb-3">
+                <div class="col-md">
+                    <label for="profit" class="form-label required">Add Total Profit</label>
+                    <div class="d-flex align-items-center gap-2">
+                        <b class="fs-4">₱</b>
+                        <input type="text" class="form-control" id="profit" name="profit" required>
+                    </div>
+                    <div class="d-flex justify-content-end">
+                        <small class="text-danger" id="validateProfit">Input Profit Amount</small>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md d-flex justify-content-end gap-2">
+                    <button type="button" class="btn btn-label-danger" data-bs-dismiss="modal" id="closeProfitFormModal">Close</button>
+                    <button type="Submit" class="btn btn-dark" id="saveProfitFormModal">Enter</button>
+                </div>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+</div>
+
 {{-- Header Datatables --}}
 <div class="row mb-4">
     <div class="col-md">
@@ -300,6 +335,16 @@
                                 </div>`;
                     }
             },
+        {
+            data: 'profit',
+            name: 'profit',
+            title: 'Profit',
+            render: function(data, type, row) {
+                return `<button type="button" class="btn btn-icon me-2 btn-label-dark profit-btn" data-bs-toggle="modal" data-bs-target="#addProfitModal" data-id="${row.id}">
+                            <span class="tf-icons bx bxs-calculator bx-22px"></span>
+                        </button>`;
+            }
+        },
         ],
         order: [[0, 'desc']],  // Sort by 'unit' column by default
         columnDefs: [
@@ -430,6 +475,40 @@
             }
         });
     });
+
+
+    // profit form validation on border-danger
+    $(document).ready(function () {
+        $('#saveProfitFormModal').on('click', function (e) {
+            e.preventDefault(); // Prevent default form submission
+
+            const $profitInput = $('#profit');
+            const $validateProfit = $('#validateProfit');
+
+            if ($profitInput.val().trim() === '') {
+                // Add border-danger class and show the validation message
+                $profitInput.addClass('border-danger');
+                $validateProfit.text('Input Profit Amount').show();
+            } else {
+                // Remove border-danger class and hide the validation message
+                $profitInput.removeClass('border-danger');
+                $validateProfit.hide();
+
+                // Optionally handle form submission logic here
+                alert('Profit amount saved successfully!');
+            }
+        });
+
+        // Reset validation on modal close (optional)
+        $('#closeProfitFormModal').on('click', function () {
+            const $profitInput = $('#profit');
+            const $validateProfit = $('#validateProfit');
+            $profitInput.removeClass('border-danger').val('');
+            $validateProfit.hide();
+        });
+    });
+
+
 </script>
 
 

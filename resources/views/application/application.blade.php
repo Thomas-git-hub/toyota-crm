@@ -76,7 +76,10 @@
                         <div class="col-md">
                             <div class="mb-3">
                                 <label for="percentage" class="form-label required">Percentage-Based Down Payment</label>
-                                <input type="number" class="form-control" id="percentage" name="percentage" step="0.01" min="0">
+                                <div class="d-flex align-items-center gap-2">
+                                    <input type="number" class="form-control" id="percentage" name="percentage" step="0.01" min="0">
+                                    <b class="fs-4">%</b>
+                                </div>
                                 <small class="text-danger" id="validatePercentage">Please enter percentage</small>
                             </div>
                         </div>
