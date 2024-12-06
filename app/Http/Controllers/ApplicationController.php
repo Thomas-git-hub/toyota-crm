@@ -676,15 +676,27 @@ class ApplicationController extends Controller
             $application = Application::findOrFail(decrypt($request->id));
 
             if( $application->status_id == $pending_status  ){
-                $existingBankTransactions = BankTransaction::where('application_id', decrypt($request->id))
-                    ->whereNull('deleted_at')
-                    ->get();
 
-                if($existingBankTransactions->count() === 0){
-                    return response()->json([
-                        'success' => false,
-                        'message' => 'Bank is required for processing.'
-                    ], 500);
+                if($request->transaction === 'financing'){
+                    $existingBankTransactions = BankTransaction::where('application_id', decrypt($request->id))
+                        ->whereNull('deleted_at')
+                        ->get();
+
+                    if($existingBankTransactions->count() === 0){
+                        return response()->json([
+                            'success' => false,
+                                'message' => 'Bank is required for processing.'
+                            ], 500);
+                    }
+                }
+                if($request->transaction === 'po'){
+                    $bankId = $application->bank_id;
+                    if (!$bankId) {
+                        return response()->json([
+                            'success' => false,
+                            'message' => 'Bank is required for PO transactions.'
+                        ], 500);
+                    }
                 }
 
                 $application->status_id =  $approved_status;
@@ -695,22 +707,49 @@ class ApplicationController extends Controller
             }else if( $application->status_id == $approved_status){
 
                 if($request->transaction === 'financing'){
+
+                    $existingBankTransactions = BankTransaction::where('application_id', decrypt($request->id))
+                        ->whereNull('deleted_at')
+                        ->whereNotNull('approval_date')
+                        ->whereNotNull('approval_status')
+                        ->get();
+
+                    if($existingBankTransactions->count() === 0){
+                        return response()->json([
+                            'success' => false,
+                                'message' => 'Bank approval is required for processing.'
+                            ], 500);
+                    }
+
+
                     $bankId = $application->bank_id;
+
                     if (!$bankId) {
                         return response()->json([
                             'success' => false,
                             'message' => 'Bank is required for financing transactions.'
                         ], 500);
                     }
-                   }
-                   if($request->transaction === 'po'){
-                    $bankId = $application->bank_id;
-                    if (!$bankId) {
+
+                    $terms = $application->terms;
+                    $percentage = $application->percentage;
+
+                    if(!$terms || !$percentage){
                         return response()->json([
                             'success' => false,
-                            'message' => 'Bank is required for PO transactions.'
+                            'message' => 'Terms and percentage are required for financing transactions.'
                         ], 500);
                     }
+
+                   }
+                   if($request->transaction === 'po'){
+                        $bankId = $application->bank_id;
+                        if (!$bankId) {
+                            return response()->json([
+                                'success' => false,
+                                'message' => 'Bank is required for PO transactions.'
+                            ], 500);
+                        }
                    }
                 $transactions = Transactions::where('application_id', $application->id)
                 ->whereNull('inventory_id')
@@ -924,7 +963,8 @@ class ApplicationController extends Controller
                         'bank_id' => $transaction->bank_id,
                         'bank_name' => $transaction->bank->bank_name,
                         'approval_date' => $transaction->approval_date,
-                        'is_preferred' => $transaction->is_preferred
+                        'is_preferred' => $transaction->is_preferred,
+                        'approval_status' => $transaction->approval_status
                     ];
                 });
 
@@ -990,8 +1030,4 @@ class ApplicationController extends Controller
             ], 500);
         }
     }
-
-
-
-
 }

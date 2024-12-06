@@ -25,6 +25,7 @@
           <form action="profitForm">
             <div class="row mb-3">
                 <div class="col-md">
+                    <input type="hidden" id="profit-id" name="profit-id">
                     <label for="profit" class="form-label required">Add Total Profit</label>
                     <div class="d-flex align-items-center gap-2">
                         <b class="fs-4">₱</b>
@@ -265,17 +266,11 @@
             infoEmpty: "", // Removes the message when there's no data
             infoFiltered: "", // Removes the "filtered from X entries" part
         },
-        data: [
-            { team: "EOV", quantity: 5 },
-            { team: "JDS", quantity: 3 },
-            { team: "IBT", quantity: 2 },
-            { team: "EDJ", quantity: 4 },
-            { team: "JLB", quantity: 1 },
-        ],
+       
         columns: [
             { data: 'team', name: 'team', title: 'Team' },
             { data: 'quantity', name: 'quantity', title: 'Quantity' },
-            { data: 'profit', name: 'profit', title: 'Total Profit' },
+            { data: 'total_profit', name: 'total_profit', title: 'Total Profit' },
         ],
         order: [[0, 'desc']],  // Sort by 'unit' column by default
         columnDefs: [
@@ -335,16 +330,16 @@
                                 </div>`;
                     }
             },
-        {
-            data: 'profit',
-            name: 'profit',
-            title: 'Profit',
-            render: function(data, type, row) {
-                return `<button type="button" class="btn btn-icon me-2 btn-label-dark profit-btn" data-bs-toggle="modal" data-bs-target="#addProfitModal" data-id="${row.id}">
-                            <span class="tf-icons bx bxs-calculator bx-22px"></span>
-                        </button>`;
-            }
-        },
+            {
+                data: 'profit',
+                name: 'profit',
+                title: 'Profit',
+                render: function(data, type, row) {
+                    return `<button type="button" class="btn btn-icon me-2 btn-label-dark profit-btn" data-bs-toggle="modal" data-bs-target="#addProfitModal" data-id="${row.id}" data-profit="${data}">
+                                <span class="tf-icons bx bxs-calculator bx-22px"></span>
+                            </button>`;
+                }
+            },
         ],
         order: [[0, 'desc']],  // Sort by 'unit' column by default
         columnDefs: [
@@ -362,6 +357,7 @@
         // Toggle column visibility based on the active tab
         const isFoReleasedTab = $(this).text().trim() === 'For Release Units';
         vehicleReleasesTable.column(12).visible(isFoReleasedTab);
+        vehicleReleasesTable.column(13).visible(isFoReleasedTab);
         var route = $(this).data('route');
         vehicleReleasesTable.ajax.url(route).load();
     });
@@ -476,15 +472,25 @@
         });
     });
 
+    $(document).on('click', '.profit-btn', function() {
+        const id = $(this).data('id');
+        const profit = $(this).data('profit');
+        $('#profit').val(profit);
+        $('#profit-id').val(id);
+
+    });
+
 
     // profit form validation on border-danger
     $(document).ready(function () {
+        const $profitInput = $('#profit');
+        const $validateProfit = $('#validateProfit');
+        $profitInput.on('input', function() {
+            this.value = this.value.replace(/[^0-9.]/g, ''); // Allow only numbers and decimal point
+        });
+
         $('#saveProfitFormModal').on('click', function (e) {
             e.preventDefault(); // Prevent default form submission
-
-            const $profitInput = $('#profit');
-            const $validateProfit = $('#validateProfit');
-
             if ($profitInput.val().trim() === '') {
                 // Add border-danger class and show the validation message
                 $profitInput.addClass('border-danger');
@@ -494,9 +500,42 @@
                 $profitInput.removeClass('border-danger');
                 $validateProfit.hide();
 
-                // Optionally handle form submission logic here
-                alert('Profit amount saved successfully!');
+                $.ajax({
+                    url: '{{ route("vehicle.releases.updateProfit") }}',
+                    type: 'POST',
+                    data: {
+                        id: $('#profit-id').val(),
+                        profit: $profitInput.val()
+                    },
+                    headers: {
+                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                    },
+                    success: function(response) {
+                        if (response.success) {
+                            Swal.fire(
+                                'Updated!',
+                                response.message,
+                                'success'
+                            );
+                            // vehicleReleasesTable.ajax.reload();
+                            $('#addProfitModal').modal('hide');
+                            statusTable.ajax.reload();
+
+                            // releasedUnitsTable.ajax.reload();
+                            // releasedCount();
+                        }
+                    },
+                    error: function(xhr) {
+                        Swal.fire(
+                            'Error!',
+                            xhr.responseJSON?.message || 'Something went wrong!',
+                            'error'
+                        );
+                    }
+                });
             }
+
+            
         });
 
         // Reset validation on modal close (optional)

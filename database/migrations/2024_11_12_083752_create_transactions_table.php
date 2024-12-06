@@ -20,6 +20,7 @@ return new class extends Migration
             $table->string('reservation_status')->default('none');
             $table->unsignedBigInteger('inventory_id')->nullable();
             $table->unsignedBigInteger('team_id')->nullable();
+            $table->decimal('profit', 10, 2)->nullable();
             $table->date('application_transaction_date')->nullable();
             $table->date('transaction_updated_date')->nullable();
             $table->date('reservation_date')->nullable();

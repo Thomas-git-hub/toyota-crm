@@ -85,6 +85,17 @@ class VehicleReleasesController extends Controller
             return $count;
         })
 
+        ->addColumn('total_profit', function($data) {
+            $released_status = Status::where('status', 'like', 'Released')->first();
+           $profit = Transactions::with(['inquiry', 'inventory', 'application'])
+           ->whereNull('deleted_at')
+           ->where('team_id', $data->id)
+           ->whereNotNull('reservation_id')
+           ->where('reservation_transaction_status', $released_status->id)
+           ->sum('profit');
+           return number_format($profit, 2);
+        })
+
         ->make(true);
     }
 
@@ -192,6 +203,10 @@ class VehicleReleasesController extends Controller
             return $status;
         })
 
+        ->addColumn('profit', function($data) {
+            return number_format($data->profit ?? 0, 2);
+        })
+
         ->make(true);
     }
 
@@ -278,6 +293,11 @@ class VehicleReleasesController extends Controller
             $status = Status::where('id', $data->status)->first()->status;
             return $status;
         })
+        ->addColumn('profit', function($data) {
+            return number_format($data->profit ?? 0, 2);
+        })
+
+       
 
         ->make(true);
     }
@@ -344,5 +364,28 @@ class VehicleReleasesController extends Controller
 
         }
 
+    }
+
+    public function updateProfit(Request $request){
+       try {    
+            $request->validate([
+                'profit' => 'required|numeric|min:0'
+            ]);
+
+            $transaction = Transactions::findOrFail(decrypt($request->id));
+            $transaction->profit = $request->profit;
+            $transaction->save();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Profit updated successfully'
+            ]);
+
+       } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Error updating profit: ' . $e->getMessage()
+            ], 500);
+       }
     }
 }

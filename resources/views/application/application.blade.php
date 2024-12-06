@@ -530,16 +530,18 @@
                 orderable: false,
                 searchable: false,
                 render: function (data, type, row) {
+                    if(row.transaction === 'financing'){
 
-                    let activeTab = $('.btn-group .active').attr('id'); // Get the ID of the active tab
-                    let isApprovedTab = activeTab === 'approved-tab';
-                    let termBtnStyle =  isApprovedTab ? '' : 'display: none;'; // Show for Approved tab
+                        let activeTab = $('.btn-group .active').attr('id'); // Get the ID of the active tab
+                        let isApprovedTab = activeTab === 'approved-tab';
+                        let termBtnStyle =  isApprovedTab ? '' : 'display: none;'; // Show for Approved tab
 
-                    return `
-                        <button type="button" class="btn btn-icon me-2 btn-warning term-btn" data-bs-toggle="modal" data-bs-target="#termsModal"  data-id="${data}" style="${termBtnStyle}">
-                                <span class="tf-icons bx bxs-offer bx-22px"></span>
-                        </button>
-                    `;
+                        return `
+                            <button type="button" class="btn btn-icon me-2 btn-warning term-btn" data-bs-toggle="modal" data-bs-target="#termsModal"  data-id="${data}" style="${termBtnStyle}">
+                                    <span class="tf-icons bx bxs-offer bx-22px"></span>
+                            </button>
+                        `;
+                    }
                 }
             },
             {

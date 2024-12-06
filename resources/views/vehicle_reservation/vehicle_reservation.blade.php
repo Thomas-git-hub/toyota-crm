@@ -209,11 +209,10 @@
               </div>
               <div class="modal-body">
                   <div class="mb-2">
-                      <div class="">Customer: <b id="customerName">John Doe</b></div>
-                      <div class="">Unit: <b id="customerName">John Doe</b></div>
-                      <div class="">Year Model: <b id="customerName">John Doe</b></div>
-                      <div class="">Variant: <b id="customerName">John Doe</b></div>
-                      <div class="">Color: <b id="customerName">John Doe</b></div>
+                      <div class="">Customer: <b id="customerName"></b></div>
+                      <div class="">Unit: <b id="unit"></b></div>
+                      <div class="">Variant: <b id="variant"></b></div>
+                      <div class="">Color: <b id="color"></b></div>
                   </div>
                   <div>
                      <input type="hidden" id="transaction_id" name="transaction_id">
@@ -486,7 +485,7 @@
                     if (type === 'display') {
                         return `
                             <div class="d-flex">
-                                <button type="button" class="badge btn me-2 btn-label-dark btn-csNumber" data-bs-toggle="modal" data-bs-target="#selectCSNumber"  data-vehicle-id="${row.vehicle_id}" data-transaction-id="${row.id}" data-unit="${row.unit}" data-variant="${row.variant}" data-color="${row.color}">
+                                <button type="button" class="badge btn me-2 btn-label-dark btn-csNumber" data-bs-toggle="modal" data-bs-target="#selectCSNumber"  data-vehicle-id="${row.vehicle_id}" data-transaction-id="${row.id}" data-unit="${row.unit}" data-variant="${row.variant}" data-color="${row.color}" data-client-name="${row.client_name}">
                                         ${data}
                                 </button>
                             </div>
@@ -613,8 +612,13 @@
         const unit = selectElement.data('unit');
         const variant = selectElement.data('variant');
         const color = selectElement.data('color');
+        const client_name = selectElement.data('client-name');
 
         $('#transaction_id').val(transaction_id);
+        $('#customerName').text(client_name);
+        $('#unit').text(unit);
+        $('#variant').text(variant);
+        $('#color').text(color);
 
         $.ajax({
             url: `/get-cs-number/${vehicleId}`,
