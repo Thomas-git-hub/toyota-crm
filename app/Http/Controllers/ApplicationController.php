@@ -828,6 +828,7 @@ class ApplicationController extends Controller
                         'bank_id' => $transaction->bank_id,
                         'bank_name' => $transaction->bank->bank_name,
                         'approval_date' => $transaction->approval_date,
+                        'approval_status' => $transaction->approval_status,
                         'is_preferred' => $transaction->is_preferred
                     ];
                 });
@@ -853,23 +854,30 @@ class ApplicationController extends Controller
                 'bank_ids.*' => 'required|exists:banks,id',
                 'approval_dates' => 'required|array',
                 'approval_dates.*' => 'nullable|date',
+                'approval_statuses' => 'required|array',
+                'approval_statuses.*' => 'required|in:approve,disapprove',
                 'preferred_bank' => 'required|exists:banks,id'
             ]);
 
             // Update approval dates and preferred status for each bank
             foreach ($validated['bank_ids'] as $index => $bankId) {
                 BankTransaction::where('application_id', decrypt($id))
-                ->where('bank_id', $bankId)
+                    ->where('bank_id', $bankId)
                     ->update([
                         'approval_date' => $validated['approval_dates'][$index],
+                        'approval_status' => $validated['approval_statuses'][$index],
                         'is_preferred' => $bankId == $validated['preferred_bank'],
                         'updated_by' => Auth::id()
                     ]);
             }
 
-            $application = Application::findOrFail(decrypt($id));
-            $application->bank_id = $validated['preferred_bank'];
-            $application->save();
+            // Only update preferred bank if it has an approved status
+            $preferredBankIndex = array_search($validated['preferred_bank'], $validated['bank_ids']);
+            if ($preferredBankIndex !== false && $validated['approval_statuses'][$preferredBankIndex] === 'approve') {
+                $application = Application::findOrFail(decrypt($id));
+                $application->bank_id = $validated['preferred_bank'];
+                $application->save();
+            }
 
             return response()->json([
                 'success' => true,
@@ -897,6 +905,7 @@ class ApplicationController extends Controller
                         'bank_id' => $transaction->bank_id,
                         'bank_name' => $transaction->bank->bank_name,
                         'approval_date' => $transaction->approval_date,
+                        'approval_status' => $transaction->approval_status,
                         'is_preferred' => $transaction->is_preferred
                     ];
                 });
