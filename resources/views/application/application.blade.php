@@ -130,18 +130,20 @@
     </div>
 </div>
 
-{{-- Bank Approval Date Modal --}}
+{{-- Bank Approval Modal --}}
 <div class="modal fade" id="bankApprovalDateModal" tabindex="-1" role="dialog" aria-labelledby="bankApprovalDateModalLabel" aria-hidden="true">
-    <div class="modal-dialog" role="document">
+    <div class="modal-dialog modal-xl" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="bankApprovalDateModalLabel">Bank Approval Date</h5>
+                <h5 class="modal-title" id="bankApprovalDateModalLabel">Bank Approval</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
                 <form id="bankApprovalDateForm">
                     <div class="row d-flex align-items-center mb-2">
                     </div>
+
+                    <label for="terms" class="form-label mt-2 required">Select Prefered Bank to Proceed in Application</label>
                     <select class="form-select" id="exampleFormControlSelect1" aria-label="Default select example" name="preferred_bank">
                         <option selected>Select Prefered Bank</option>
                     </select>
@@ -1324,17 +1326,23 @@
                 let bankFields = '';
                 response.banks.forEach(bank => {
                     bankFields += `
-                        <div class="row d-flex align-items-center mb-2 bank-approval-row">
+                        <div class="row d-flex align-items-center mb-   2 bank-approval-row">
                             <div class="col-md-4">
-                                <b class="">${bank.bank_name}</b>
+                                <b>${bank.bank_name}</b>
                                 <input type="hidden" name="bank_ids[]" value="${bank.bank_id}">
                             </div>
-                            <div class="col-md-8">
+                            <div class="col-md-4">
                                 <input type="date"
-                                    class="form-control"
+                                    class="form-control approval-date"
                                     name="approval_dates[]"
                                     value="${bank.approval_date || ''}"
                                     ${bank.approval_date ? 'readonly' : ''}>
+                            </div>
+                            <div class="col-md-4">
+                                <select class="form-control approval-status" name="approval_statuses[]">
+                                    <option value="approve" ${bank.approval_status === 'approve' ? 'selected' : ''}>APPROVE</option>
+                                    <option value="disapprove" ${bank.approval_status === 'disapprove' ? 'selected' : ''}>DISAPPROVE</option>
+                                </select>
                             </div>
                         </div>
                     `;
@@ -1361,6 +1369,18 @@
                     title: 'Error',
                     text: xhr.responseJSON?.message || 'Could not fetch bank data.'
                 });
+            }
+        });
+
+        // Color Change indicator for Approve and Disapprove
+        $(document).on('change', '.approval-status', function () {
+            const $row = $(this).closest('.bank-approval-row'); // Find the closest row
+            const $dateInput = $row.find('.approval-status');    // Find the associated date input field
+
+            if ($(this).val() === 'approve') {
+                $dateInput.removeClass('border-danger').addClass('border-success');
+            } else if ($(this).val() === 'disapprove') {
+                $dateInput.removeClass('border-success').addClass('border-danger');
             }
         });
     });
