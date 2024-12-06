@@ -483,7 +483,7 @@
                 render: function(data, type, row) {
                     return `
                         <div class="d-flex">
-                            <button type="button" class="btn btn-icon me-2 btn-warning edit-btn" data-bs-toggle="modal" data-bs-target="#termsModal"  data-id="">
+                            <button type="button" class="btn btn-icon me-2 btn-warning term-btn" data-bs-toggle="modal" data-bs-target="#termsModal"  data-id="${data}">
                                 <span class="tf-icons bx bxs-offer bx-22px"></span>
                             </button>
                             <button type="button" class="btn btn-icon me-2 btn-success edit-btn" data-bs-toggle="modal" data-bs-target="#editApplicationFormModal"  data-id="${data}">
@@ -783,7 +783,7 @@
 
     let originalValues = {};0
 
-    // Add this inside your <script> tag in the Blade file
+    
     $(document).on('click', '.edit-btn', function() {
         const applicationId = $(this).data('id');
         $.ajax({
