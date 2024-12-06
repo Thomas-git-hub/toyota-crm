@@ -334,6 +334,7 @@
                 data: 'profit',
                 name: 'profit',
                 title: 'Profit',
+                visible: false,
                 render: function(data, type, row) {
                     return `<button type="button" class="btn btn-icon me-2 btn-label-dark profit-btn" data-bs-toggle="modal" data-bs-target="#addProfitModal" data-id="${row.id}" data-profit="${data}">
                                 <span class="tf-icons bx bxs-calculator bx-22px"></span>
