@@ -87,11 +87,12 @@ class VehicleReleasesController extends Controller
 
         ->addColumn('total_profit', function($data) {
             $released_status = Status::where('status', 'like', 'Released')->first();
+            $posted_status = Status::where('status', 'like', 'Posted')->first();
            $profit = Transactions::with(['inquiry', 'inventory', 'application'])
            ->whereNull('deleted_at')
            ->where('team_id', $data->id)
            ->whereNotNull('reservation_id')
-           ->where('reservation_transaction_status', $released_status->id)
+           ->whereIn('reservation_transaction_status', [$released_status->id, $posted_status->id])
            ->sum('profit');
            return number_format($profit, 2);
         })
