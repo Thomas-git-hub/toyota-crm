@@ -911,7 +911,7 @@
                         $('#edit_gender, #edit_birthdate, #edit_age').closest('.row').show();
                         $('#editFleetColumnField').addClass('d-none');
 
-                        
+
 
                     } else if (edit_inquiry_type === 'Fleet' || edit_inquiry_type === 'Company') {
                         // Hide first and last name, show quantity
@@ -1366,7 +1366,7 @@
                 let bankFields = '';
                 response.banks.forEach(bank => {
                     bankFields += `
-                        <div class="row d-flex align-items-center mb-   2 bank-approval-row">
+                        <div class="row d-flex align-items-center mb-2 bank-approval-row">
                             <div class="col-md-4">
                                 <b>${bank.bank_name}</b>
                                 <input type="hidden" name="bank_ids[]" value="${bank.bank_id}">
@@ -1380,6 +1380,7 @@
                             </div>
                             <div class="col-md-4">
                                 <select class="form-control approval-status" name="approval_statuses[]">
+                                    <option disabled selected>Select Approval Status</option>
                                     <option value="approve" ${bank.approval_status === 'approve' ? 'selected' : ''}>APPROVE</option>
                                     <option value="disapprove" ${bank.approval_status === 'disapprove' ? 'selected' : ''}>DISAPPROVE</option>
                                 </select>
@@ -1630,7 +1631,7 @@
         $.ajax({
             url: '{{ route('application.banks.update') }}',
             type: 'POST',
-            data: $(this).serialize(),  
+            data: $(this).serialize(),
             headers: {
                 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
             },

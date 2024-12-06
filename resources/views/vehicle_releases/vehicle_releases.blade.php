@@ -7,7 +7,7 @@
     <div class="card-body">
         <div class="d-flex align-items-center">
             <i class='bx bxs-car text-white' style="font-size: 24px;">&nbsp;</i>
-            <h4 class="text-white mb-0">Vehicle Reservation</h4>
+            <h4 class="text-white mb-0">Vehicle Releases</h4>
         </div>
     </div>
 </div>
@@ -240,6 +240,7 @@
         columns: [
             { data: 'team', name: 'team', title: 'Team' },
             { data: 'quantity', name: 'quantity', title: 'Quantity' },
+            { data: 'profit', name: 'profit', title: 'Total Profit' },
         ],
         order: [[0, 'desc']],  // Sort by 'unit' column by default
         columnDefs: [
