@@ -201,12 +201,7 @@
                     <small class="text-danger" id="validateCategory">Please Select Category</small>
                 </div>
             </div>
-            <div class="row mb-2">
-                <div class="col-md">
-                    <label for="additional_info" class="form-label">Remarks</label>
-                    <textarea class="form-control" placeholder="Message" id="edit_remarks" name="additional_info" rows="3"></textarea>
-                </div>
-            </div>
+           
             <div class="row">
                 <div class="col-md d-flex justify-content-end gap-2">
                     <button type="button" class="btn btn-success" id="editInquiryModalButton">Edit Details</button>

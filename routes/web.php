@@ -56,6 +56,7 @@ Route::post('/application/cancel', [ApplicationController::class, 'cancel'])->na
 Route::post('/application/store/banks', [ApplicationController::class, 'updateBanks'])->name('application.store.banks')->middleware('permission:update_banks');
 Route::get('/application/banks/{id}', [ApplicationController::class, 'getApplicationBanks'])->name('application.banks.get')->middleware('permission:get_application_banks');
 Route::post('/application/banks/approval/{id}', [ApplicationController::class, 'updateBankApproval'])->name('application.banks.approval')->middleware('permission:update_bank_approval');
+Route::post('/application/terms', [ApplicationController::class, 'updateTerms'])->name('application.terms')->middleware('permission:update_terms')->middleware('permission:update_terms');
 
 
 

@@ -12,7 +12,7 @@
     </div>
 </div>
 
-<!-- Modal for Adding Banks -->
+<!-- Modal for Adding Terms -->
 <div class="modal fade" id="termsModal" tabindex="-1" role="dialog" aria-labelledby="addBankModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-md" role="document">
         <div class="modal-content">
@@ -43,7 +43,7 @@
                         <div class="col-md">
                             <div class="mb-3">
                                 <label for="percentage" class="form-label required">Percentage-Based Down Payment</label>
-                                <input type="number" class="form-control" id="percentage" name="percentage" required>
+                                <input type="number" class="form-control" id="percentage" name="percentage" step="0.01" min="0">
                                 <small class="text-danger" id="validatePercentage">Please enter percentage</small>
                             </div>
                         </div>
@@ -1342,6 +1342,96 @@
                         text: response.message
                     });
                     $('#bankApprovalDateModal').modal('hide');
+                    applicationTable.ajax.reload();
+                }
+            },
+            error: function(xhr) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: xhr.responseJSON?.message || 'Something went wrong!'
+                });
+            }
+        });
+    });
+
+    // Add validation feedback for terms form
+    $(document).on('click', '.term-btn', function() {
+        const applicationId = $(this).data('id');
+        $('#termsForm').data('application-id', applicationId); // Store ID on form
+        
+        // Reset validation state
+        $('#validateSource, #validatePercentage').hide();
+        $('#terms, #percentage').removeClass('is-invalid border-danger');
+        $.ajax({
+            url: `{{ url('application/edit') }}/${applicationId}`,
+            type: 'GET',
+            success: function(response) {
+                const data = response.application;
+                $('#terms').val(data.terms).trigger('change');
+                $('#percentage').val(data.percentage);
+            },
+            error: function(xhr) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'Could not fetch Application data.'
+                });
+            }
+        });
+    });
+
+    $('#termsForm').on('submit', function(e) {
+        e.preventDefault();
+        
+        // Reset validation state
+        $('#validateSource, #validatePercentage').hide();
+        $('#terms, #percentage').removeClass('is-invalid border-danger');
+        
+        // Get values
+        const terms = $('#terms').val();
+        const percentage = $('#percentage').val();
+        const applicationId = $(this).data('application-id');
+        
+        // Validate
+        let isValid = true;
+        
+        if (!terms) {
+            $('#terms').addClass('is-invalid border-danger');
+            $('#validateSource').show();
+            isValid = false;
+        }
+        
+        if (!percentage) {
+            $('#percentage').addClass('is-invalid border-danger'); 
+            $('#validatePercentage').show();
+            isValid = false;
+        }
+        
+        if (!isValid) {
+            return;
+        }
+
+        // Submit if valid
+        $.ajax({
+            url: '{{ route('application.terms') }}',
+            type: 'POST',
+            data: {
+                id: applicationId,
+                terms: terms,
+                percentage: percentage
+            },
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            },
+            success: function(response) {
+                if (response.success) {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Success',
+                        text: response.message
+                    });
+                    $('#termsModal').modal('hide');
                     applicationTable.ajax.reload();
                 }
             },

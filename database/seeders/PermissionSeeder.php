@@ -41,6 +41,7 @@ class PermissionSeeder extends Seeder
         ['permission_name' => 'store_banks', 'permission_description' => 'Allows the user to store bank information.'],
         ['permission_name' => 'get_application_banks', 'permission_description' => 'Allows the user to retrieve application banks.'],
         ['permission_name' => 'update_bank_approval', 'permission_description' => 'Allows the user to update bank approval status.'],
+        ['permission_name' => 'update_terms', 'permission_description' => 'Allows the user to update terms and percentage.'],
 
         ['permission_name' => 'view_vehicle_reservation', 'permission_description' => 'Allows the user to view vehicle reservations.'],
         ['permission_name' => 'list_available_units', 'permission_description' => 'Allows the user to list available vehicle units.'],

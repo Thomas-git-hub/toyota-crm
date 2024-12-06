@@ -897,6 +897,35 @@ class ApplicationController extends Controller
         }
     }
 
+    public function updateTerms(Request $request){
+        try {
+
+            $validated = $request->validate([
+                'terms' => 'required',
+                'percentage' => 'required'
+            ]);
+
+            $application = Application::findOrFail(decrypt($request->id));
+            $application->terms = $validated['terms'];
+            $application->percentage = $validated['percentage'];
+            $application->updated_by = Auth::id();
+            $application->updated_at = now();
+            $application->save();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Terms updated successfully'
+            ]);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Error updating terms: ' . $e->getMessage()
+            ], 500);
+        }
+
+    }
+
 
 
 
