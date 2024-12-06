@@ -13,6 +13,52 @@
 </div>
 
 <!-- Modal for Adding Banks -->
+<div class="modal fade" id="termsModal" tabindex="-1" role="dialog" aria-labelledby="addBankModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-md" role="document">
+        <div class="modal-content">
+            <div class="modal-header d-flex align-items-center gap-2">
+                <div class="d-flex align-items-center gap-2">
+                    <i class='bx bxs-offer'></i>
+                    <h5 class="modal-title" id="largeModalLabel">Add Terms</h5>
+                </div>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="termsForm">
+                    <div class="row mb-2">
+                        <div class="col-md">
+                            <label for="terms" class="form-label required">Terms</label>
+                            <select class="form-control" id="terms" name="terms" >
+                                <option value="">Select Terms</option>
+                                <option value="12 Months to Pay">12 Months to Pay</option>
+                                <option value="24 Months to Pay">24 Months to Pay</option>
+                                <option value="36 Months to Pay">36 Months to Pay</option>
+                                <option value="48 Months to Pay">48 Months to Pay</option>
+                                <option value="60 Months to Pay">60 Months to Pay</option>
+                            </select>
+                            <small class="text-danger" id="validateSource">Please Select Source</small>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md">
+                            <div class="mb-3">
+                                <label for="percentage" class="form-label required">Percentage-Based Down Payment</label>
+                                <input type="number" class="form-control" id="percentage" name="percentage" required>
+                                <small class="text-danger" id="validatePercentage">Please enter percentage</small>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-label-danger" data-bs-dismiss="modal">Close</button>
+                <button type="submit" class="btn btn-dark" form="termsForm">Add these Banks</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal for Adding Banks -->
 <div class="modal fade" id="selectBankModal" tabindex="-1" role="dialog" aria-labelledby="addBankModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
@@ -270,7 +316,6 @@
     </div>
 </div>
 
-
 {{-- Datatables Tabs --}}
 <div class="row mb-2">
     <div class="col">
@@ -438,6 +483,9 @@
                 render: function(data, type, row) {
                     return `
                         <div class="d-flex">
+                            <button type="button" class="btn btn-icon me-2 btn-warning edit-btn" data-bs-toggle="modal" data-bs-target="#termsModal"  data-id="">
+                                <span class="tf-icons bx bxs-offer bx-22px"></span>
+                            </button>
                             <button type="button" class="btn btn-icon me-2 btn-success edit-btn" data-bs-toggle="modal" data-bs-target="#editApplicationFormModal"  data-id="${data}">
                                 <span class="tf-icons bx bxs-show bx-22px"></span>
                             </button>

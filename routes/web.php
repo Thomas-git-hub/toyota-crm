@@ -10,7 +10,7 @@ use App\Http\Controllers\VehicleReservationController;
 use App\Http\Controllers\VehicleReleasesController;
 use App\Http\Controllers\VehicleInventoryController;
 use App\Http\Controllers\BankController;
-
+use App\Http\Controllers\UserManagementController;
 
 //LOGIN
 Route::get('/', [LoginController::class, 'index']);
@@ -36,7 +36,7 @@ Route::get('/leads/get-variants-and-colors', [LeadController::class, 'getVariant
 Route::get('/leads/get-variants', [LeadController::class, 'getVariants'])->name('leads.getVariants');
 Route::get('/leads/get-colors', [LeadController::class, 'getColor'])->name('leads.getColor');
 Route::get('leads/edit/{id}', [LeadController::class, 'edit'])->name('leads.edit')->middleware('permission:edit_lead');
-Route::post('/leads/update/{id}', [LeadController::class, 'update'])->name('leads.update')->middleware('permission:update_lead'); 
+Route::post('/leads/update/{id}', [LeadController::class, 'update'])->name('leads.update')->middleware('permission:update_lead');
 Route::post('/leads/updateRemarks/', [LeadController::class, 'updateRemarks'])->name('leads.updateRemarks')->middleware('permission:update_remarks');
 
 
@@ -108,3 +108,14 @@ Route::get('banks/edit/{id}', [BankController::class, 'edit'])->name('banks.edit
 Route::match(['post', 'put'], 'banks/update/{id}', [BankController::class, 'update'])->name('banks.update');
 Route::delete('banks/destroy/{id}', [BankController::class, 'destroy'])->name('banks.destroy');
 Route::get('banks/list', [BankController::class, 'list'])->name('banks.list');
+
+
+// USER MANAGEMENT
+Route::get('user-management', [UserManagementController::class, 'index'])->name('user.management');
+Route::get('user-management/list', [UserManagementController::class, 'list'])->name('user.management.list');
+Route::get('user-management/usertypes/list', [UserManagementController::class, 'getUserTypes'])->name('usertypes.list');
+Route::get('user-management/teams/list', [UserManagementController::class, 'getTeams'])->name('teams.list');
+Route::post('user-management/store', [UserManagementController::class, 'store'])->name('user.management.store');
+Route::put('user-management/{id}/update', [UserManagementController::class, 'update'])->name('user.management.update');
+Route::delete('user-management/{id}/destroy', [UserManagementController::class, 'destroy'])->name('user.management.destroy');
+Route::get('user-management/{id}/edit', [UserManagementController::class, 'edit'])->name('user.management.edit');

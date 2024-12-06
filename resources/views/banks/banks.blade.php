@@ -30,7 +30,7 @@
                     </div>
                     <div class="d-flex justify-content-end gap-2">
                         <button type="button" class="btn btn-label-danger" data-bs-dismiss="modal">Cancel</button>
-                        <button type="submit" class="btn btn-success">Save</button>
+                        <button type="submit" class="btn btn-dark">Save</button>
                     </div>
                 </form>
             </div>
@@ -257,7 +257,7 @@
         // Edit Bank
         $(document).on('click', '.edit-btn', function() {
             const bankId = $(this).data('id');
-            
+
             $.ajax({
                 url: `/banks/edit/${bankId}`,
                 type: 'GET',
@@ -280,7 +280,7 @@
         // Delete Bank
         $(document).on('click', '.delete-btn', function() {
             const bankId = $(this).data('id');
-            
+
             Swal.fire({
                 title: 'Are you sure?',
                 text: "This action cannot be undone!",
@@ -329,7 +329,7 @@
             $('#addBankButton').show();
         });
 
-       
+
     });
 </script>
 @endsection
