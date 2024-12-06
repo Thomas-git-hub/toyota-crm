@@ -675,13 +675,25 @@ class ApplicationController extends Controller
 
             $application = Application::findOrFail(decrypt($request->id));
 
-            if( $application->status_id == $pending_status || $application->status_id == $cancel_status ){
+            if( $application->status_id == $pending_status  ){
+                $existingBankTransactions = BankTransaction::where('application_id', decrypt($request->id))
+                    ->whereNull('deleted_at')
+                    ->get();
+
+                if($existingBankTransactions->count() === 0){
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'Bank is required for processing.'
+                    ], 500);
+                }
+
                 $application->status_id =  $approved_status;
                 $application->updated_by = Auth::user()->id;
                 $application->updated_at = now();
                 $application->save();
 
             }else if( $application->status_id == $approved_status){
+
                 if($request->transaction === 'financing'){
                     $bankId = $application->bank_id;
                     if (!$bankId) {
@@ -719,6 +731,13 @@ class ApplicationController extends Controller
                 $application->status_id = $processing_status;
                 $application->transaction = $application->transaction;
                 $application->updated_by = Auth::id();
+                $application->updated_at = now();
+                $application->save();
+
+            } else if($application->status_id == $cancel_status){
+
+                $application->status_id =  $pending_status;
+                $application->updated_by = Auth::user()->id;
                 $application->updated_at = now();
                 $application->save();
 
@@ -905,7 +924,6 @@ class ApplicationController extends Controller
                         'bank_id' => $transaction->bank_id,
                         'bank_name' => $transaction->bank->bank_name,
                         'approval_date' => $transaction->approval_date,
-                        'approval_status' => $transaction->approval_status,
                         'is_preferred' => $transaction->is_preferred
                     ];
                 });

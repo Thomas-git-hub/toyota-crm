@@ -506,12 +506,10 @@
                     }else if (row.transaction === 'po'){
                          // Determine the active tab
                         let activeTab = $('.btn-group .active').attr('id'); // Get the ID of the active tab
-                        let isPendingTab = activeTab === 'pending-tab';
                         let isApprovedTab = activeTab === 'approved-tab';
                         let isCashTab = activeTab === 'cash-tab';
-                        let isCanceledTab = activeTab === 'canceled-tab';
 
-                        let bankBtnStyle =  isCashTab || isApprovedTab || isCanceledTab ? '' : 'display: none;'; // Hide for Approved and Cash tabs
+                        let bankBtnStyle =  isCashTab || isApprovedTab  ? '' : 'display: none;'; // Hide for Approved and Cash tabs
 
                         return `
                             <button type="button" class="btn btn-icon me-2 btn-label-dark single-bank-btn" data-bs-toggle="modal" data-bs-target="#addSingleBankModal" data-id="${data}" style="${bankBtnStyle}">
