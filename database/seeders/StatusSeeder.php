@@ -22,5 +22,6 @@ class StatusSeeder extends Seeder
         Status::create(['status' => 'Released']);
         Status::create(['status' => 'Reserved']);
         Status::create(['status' => 'Pending For Release']);
+        Status::create(['status' => 'Posted']);
     }
 }

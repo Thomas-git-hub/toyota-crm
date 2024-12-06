@@ -479,6 +479,7 @@
 
             {
                 data: 'id',
+                name: 'id',
                 title: 'Bank',
                 orderable: false,
                 searchable: false,
@@ -526,6 +527,7 @@
             },
             {
                 data: 'id',
+                name: 'id',
                 title: 'Terms',
                 orderable: false,
                 searchable: false,
@@ -541,11 +543,14 @@
                                     <span class="tf-icons bx bxs-offer bx-22px"></span>
                             </button>
                         `;
+                    }else{
+                        return '';
                     }
                 }
             },
             {
                 data: 'id',
+                name: 'id',
                 title: 'Action',
                 orderable: false,
                 searchable: false,

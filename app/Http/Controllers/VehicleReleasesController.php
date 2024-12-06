@@ -305,7 +305,7 @@ class VehicleReleasesController extends Controller
     public function processing(Request $request){
         try {
 
-            $released_status = Status::where('status', 'like', 'Released')->first()->id;
+            $posted_status = Status::where('status', 'like', 'Posted')->first()->id;
             $pending_for_release_status = Status::where('status', 'like', 'Pending For Release')->first()->id;
 
             $transaction = Transactions::findOrFail(decrypt($request->id));
@@ -317,8 +317,8 @@ class VehicleReleasesController extends Controller
                 $inventory->status = 'released';
                 $inventory->save();
 
-                $transaction->status = $released_status;
-                $transaction->reservation_transaction_status = $released_status;
+                $transaction->status = $posted_status;
+                $transaction->reservation_transaction_status = $posted_status;
                 $transaction->released_date = now();
                 $transaction->updated_at = now();
                 $transaction->save();
