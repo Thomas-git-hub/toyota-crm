@@ -12,6 +12,37 @@
     </div>
 </div>
 
+<!-- Modal for Adding Bank for PO Transactions -->
+<div class="modal fade" id="addSingleBankModal" tabindex="-1" role="dialog" aria-labelledby="addBankModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-md" role="document">
+        <div class="modal-content">
+            <div class="modal-header d-flex align-items-center gap-2">
+                <div class="d-flex align-items-center gap-2">
+                    <i class='bx bxs-plus-circle'></i>
+                    <h5 class="modal-title" id="largeModalLabel">Add Bank</h5>
+                </div>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="addSingleBankForm">
+                    <!-- Bank Field Template -->
+                    <div class="row mb-2 bank-field">
+                        <div class="col-md">
+                            <label for="add_single_bank" class="form-label required">Select a Bank</label>
+                            <select class="form-control" name="bank_id[]" id=bank_ids>
+                            </select>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-label-danger" data-bs-dismiss="modal">Close</button>
+                <button type="submit" class="btn btn-dark" form="addSingleBankForm">Add Bank</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <!-- Modal for Adding Terms -->
 <div class="modal fade" id="termsModal" tabindex="-1" role="dialog" aria-labelledby="addBankModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-md" role="document">
@@ -52,7 +83,7 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-label-danger" data-bs-dismiss="modal">Close</button>
-                <button type="submit" class="btn btn-dark" form="termsForm">Add these Banks</button>
+                <button type="submit" class="btn btn-dark" form="termsForm">Add Terms</button>
             </div>
         </div>
     </div>
@@ -87,7 +118,6 @@
                                 <select class="form-control" name="bank_id[]" id=bank_ids>
                                 </select>
                             </div>
-
                         </div>
                     </div>
                 </form>
@@ -461,10 +491,13 @@
 
                         return `
                             <div class="d-flex">
-                                <button type="button" class="btn btn-icon me-2 btn-warning bank-btn" data-bs-toggle="modal" data-bs-target="#selectBankModal" data-id="${data}" style="${bankBtnStyle}">
+                                <button type="button" class="btn btn-icon me-2 btn-label-dark bank-btn" data-bs-toggle="modal" data-bs-target="#addSingleBankModal" data-id="${data}" style="">
+                                    <span class="tf-icons bx bxs-plus-circle bx-22px"></span>
+                                </button>
+                                <button type="button" class="btn btn-icon me-2 btn-label-dark bank-btn" data-bs-toggle="modal" data-bs-target="#selectBankModal" data-id="${data}" style="${bankBtnStyle}">
                                     <span class="tf-icons bx bxs-bank bx-22px"></span>
                                 </button>
-                                <button type="button" class="btn btn-icon me-2 btn-info bank-approval-date-btn" data-bs-toggle="modal" data-bs-target="#bankApprovalDateModal" data-id="${data}" style="${approvalDateBtnStyle}">
+                                <button type="button" class="btn btn-icon me-2 btn-label-dark bank-approval-date-btn" data-bs-toggle="modal" data-bs-target="#bankApprovalDateModal" data-id="${data}" style="${approvalDateBtnStyle}">
                                     <span class="tf-icons bx bxs-calendar-plus bx-22px"></span>
                                 </button>
                             </div>
@@ -474,7 +507,19 @@
                     }
                 }
             },
-
+            {
+                data: 'id',
+                title: 'Terms',
+                orderable: false,
+                searchable: false,
+                render: function (data, type, row) {
+                    return `
+                        <button type="button" class="btn btn-icon me-2 btn-warning term-btn" data-bs-toggle="modal" data-bs-target="#termsModal"  data-id="${data}">
+                                <span class="tf-icons bx bxs-offer bx-22px"></span>
+                        </button>
+                    `;
+                }
+            },
             {
                 data: 'id',
                 title: 'Action',
@@ -483,9 +528,6 @@
                 render: function(data, type, row) {
                     return `
                         <div class="d-flex">
-                            <button type="button" class="btn btn-icon me-2 btn-warning term-btn" data-bs-toggle="modal" data-bs-target="#termsModal"  data-id="${data}">
-                                <span class="tf-icons bx bxs-offer bx-22px"></span>
-                            </button>
                             <button type="button" class="btn btn-icon me-2 btn-success edit-btn" data-bs-toggle="modal" data-bs-target="#editApplicationFormModal"  data-id="${data}">
                                 <span class="tf-icons bx bxs-show bx-22px"></span>
                             </button>
@@ -783,7 +825,7 @@
 
     let originalValues = {};0
 
-    
+
     $(document).on('click', '.edit-btn', function() {
         const applicationId = $(this).data('id');
         $.ajax({
@@ -1359,7 +1401,7 @@
     $(document).on('click', '.term-btn', function() {
         const applicationId = $(this).data('id');
         $('#termsForm').data('application-id', applicationId); // Store ID on form
-        
+
         // Reset validation state
         $('#validateSource, #validatePercentage').hide();
         $('#terms, #percentage').removeClass('is-invalid border-danger');
@@ -1383,31 +1425,31 @@
 
     $('#termsForm').on('submit', function(e) {
         e.preventDefault();
-        
+
         // Reset validation state
         $('#validateSource, #validatePercentage').hide();
         $('#terms, #percentage').removeClass('is-invalid border-danger');
-        
+
         // Get values
         const terms = $('#terms').val();
         const percentage = $('#percentage').val();
         const applicationId = $(this).data('application-id');
-        
+
         // Validate
         let isValid = true;
-        
+
         if (!terms) {
             $('#terms').addClass('is-invalid border-danger');
             $('#validateSource').show();
             isValid = false;
         }
-        
+
         if (!percentage) {
-            $('#percentage').addClass('is-invalid border-danger'); 
+            $('#percentage').addClass('is-invalid border-danger');
             $('#validatePercentage').show();
             isValid = false;
         }
-        
+
         if (!isValid) {
             return;
         }
