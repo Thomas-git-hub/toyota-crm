@@ -48,6 +48,33 @@
     </div>
 </div>
 
+{{-- LTO Remarks Modal --}}
+<div class="modal fade" id="LtoRemarksModal" tabindex="-1" aria-labelledby="largeModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header d-flex align-items-center gap-2">
+          <i class='bx bxs-message-rounded-detail'></i>
+          <h5 class="modal-title" id="largeModalLabel">Remarks</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <div id="ltoRemarksContent">
+              <input type="hidden" name="lto_remarks" id="ltoRemarks">
+              <textarea class="form-control mb-2 d-none" id="ltoRemarksTextArea" name="remarks" rows="5" placeholder="">
+              {{-- display remarks here --}}
+              </textarea>
+              <p class="fs-5 text-dark" id="remarksParagraph">
+              </p>
+          </div>
+          <div class="d-flex justify-content-end gap-2">
+              <button class="btn btn-label-success" id="editLtoRemarksButton">Edit</button>
+              <button class="btn btn-dark d-none save-remark" id="saveEditLtoRemarksButton">Save</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
 {{-- Header Datatables --}}
 <div class="row mb-4">
     <div class="col-md">
@@ -266,7 +293,7 @@
             infoEmpty: "", // Removes the message when there's no data
             infoFiltered: "", // Removes the "filtered from X entries" part
         },
-       
+
         columns: [
             { data: 'team', name: 'team', title: 'Team' },
             { data: 'quantity', name: 'quantity', title: 'Quantity' },
@@ -341,6 +368,18 @@
                             </button>`;
                 }
             },
+        {
+            data: 'id',
+            name: 'id',
+            title: 'LTO Remarks',
+            orderable: false,
+            searchable: false,
+            render: function(data, type, row) {
+                return `<button type="button" class="btn btn-icon me-2 btn-label-dark lto-remarks-btn" data-id="${data}" data-bs-toggle="modal" data-bs-target="#LtoRemarksModal    ">
+                            <span class="tf-icons bx bx-comment-detail bx-22px"></span>
+                        </button>`;
+            }
+        },
         ],
         order: [[0, 'desc']],  // Sort by 'unit' column by default
         columnDefs: [
@@ -540,7 +579,7 @@
                 });
             }
 
-            
+
         });
 
         // Reset validation on modal close (optional)
@@ -549,6 +588,19 @@
             const $validateProfit = $('#validateProfit');
             $profitInput.removeClass('border-danger').val('');
             $validateProfit.hide();
+        });
+    });
+
+    // Edit LTO Remarks hide show
+    $(document).ready(function () {
+        $("#editLtoRemarksButton").on("click", function () {
+            // Hide the remarks paragraph and edit button
+            $("#ltoRemarksParagraph").addClass("d-none");
+            $("#editLtoRemarksButton").addClass("d-none");
+
+            // Show the textarea and save button
+            $("#ltoRemarksTextArea").removeClass("d-none");
+            $("#saveEditLtoRemarksButton").removeClass("d-none");
         });
     });
 
