@@ -1449,7 +1449,7 @@
     // Compute Birthdate store to age
     $(document).ready(function () {
         // Attach an event listener to the birthdate field
-        $('#birthdate').on('change', function () {
+        $('#birthdate, #edit_birthdate').on('change', function () {
             // Get the entered birthdate value
             const birthdate = $(this).val();
 
@@ -1468,10 +1468,10 @@
                 }
 
                 // Set the age field value
-                $('#age').val(age);
+                $('#age, #edit_age').val(age);
             } else {
                 // Clear the age field if the birthdate is invalid
-                $('#age').val('');
+                $('#age, #edit_age').val('');
             }
         });
     });

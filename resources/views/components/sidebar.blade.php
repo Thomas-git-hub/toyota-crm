@@ -95,8 +95,8 @@
         <li class="menu-item">
             <div style="margin-left: 5%; margin-top: 5%; color: #b4b0c4;">User Management</div>
         </li>
-        <li class="menu-item {{ request()->is('') ? 'active' : '' }}">
-            <a href="" class="menu-link">
+        <li class="menu-item {{ request()->is('user-management') ? 'active' : '' }}">
+            <a href="/user-management" class="menu-link">
                 <i class='menu-icon tf-icons bx bxs-group'></i>
               <div class="text-truncate" data-i18n="Page 2">Users</div>
             </a>
