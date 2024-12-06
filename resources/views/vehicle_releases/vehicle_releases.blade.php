@@ -358,8 +358,11 @@
         // Toggle column visibility based on the active tab
         const isFoReleasedTab = $(this).text().trim() === 'For Release Units';
         vehicleReleasesTable.column(12).visible(isFoReleasedTab);
-        vehicleReleasesTable.column(13).visible(isFoReleasedTab);
-        
+
+        const isReleasedTab = $(this).text().trim() === 'Released Units';
+        vehicleReleasesTable.column(13).visible(isReleasedTab);
+
+
         var route = $(this).data('route');
         vehicleReleasesTable.ajax.url(route).load();
     });
