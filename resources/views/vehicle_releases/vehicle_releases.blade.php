@@ -359,6 +359,7 @@
         const isFoReleasedTab = $(this).text().trim() === 'For Release Units';
         vehicleReleasesTable.column(12).visible(isFoReleasedTab);
         vehicleReleasesTable.column(13).visible(isFoReleasedTab);
+        
         var route = $(this).data('route');
         vehicleReleasesTable.ajax.url(route).load();
     });

@@ -212,11 +212,11 @@ class VehicleReleasesController extends Controller
 
     public function list_release(Request $request){
 
-        // dd($request->start_date);
         $release_status = Status::where('status', 'like', 'Released')->first();
+        $posted_status = Status::where('status', 'like', 'Posted')->first();
         $query = Transactions::with(['inquiry', 'inventory', 'application'])
                         ->whereNull('deleted_at')
-                        ->where('reservation_transaction_status', $release_status->id)
+                        ->whereIn('reservation_transaction_status', [$release_status->id, $posted_status->id])
                         ->whereNotNull('reservation_id')
                        ;
 
