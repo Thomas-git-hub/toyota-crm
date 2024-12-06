@@ -28,9 +28,11 @@
                     <!-- Bank Field Template -->
                     <div class="row mb-2 bank-field">
                         <div class="col-md">
+                            <input type="hidden" name="application_id" id="bank_application_id">
                             <label for="add_single_bank" class="form-label required">Select a Bank</label>
-                            <select class="form-control" name="bank_id[]" id=bank_ids>
+                            <select class="form-control" name="bank_id" id="bank_id">
                             </select>
+                            <small class="text-danger" id="validateBank">Please Select Bank</small>
                         </div>
                     </div>
                 </form>
@@ -228,7 +230,7 @@
                     </div>
                     <div class="col-md" id="birthdateColumnField">
                         <label for="age" class="form-label required">Birthdate</label>
-                        <input type="date" class="form-control" id="birthdate" name="birthdate" placeholder="" />
+                        <input type="date" class="form-control" id="edit_birthdate" name="birthdate" placeholder="" />
                         <small class="text-danger" id="validateBirthdate">Enter Customer Birthdate</small>
                     </div>
                     <div class="col-md" id="editAgeColumnField">
@@ -479,7 +481,7 @@
                 searchable: false,
                 render: function (data, type, row) {
                     // Check if the transaction type is not 'cash'
-                    if (row.transaction !== 'cash') {
+                    if (row.transaction === 'financing') {
                         // Determine the active tab
                         let activeTab = $('.btn-group .active').attr('id'); // Get the ID of the active tab
                         let isPendingTab = activeTab === 'pending-tab';
@@ -493,9 +495,6 @@
 
                         return `
                             <div class="d-flex">
-                                <button type="button" class="btn btn-icon me-2 btn-label-dark bank-btn" data-bs-toggle="modal" data-bs-target="#addSingleBankModal" data-id="${data}" style="">
-                                    <span class="tf-icons bx bxs-plus-circle bx-22px"></span>
-                                </button>
                                 <button type="button" class="btn btn-icon me-2 btn-label-dark bank-btn" data-bs-toggle="modal" data-bs-target="#selectBankModal" data-id="${data}" style="${bankBtnStyle}">
                                     <span class="tf-icons bx bxs-bank bx-22px"></span>
                                 </button>
@@ -504,7 +503,22 @@
                                 </button>
                             </div>
                         `;
-                    } else {
+                    }else if (row.transaction === 'po'){
+                         // Determine the active tab
+                        let activeTab = $('.btn-group .active').attr('id'); // Get the ID of the active tab
+                        let isPendingTab = activeTab === 'pending-tab';
+                        let isApprovedTab = activeTab === 'approved-tab';
+                        let isCashTab = activeTab === 'cash-tab';
+                        let isCanceledTab = activeTab === 'canceled-tab';
+
+                        let bankBtnStyle =  isCashTab || isApprovedTab || isCanceledTab ? '' : 'display: none;'; // Hide for Approved and Cash tabs
+
+                        return `
+                            <button type="button" class="btn btn-icon me-2 btn-label-dark single-bank-btn" data-bs-toggle="modal" data-bs-target="#addSingleBankModal" data-id="${data}" style="${bankBtnStyle}">
+                                <span class="tf-icons bx bxs-bank bx-22px"></span>
+                            </button>
+                        `;
+                    }else {
                         return ''; // Return empty string if transaction type is 'cash'
                     }
                 }
@@ -586,6 +600,24 @@
 
     // Application Form Validation
     $(document).ready(function () {
+
+        $.ajax({
+            url: '{{ route('application.getBanks') }}',
+            type: 'GET',
+            dataType: 'json',
+            success: function(data) {
+                let singleBankSelect = $('#bank_id');
+                singleBankSelect.empty();
+                singleBankSelect.append('<option value="">Select Bank...</option>');
+                data.forEach(function(item) {
+                    singleBankSelect.append(`<option value="${item.id}">${item.bank_name}</option>`);
+                });
+            },
+            error: function(error) {
+                console.error('Error loading unit:', error);
+            }
+        });
+
         $.ajax({
             url: '{{ route('leads.getUnit') }}',
             type: 'GET',
@@ -602,7 +634,6 @@
                 console.error('Error loading unit:', error);
             }
         });
-
 
         // Load variants and colors based on selected unit
         $('#edit_car_unit').on('change', function() {
@@ -762,6 +793,7 @@
                 $('#edit_quantity').val(originalValues.quantity);
                 $('#edit_mobile_number').val(originalValues.mobileNumber);
                 $('#edit_category').val(originalValues.category);
+                $('#edit_birthdate').val(originalValues.birthdate).trigger('change');
 
                 if (edit_inquiryType === 'Individual') {
                     $('#edit_first_name').val(originalValues.firstName);
@@ -854,28 +886,31 @@
                 $('#edit_category').val(inquiry.category).trigger('change');
                 $('#edit_quantity').val(inquiry.quantity);
                 $('#edit_payment_status').val(firstTransaction.reservation_status).trigger('change');
+                $('#edit_first_name').val(data.customer.customer_first_name);
+                $('#edit_last_name').val(data.customer.customer_last_name);
+                $('#edit_gender').val(data.customer.gender);
+                $('#edit_age').val(data.customer.age);
+                $('#edit_birthdate').val(data.customer.birthdate).trigger('change');
+
 
 
                 const edit_inquiry_type =  $('#edit_inquiry_type').val();
                 console.log(edit_inquiry_type);
 
                 if (edit_inquiry_type === 'Individual') {
-                        // No special validation changes for individual, just hide others
+                         // No special validation changes for individual, just hide others
                         $('#edit_first_name, #edit_first_name').closest('.row').show(); // Show first and last name by default
                         $('#editCompanyColumnField, #editGovernmentColumnField, #editQuantityColumnField').addClass('d-none');
                         $('#editQuantityColumnField').addClass('d-none');
                         $('#editCompanyColumnField').addClass('d-none');
-                        $('#edit_gender, #edit_age').closest('.row').show();
+                        $('#edit_gender, #edit_birthdate, #edit_age').closest('.row').show();
                         $('#editFleetColumnField').addClass('d-none');
 
-                        $('#edit_first_name').val(data.customer.customer_first_name);
-                        $('#edit_last_name').val(data.customer.customer_last_name);
-                        $('#edit_gender').val(data.customer.gender);
-                        $('#edit_age').val(data.customer.age);
+                        
 
                     } else if (edit_inquiry_type === 'Fleet' || edit_inquiry_type === 'Company') {
                         // Hide first and last name, show quantity
-                        $('#edit_first_name, #edit_first_name').closest('.row').hide();
+                        $('#edit_first_name, #edit_first_name').closest('.row').show();
                         $('#editQuantityColumnField').removeClass('d-none');
                         $('#editCompanyColumnField').toggleClass('d-none', edit_inquiry_type !== 'Company');
                         $('#editFleetColumnField').toggleClass('d-none', edit_inquiry_type !== 'Fleet');
@@ -888,7 +923,7 @@
                     } else if (edit_inquiry_type === 'Government') {
                         // Hide first name, last name, and company, show government field
                         $('#editFleetColumnField').addClass('d-none');
-                        $('#edit_first_name, #edit_first_name').closest('.row').hide();
+                        $('#edit_first_name, #edit_first_name').closest('.row').show();
                         $('#editQuantityColumnField').removeClass('d-none');
                         $('#editCompanyColumnField').addClass('d-none');
                         $('#editGovernmentColumnField').removeClass('d-none');
@@ -896,7 +931,6 @@
                         $('#edit_government').val(data.customer.department_name);
 
                     }
-
 
                 $.ajax({
                     url: '{{ route("leads.getVariants") }}',
@@ -961,6 +995,7 @@
                     government: data.customer.department_name,
                     quantity: inquiry.quantity,
                     category: inquiry.category,
+                    birthdate: data.customer.birthdate,
                 };
 
                 $('#editApplicationFormModal').modal('show');
@@ -1505,6 +1540,105 @@
                 });
             }
         });
+    });
+
+     // Compute Birthdate store to age
+     $(document).ready(function () {
+        // Attach an event listener to the birthdate field
+        $('#edit_birthdate').on('change', function () {
+            // Get the entered birthdate value
+            const birthdate = $(this).val();
+
+            // Check if a valid date is provided
+            if (birthdate) {
+                // Calculate the age
+                const birthDateObj = new Date(birthdate);
+                const today = new Date();
+
+                let age = today.getFullYear() - birthDateObj.getFullYear();
+                const monthDiff = today.getMonth() - birthDateObj.getMonth();
+
+                // Adjust age if the current date is before the birthdate this year
+                if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDateObj.getDate())) {
+                    age--;
+                }
+
+                // Set the age field value
+                $('#edit_age').val(age);
+            } else {
+                // Clear the age field if the birthdate is invalid
+                $('#edit_age').val('');
+            }
+        });
+    });
+
+    $(document).on('click', '.single-bank-btn', function() {
+        const applicationId = $(this).data('id');
+
+        $('#validateBank').hide();
+        $('#bank_id').removeClass('is-invalid border-danger');
+        $('bank_id').val();
+
+        $.ajax({
+            url: `{{ url('application/edit') }}/${applicationId}`,
+            type: 'GET',
+            success: function(response) {
+                const data = response.application;
+                $('#bank_application_id').val(applicationId);
+                $('#bank_id').val(data.bank_id).trigger('change');
+            },
+            error: function(xhr) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'Could not fetch Application data.'
+                });
+            }
+        });
+
+    });
+
+    $('#addSingleBankForm').on('submit', function(e) {
+        e.preventDefault();
+
+         // Reset validation state
+        $('#validateBank').hide();
+        $('#bank_id').removeClass('is-invalid border-danger');
+
+        // Get values
+        const bankId = $('#bank_id').val();
+        const applicationId = $('#application_id').val();
+
+        // Validate
+        let isValid = true;
+
+        if (!bankId) {
+            $('#bank_id').addClass('is-invalid border-danger');
+            $('#validateBank').show();
+            isValid = false;
+        }
+
+        if (!isValid) {
+            return;
+        }
+
+        $.ajax({
+            url: '{{ route('application.banks.update') }}',
+            type: 'POST',
+            data: $(this).serialize(),  
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            },
+            success: function(response) {
+                if(response.success) {
+                    Swal.fire('Success', response.message, 'success');
+                }
+                $('#addSingleBankModal').modal('hide');
+            },
+            error: function(xhr) {
+                Swal.fire('Error', xhr.responseJSON?.message || 'Something went wrong!', 'error');
+            }
+        })
     });
 
 </script>

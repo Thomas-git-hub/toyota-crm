@@ -160,7 +160,7 @@
                     </div>
                     <div class="col-md d-none" id="editQuantityColumnField">
                         <label for="edit_quantity" class="form-label">Quantity</label>
-                        <input type="number" class="form-control" id="edit_quantity" name="quantity" placeholder="" />
+                        <input type="number" class="form-control" id="edit_quantity" name="quantity" placeholder="" readonly/>
                     </div>
                 </div>
             </div>
@@ -948,6 +948,7 @@
                 $('#edit_quantity').val(originalValues.quantity);
                 $('#edit_mobile_number').val(originalValues.mobileNumber);
                 $('#edit_category').val(originalValues.category);
+                $('#edit_birthdate').val(originalValues.birthdate).trigger('change');
 
                 if (edit_inquiry_type === 'Individual') {
                     $('#edit_first_name').val(originalValues.firstName);
@@ -1182,6 +1183,7 @@
                     government: data.customer.department_name,
                     quantity: data.quantity,
                     category: data.category,
+                    birthdate: data.customer.birthdate,
                 };
                 $('#editInquiryFormModal').modal('show');
             },

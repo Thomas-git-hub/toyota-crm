@@ -48,6 +48,7 @@ class ApplicationController extends Controller
                 'gender' => 'required|string',
                 'address' => 'required',
                 'bank_id' => 'required',
+                'birthdate' => 'nullable|date',
             ]);
 
             $customer = new Customer();
@@ -578,6 +579,7 @@ class ApplicationController extends Controller
                 'category' => 'required',
                 'quantity' => 'nullable',
                 'payment_status' => 'nullable',
+                'birthdate' => 'nullable|date',
             ]);
 
             // Find the inquiry and related customer and vehicle
@@ -627,6 +629,7 @@ class ApplicationController extends Controller
             $customer->gender = $validated['gender'];
             $customer->address = $validated['address'];
             $customer->age = $validated['age'];
+            $customer->birthdate = $validated['birthdate'];
             $customer->source = $validated['source'];
             $customer->updated_by = Auth::id();
             $customer->updated_at = now();
@@ -685,6 +688,15 @@ class ApplicationController extends Controller
                         return response()->json([
                             'success' => false,
                             'message' => 'Bank is required for financing transactions.'
+                        ], 500);
+                    }
+                   }
+                   if($request->transaction === 'po'){
+                    $bankId = $application->bank_id;
+                    if (!$bankId) {
+                        return response()->json([
+                            'success' => false,
+                            'message' => 'Bank is required for PO transactions.'
                         ], 500);
                     }
                    }
@@ -751,6 +763,10 @@ class ApplicationController extends Controller
 
     public function updateBanks(Request $request){
         try {
+        $validated = $request->validate([
+            'bank_id' => 'required|exists:banks,id'
+        ]);
+
         $application = Application::findOrFail(decrypt($request->application_id));
 
         $banksArray = $request->bank_id;
@@ -924,6 +940,28 @@ class ApplicationController extends Controller
             ], 500);
         }
 
+    }
+
+    public function updateApplicationBank(Request $request){
+        try {
+            $application = Application::findOrFail(decrypt($request->application_id));
+            $application->bank_id = $request->bank_id;
+            $application->updated_by = Auth::id();
+            $application->updated_at = now();
+            $application->save();
+
+           
+            return response()->json([
+                'success' => true,
+                'message' => 'Application bank updated successfully'
+            ]);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Error updating application bank: ' . $e->getMessage()
+            ], 500);
+        }
     }
 
 
