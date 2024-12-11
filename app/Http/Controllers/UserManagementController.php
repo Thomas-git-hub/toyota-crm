@@ -8,7 +8,11 @@ use App\Models\Usertype;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Yajra\DataTables\Facades\DataTables;
-
+use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\TemporaryPasswordMail;
+use Illuminate\Support\Facades\Validator;
 class UserManagementController extends Controller
 {
 
@@ -16,7 +20,7 @@ class UserManagementController extends Controller
         if (Auth::check()){
             return view('user.user_management');
         }else{
-            return redirect()->route('login');
+            return view('index');
         }
     }
 
@@ -47,12 +51,14 @@ class UserManagementController extends Controller
             $user->email = $request->email;
             $user->usertype_id = $request->usertype_id;
             $user->team_id = $request->team_id;
-            $user->status = $request->status;
+            $user->status = 'Active';
             $user->created_by = Auth::user()->id;
             $user->created_at = now();
             $user->updated_by = Auth::user()->id;
             $user->updated_at = now();
             $user->save();
+
+            return response()->json(['success' => true, 'message' => 'User created successfully'], 200);
 
         }catch(\Exception $e){
             return response()->json(['error' => $e->getMessage()], 500);
@@ -60,10 +66,23 @@ class UserManagementController extends Controller
 
     }
 
-    public function update($id, Request $request){
+    public function update(Request $request){
         try{
 
-            $user = User::findOrFail($id);
+            $validator = Validator::make($request->all(), [
+                'first_name' => 'required|string|max:255',
+                'last_name' => 'required|string|max:255',
+                'email' => 'required',
+                'usertype_id' => 'required|exists:usertypes,id',
+                'team_id' => 'required|exists:team,id',
+                'status' => 'required',
+            ]);
+
+            if ($validator->fails()) {
+                return response()->json(['errors' => $validator->errors()], 422);
+            }
+
+            $user = User::findOrFail(decrypt($request->id));
             $user->first_name = $request->first_name;
             $user->last_name = $request->last_name;
             $user->email = $request->email;
@@ -74,7 +93,7 @@ class UserManagementController extends Controller
             $user->updated_at = now();
             $user->save();
 
-            return response()->json(['success' => 'User updated successfully'], 200);
+            return response()->json(['success' => true, 'message' => 'User updated successfully'], 200);
 
         }catch(\Exception $e){
             return response()->json(['error' => $e->getMessage()], 500);
@@ -111,6 +130,22 @@ class UserManagementController extends Controller
         $teams = Team::all();
         return response()->json($teams);
 
+    }
+
+    public function sendTemporaryPassword($id){
+        try {
+            $user = User::findOrFail(decrypt($id));
+            $password = Str::random(8);
+            $user->password = Hash::make($password);
+            $user->save();
+
+            // Send email
+            Mail::to($user->email)->send(new TemporaryPasswordMail($user, $password));
+
+            return response()->json(['success' => 'Temporary password sent successfully', 'password' => $password], 200);
+        } catch(\Exception $e) {
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
     }
 
 }

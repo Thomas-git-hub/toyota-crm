@@ -23,7 +23,7 @@
             <div class="modal-body">
                 <form id="editUserForm">
                     @csrf
-                    <input type="hidden" id="edit_user_id">
+                    <input type="hidden" id="edit_user_id" name="id">
                     <div class="row mb-3">
                         <div class="col-md-6">
                             <label for="edit_first_name" class="form-label required">First Name</label>
@@ -195,8 +195,11 @@
                     searchable: false,
                     render: function(data) {
                         return `<div class="d-flex gap-2">
-                            <button type="button" class="btn btn-icon btn-success edit-user" data-id="${data}">
+                            <button type="button" class="btn btn-icon btn-success edit-user" data-id="${data}" title="Edit User">
                                 <span class="tf-icons bx bx-pencil"></span>
+                            </button>
+                            <button type="button" class="btn btn-icon btn-warning send-temporary-password" data-id="${data}" title="Send Temporary Password">
+                                <span class="tf-icons bx bx-envelope"></span>
                             </button>
                         </div>`;
                     }
@@ -208,6 +211,10 @@
         // Show/Hide Add User Form
         $('#addUserBtn').click(function() {
             $('#addUserCard').show();
+            $('#addUserForm')[0].reset();
+            $('#usertype').val('');
+            $('#team').val('');
+            $(".text-danger").hide();
         });
 
         $('#cancelAddUserBtn').click(function() {
@@ -300,7 +307,7 @@
                 url: `user-management/${userId}/edit`,
                 type: 'GET',
                 success: function(response) {
-                    $('#edit_user_id').val(response.id);
+                    $('#edit_user_id').val(userId);
                     $('#edit_first_name').val(response.first_name);
                     $('#edit_last_name').val(response.last_name);
                     $('#edit_email').val(response.email);
@@ -312,8 +319,66 @@
             });
         });
 
+        $('#editUserForm').on('submit', function(e) {
+            e.preventDefault();
+            let formData = $(this).serialize();
 
-        // Update User
+            $.ajax({
+                url: '{{ route("user.management.update") }}',
+                type: 'POST',
+                data: formData,
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                },
+                success: function(response) {
+                    if (response.success) {
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Success',
+                            text: response.message,
+                        }).then(() => {
+                            $('#editUserModal').modal('hide');
+                            usersTable.ajax.reload();
+                        });
+                    }
+                },
+                error: function(xhr) {
+                    let errors = xhr.responseJSON?.errors || {};
+                    Object.keys(errors).forEach(field => {
+                        $(`#validate_${field}`).text(errors[field][0]).show();
+                        $(`#${field}`).addClass('border-danger');
+                    });
+                }
+            });
+        }); 
+
+        $(document).on('click', '.send-temporary-password', function(e) {
+            e.preventDefault();
+            let userId = $(this).data('id');
+            $.ajax({
+                url: `user-management/${userId}/send-temporary-password`,
+                type: 'GET',
+                success: function(response) {
+                    if (response.success) {
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Success',
+                            text:  'Your temporary password is: ' + response.password,
+                        })
+                    }
+                },
+                error: function(xhr) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: xhr.responseJSON?.message || 'An error occurred',
+                    });
+                }
+            });
+        });
+
+
+
 
     });
 </script>

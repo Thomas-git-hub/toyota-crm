@@ -131,6 +131,7 @@ Route::get('user-management/list', [UserManagementController::class, 'list'])->n
 Route::get('user-management/usertypes/list', [UserManagementController::class, 'getUserTypes'])->name('usertypes.list');
 Route::get('user-management/teams/list', [UserManagementController::class, 'getTeams'])->name('teams.list');
 Route::post('user-management/store', [UserManagementController::class, 'store'])->name('user.management.store');
-Route::put('user-management/{id}/update', [UserManagementController::class, 'update'])->name('user.management.update');
+Route::post('user-management/update', [UserManagementController::class, 'update'])->name('user.management.update');
 Route::delete('user-management/{id}/destroy', [UserManagementController::class, 'destroy'])->name('user.management.destroy');
 Route::get('user-management/{id}/edit', [UserManagementController::class, 'edit'])->name('user.management.edit');
+Route::get('user-management/{id}/send-temporary-password', [UserManagementController::class, 'sendTemporaryPassword'])->name('user.management.sendTemporaryPassword');
