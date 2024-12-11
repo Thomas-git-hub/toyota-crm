@@ -98,6 +98,72 @@
     </div>
 </div>
 
+<!-- Vehicle Incoming Status Modal -->
+<div class="modal fade" id="incomingStatusModal" tabindex="-1" aria-labelledby="incomingStatusModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel">Vehicle Transportation Status</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+            </button>
+        </div>
+        <div class="modal-body">
+            <form action="">
+                <div class="row mb-4">
+                    <div class="col-md">
+                        <label for="select_agent" class="form-label required">Update Icoming Status</label>
+                        <select class="form-control" id="selectIncomingStatus" name="incoming_status">
+                            <option value="">Select Status</option>
+                        </select>
+                        <small class="text-danger" id="validateIncomingStatus">Please select Incoming Status</small>
+                    </div>
+                    <input type="hidden" class="form-control" id="incomingStatus" name="incomingStatus" placeholder="" />
+                </div>
+                <div class="row">
+                    <div class="col-md d-flex justify-content-end gap-2">
+                        <button type="button" class="btn btn-label-danger" data-bs-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-dark" id="UpdateIncomingStatusModalButton">Update Incoming Status</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+      </div>
+    </div>
+</div>
+
+<!-- Ear Marked Modal -->
+<div class="modal fade" id="earmarkModal" tabindex="-1" aria-labelledby="earMarkModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel">Ear Mark</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+            </button>
+        </div>
+        <div class="modal-body">
+            <form action="">
+                <div class="row mb-4">
+                    <div class="col-md">
+                        <label for="select_agent" class="form-label required">Select the Agent to be Earmarked</label>
+                        <select class="form-control" id="earmarkAgent" name="earmark">
+                            <option value="">Select Agent</option>
+                        </select>
+                        <small class="text-danger" id="validateEarMarkAgent">Please select agent</small>
+                    </div>
+                    <input type="hidden" class="form-control" id="inquiry_type_id" name="inquiry_type_id" placeholder="" />
+                </div>
+                <div class="row">
+                    <div class="col-md d-flex justify-content-end gap-2">
+                        <button type="button" class="btn btn-label-danger" data-bs-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-dark" id="tagAgentModalButton">Tag Agent</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+      </div>
+    </div>
+</div>
+
 {{-- Datatables --}}
 <div class="row mb-4">
     <div class="col-md">
@@ -156,7 +222,6 @@
         </div>
     </div>
 </div>
-
 
 {{-- Vehicle Form --}}
 <div class="row mb-4">
@@ -302,6 +367,14 @@
                         </div>
                     </div>
                 </div>
+                <div class="row">
+                    <div class="col-md">
+                        <div class="btn-group w-100" role="group" aria-label="Basic example">
+                            <button id="incoming" type="button" class="btn btn-label-dark active" data-route="">Incoming</button>
+                            <button id="inventory" type="button" class="btn btn-label-dark" data-route="">Inventory</button>
+                        </div>
+                    </div>
+                </div>
                 <div class="table-responsive">
                     <table id="vehicleInventoryTable" class="table table-bordered table-hover" style="width:100%">
                         <tbody>
@@ -401,53 +474,53 @@
 
     // Vehicle Form Submission
     $(document).ready(function() {
-    $('#vehicleFormData').on('submit', function(e) {
-        e.preventDefault();
+        $('#vehicleFormData').on('submit', function(e) {
+            e.preventDefault();
 
-        let formData = {
-            unit: $('#unit').val(),
-            variant: $('#variant').val(),
-            color: $('#color').val(),
-        };
+            let formData = {
+                unit: $('#unit').val(),
+                variant: $('#variant').val(),
+                color: $('#color').val(),
+            };
 
-        $.ajax({
-            url: '{{ route("vehicle.store") }}', // Adjust to your route name
-            type: 'POST',
-            data: formData,
-            headers: {
-                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-            },
-            success: function(response) {
-                if (response.success) {
+            $.ajax({
+                url: '{{ route("vehicle.store") }}', // Adjust to your route name
+                type: 'POST',
+                data: formData,
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                },
+                success: function(response) {
+                    if (response.success) {
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Success',
+                            text: response.message,
+                        }).then(() => {
+                            // Reload the page after success alert is closed
+                            location.reload();
+                        });
+                    }
+                },
+                error: function(xhr) {
+                    let errorMessage = xhr.responseJSON?.message || 'Something went wrong!';
                     Swal.fire({
-                        icon: 'success',
-                        title: 'Success',
-                        text: response.message,
-                    }).then(() => {
-                        // Reload the page after success alert is closed
-                        location.reload();
+                        icon: 'error',
+                        title: 'Error',
+                        text: errorMessage
                     });
-                }
-            },
-            error: function(xhr) {
-                let errorMessage = xhr.responseJSON?.message || 'Something went wrong!';
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Error',
-                    text: errorMessage
-                });
 
-                // Highlight validation errors if any
-                if (xhr.responseJSON?.errors) {
-                    for (const [field, messages] of Object.entries(xhr.responseJSON.errors)) {
-                        $(`#${field}`).addClass('is-invalid border-danger');
-                        $(`#${field}`).after(`<small class="text-danger">${messages[0]}</small>`);
+                    // Highlight validation errors if any
+                    if (xhr.responseJSON?.errors) {
+                        for (const [field, messages] of Object.entries(xhr.responseJSON.errors)) {
+                            $(`#${field}`).addClass('is-invalid border-danger');
+                            $(`#${field}`).after(`<small class="text-danger">${messages[0]}</small>`);
+                        }
                     }
                 }
-            }
+            });
         });
     });
-});
 
 
     // Vehicle Form Hide Show
@@ -617,6 +690,30 @@
             { data: 'age', name: 'age', title: 'Age' },
             { data: 'status', name: 'status', title: 'Status' },
             { data: 'remarks', name: 'remarks', title: 'Remarks' },
+            {
+                data: '[incoming_status]',
+                name: '[incoming_status]',
+                title: 'Incoming Status',
+                orderable: false,
+                searchable: false,
+                render: function(data, type, row) {
+                    return `<button type="button" class="btn btn-icon me-2 btn-label-dark incoming-btn" data-bs-toggle="modal" data-bs-target="#incomingStatusModal" data-id="${row.id}">
+                                <span class="tf-icons bx bxs-truck bx-22px"></span>
+                            </button>`;
+                }
+            },
+            {
+                data: 'ear_mark',
+                name: 'ear_mark',
+                title: 'Ear Mark',
+                orderable: false,
+                searchable: false,
+                render: function(data, type, row) {
+                    return `<button type="button" class="btn btn-icon me-2 btn-label-dark ear-mark-btn" data-bs-toggle="modal" data-bs-target="#earmarkModal" data-id="${row.id}">
+                                <span class="tf-icons bx bx-star bx-22px"></span>
+                            </button>`;
+                }
+            },
             {
                 data: 'id',
                 name: 'id',
