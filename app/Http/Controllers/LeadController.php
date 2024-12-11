@@ -544,7 +544,6 @@ class LeadController extends Controller
                 'car_color' => 'required|string',
                 'transaction' => 'required|string',
                 'source' => 'required|string',
-                'additional_info' => 'nullable|string',
                 'address' => 'required',
                 'category' => 'required',
                 'quantity' => 'nullable',
@@ -591,7 +590,6 @@ class LeadController extends Controller
             // Update inquiry data
             $inquiry->vehicle_id = $vehicle->id;
             $inquiry->transaction = $validated['transaction'];
-            $inquiry->remarks = $validated['additional_info'];
             $inquiry->category = $validated['category'];
             $inquiry->quantity = $validated['quantity'];
             $inquiry->updated_by = Auth::id();
@@ -599,40 +597,6 @@ class LeadController extends Controller
             $inquiry->status_id = $pending_status;
             $inquiry->save();
 
-            // Check and update transaction/application if transactional status changes to approved
-            // if ($inquiry->status_id === $approved_status) {
-            //     $transaction = Transactions::where('inquiry_id', $inquiry->id)->first();
-
-            //     if (!$transaction) {
-            //         // Create a transaction if not exists
-            //         $transaction = new Transactions();
-            //         $transaction->inquiry_id = $inquiry->id;
-            //         $transaction->status =  $pending_status;
-            //         $transaction->save();
-            //     }
-
-            //     if (in_array($inquiry->transaction, ['cash', 'po'])) {
-            //         $application = $transaction->application;
-
-            //         if (!$application) {
-            //             // Create a new application if not exists
-            //             $application = new Application();
-            //             $application->customer_id = $customer->id;
-            //             $application->vehicle_id = $vehicle->id;
-            //             $application->transaction_id = $transaction->id;
-            //             $application->status_id = $approved_status;
-            //             $application->transaction = $inquiry->transaction;
-            //             $application->created_by = Auth::id();
-            //             $application->updated_by = Auth::id();
-            //             $application->save();
-            //         }
-
-            //         // Update transaction with the application ID and approved status
-            //         $transaction->application_id = $application->id;
-            //         $transaction->status = $approved_status;
-            //         $transaction->save();
-            //     }
-            // }
 
             return response()->json([
                 'success' => true,

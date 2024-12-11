@@ -160,7 +160,7 @@
                     </div>
                     <div class="col-md d-none" id="editQuantityColumnField">
                         <label for="edit_quantity" class="form-label">Quantity</label>
-                        <input type="number" class="form-control" id="edit_quantity" name="quantity" placeholder="" readonly/>
+                        <input type="number" class="form-control" id="edit_quantity" name="quantity" placeholder=""/>
                     </div>
                 </div>
             </div>

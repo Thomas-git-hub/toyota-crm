@@ -400,15 +400,15 @@ class VehicleReservationController extends Controller
            $vehicle_ids = array_column($vehicle, 'id');
            $inventories = Inventory::with('vehicle')
            ->whereIn('vehicle_id', $vehicle_ids)
-           ->where('status', 'available')
-           ->where('CS_number_status', 'available')->get()->toArray();
+           ->where('status', 'Available')
+           ->where('CS_number_status', 'Available')->get()->toArray();
 
 
         }else{
             $inventories = Inventory::with('transaction')
             ->where('vehicle_id', $vehicle_id)
-            ->where('status', 'available')
-            ->where('CS_number_status', 'available')->get()->toArray();
+            ->where('status', 'Available')
+            ->where('CS_number_status', 'Available')->get()->toArray();
            
         }
 
@@ -424,8 +424,9 @@ class VehicleReservationController extends Controller
             if ($transaction->inventory_id) {
                 $inventory = Inventory::find($transaction->inventory_id);
                 if ($inventory) {
-                    $inventory->CS_number_status = 'available';
-                    $inventory->status = 'available';
+
+                    $inventory->CS_number_status = 'Available';
+                    $inventory->status = 'Available';
                     $inventory->save();
                 }
             }
@@ -436,8 +437,8 @@ class VehicleReservationController extends Controller
                 $transaction->inventory_id = $inventory->id;
                 $transaction->save();
 
-                $inventory->CS_number_status = 'reserved';
-                $inventory->status = 'reserved';
+                $inventory->CS_number_status = 'Reserved';
+                $inventory->status = 'Reserved';
                 $inventory->save();
 
                 return response()->json([

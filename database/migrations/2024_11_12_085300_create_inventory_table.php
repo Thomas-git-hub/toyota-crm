@@ -22,8 +22,14 @@ return new class extends Migration
             $table->integer('age');
             $table->string('status')->default('available');
             $table->string('CS_number_status')->default('available');
+            $table->string('incoming_status')->default('Invoice');
+            $table->string('tag')->nullable();
+            $table->unsignedBigInteger('team_id')->nullable();
             $table->text('remarks')->nullable();
+            $table->unsignedBigInteger('created_by')->nullable();
+            $table->unsignedBigInteger('updated_by')->nullable();
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 

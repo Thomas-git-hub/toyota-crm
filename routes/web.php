@@ -90,10 +90,19 @@ Route::get('vehicle-releases/getStatus', [VehicleReleasesController::class, 'get
 Route::post('vehicle-releases/updateStatus', [VehicleReleasesController::class, 'updateStatus'])->name('vehicle.releases.updateStatus');
 // VEHICLE INVENTORY
 Route::get('vehicle-inventory', [VehicleInventoryController::class, 'index'])->name('vehicle.inventory')->middleware('permission:view_vehicle_inventory');
+Route::get('vehicle-inventory/list/incoming', [VehicleInventoryController::class, 'inventoryIncomingList'])->name('vehicle.inventory.incoming.list')->middleware('permission:list_inventory');
 Route::get('vehicle-inventory/list', [VehicleInventoryController::class, 'inventoryList'])->name('vehicle.inventory.list')->middleware('permission:list_inventory');
 Route::get('vehicle-inventory/getTotalInventory', [VehicleInventoryController::class, 'getTotalInventory'])->name('vehicle.inventory.getTotalInventory')->middleware('permission:get_total_inventory');
 Route::post('/vehicle/store', [VehicleInventoryController::class, 'store'])->name('vehicle.store')->middleware('permission:create_vehicle');
 Route::post('/inventory/store', [VehicleInventoryController::class, 'inventoryStore'])->name('inventory.store')->middleware('permission:create_inventory');
+Route::get('vehicle-inventory/edit', [VehicleInventoryController::class, 'editInventory'])->name('vehicle.inventory.edit');
+Route::post('/inventory/update', [VehicleInventoryController::class, 'updateInventory'])->name('inventory.update');
+Route::get('inventory/status', [VehicleInventoryController::class, 'getInventoryStatus'])->name('inventory.status');
+Route::post('inventory/updateStatus', [VehicleInventoryController::class, 'updateInventoryStatus'])->name('inventory.updateStatus');
+Route::get('inventory/getAgent', [VehicleInventoryController::class, 'getAgent'])->name('inventory.getAgent');
+Route::post('inventory/updateTags', [VehicleInventoryController::class, 'updateTags'])->name('inventory.updateTags');
+Route::get('inventory/incomingUnitsList', [VehicleInventoryController::class, 'incomingUnitsList'])->name('inventory.incomingUnitsList');
+Route::get('inventory/tagsPerTeam', [VehicleInventoryController::class, 'tagsPerTeam'])->name('inventory.tagsPerTeam');
 
 // PERMISSIONS
 Route::get('permissions', [PermissionController::class, 'index'])->name('permissions');

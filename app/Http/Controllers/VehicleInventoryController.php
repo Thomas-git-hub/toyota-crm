@@ -7,10 +7,14 @@ use Illuminate\Support\Facades\Auth;
 use App\Models\Inventory;
 use App\Models\Transactions;
 use App\Models\User;
+use App\Models\Usertype;
 use Yajra\DataTables\Facades\DataTables;
 use Carbon\Carbon;
 use App\Models\Vehicle;
-
+use App\Models\Status;
+use Illuminate\Support\Facades\DB;
+use App\Models\Team;
+use Illuminate\Support\Facades\Log;
 
 class VehicleInventoryController extends Controller
 {
@@ -23,11 +27,12 @@ class VehicleInventoryController extends Controller
         }
     }
 
-    public function inventoryList(Request $request){
+    public function inventoryIncomingList(Request $request){
 
          // dd($request->start_date);
          $query = Inventory::with(['vehicle', 'transaction'])
-                        //  ->whereNull('deleted_at')
+                        ->whereIn('incoming_status', ['Invoice', 'Pull Out', 'In Transit'])
+                         ->whereNull('deleted_at')
                         ;
 
          if ($request->has('date_range') && !empty($request->date_range)) {
@@ -63,12 +68,16 @@ class VehicleInventoryController extends Controller
              return $data->vehicle->variant;
          })
 
+         ->editColumn('ear_mark', function($data) {
+             return '';
+         })
+
          ->addColumn('tags', function($data) {
 
-            $transaction = Transactions::with(['application'])->where('inventory_id', $data->id)->first();
-            if($transaction){
-                return $transaction->application->updatedBy->first_name . ' ' . $transaction->application->updatedBy->last_name;
-            }
+            // $transaction = Transactions::with(['application'])->where('inventory_id', $data->id)->first();
+            // if($transaction){
+            //     return $transaction->application->updatedBy->first_name . ' ' . $transaction->application->updatedBy->last_name;
+            // }
             return '';
         })
 
@@ -80,6 +89,123 @@ class VehicleInventoryController extends Controller
 
          ->make(true);
 
+    }
+
+    public function inventoryList(Request $request){
+
+         // dd($request->start_date);
+         $query = Inventory::with(['vehicle', 'transaction'])
+                        ->whereIn('incoming_status', ['On Stock', 'For Swapping', 'Reserved', 'Freeze', 'Ear Mark'])
+                         ->whereNull('deleted_at')
+                        ;
+
+         if ($request->has('date_range') && !empty($request->date_range)) {
+             [$startDate, $endDate] = explode(' to ', $request->date_range);
+             $startDate = Carbon::createFromFormat('m/d/Y', $startDate)->startOfDay();
+             $endDate = Carbon::createFromFormat('m/d/Y', $endDate)->endOfDay();
+
+             $query->whereBetween('created_at', [$startDate, $endDate]);
+         }
+
+         $list = $query->get();
+
+         return DataTables::of($list)
+         ->editColumn('id', function($data) {
+             return encrypt($data->id);
+         })
+
+         ->editColumn('unit', function($data) {
+             return $data->vehicle->unit;
+         })
+
+         ->editColumn('color', function($data) {
+             return $data->vehicle->color;
+         })
+
+         ->editColumn('cs_number', function($data) {
+             return $data->CS_number;
+         })
+
+         ->editColumn('model', function($data) {
+             return $data->vehicle->variant;
+         })
+
+         ->editColumn('ear_mark', function($data) {
+             return '';
+         })
+
+         ->addColumn('tags', function($data) {
+
+            $tag = $data->tag;
+
+            if($tag){
+                $user = User::find($tag);
+                return $user->first_name . ' ' . $user->last_name;
+            }else{
+                return '';
+            }
+
+        })
+
+         ->addColumn('invoice_number', function($data) {
+            return $data->invoice_number;
+        })
+
+
+
+         ->make(true);
+
+    }
+
+    public function incomingUnitsList(Request $request){
+
+        $query = Status::whereIn('status', ['Invoice', 'Pull Out', 'In Transit'])
+                        ->get();
+
+        return DataTables::of($query)
+        ->editColumn('id', function($data) {
+            return encrypt($data->id);
+        })
+        ->editColumn('for', function($data) {
+            return $data->status;
+        })
+        ->editColumn('quantity', function($data) {
+
+            $inventoryCount = Inventory::where('incoming_status', $data->status)
+                                 ->whereNull('deleted_at')
+                                 ->count();
+            return $inventoryCount;
+        })
+       
+        ->make(true);
+
+    }
+
+    public function tagsPerTeam(){
+        DB::statement("SET SQL_MODE=''");
+
+        $query = Team::whereNull('deleted_at');
+
+
+        $list = $query->get();
+
+        return DataTables::of($list)
+        ->addColumn('id', function($data) {
+            return encrypt($data->id);
+        })
+        ->addColumn('team', function($data) {
+            return $data->name;
+        })
+
+        ->addColumn('quantity', function($data) {
+            $tagUser =  Inventory::whereNull('deleted_at')
+                                 ->where('team_id', $data->id)
+                                 ->where('status', 'Ear Mark')
+                                 ->count();
+            return $tagUser;
+        })
+
+        ->make(true);
     }
 
     public function getTotalInventory(){
@@ -151,9 +277,7 @@ class VehicleInventoryController extends Controller
 
         $deliveryDate = Carbon::parse($request->input('delivery_date'));
         $currentDate = Carbon::now();
-        $age = $deliveryDate->diffInYears($currentDate);
-
-
+        $age = $deliveryDate->diffInDays($currentDate);
         // Create a new inventory record
         Inventory::create([
             'vehicle_id' => $vehicle,
@@ -163,13 +287,106 @@ class VehicleInventoryController extends Controller
             'delivery_date' => $request->delivery_date,
             'invoice_number' => $request->invoice_number,
             'age' => $age,
-            'status' => 'available',
             // Add other fields as necessary
             'created_by' => Auth::id(), // Assuming you want to track who created the inventory
+            'updated_by' => Auth::id(),
             'created_at' => now(),
+            'updated_at' => now(),
         ]);
 
         return response()->json(['success' => true, 'message' => 'New unit added to inventory!']);
     }
+
+    public function editInventory(Request $request){
+       $inventory = Inventory::findOrFail(decrypt($request->id));
+       $vehicle = Vehicle::findOrFail($request->vehicleId);
+       return response()->json(['inventory' => $inventory, 'vehicle' => $vehicle]);
+    }
+
+    public function updateInventory(Request $request){
+        
+        try{
+
+            
+            $vehicle = Vehicle::where('unit', $request->car_unit)
+                               ->where('variant', $request->car_variant)
+                               ->where('color', $request->car_color)
+                               ->first()->id;
+            
+                               
+            $inventory = Inventory::findOrFail(decrypt($request->id));
+
+
+            $deliveryDate = Carbon::parse($request->input('delivery_date'));
+            $currentDate = Carbon::now();
+            $age = $deliveryDate->diffInDays($currentDate);
+
+            $inventory->update([
+            'vehicle_id' => $vehicle,
+            'year_model' => $request->year_model,
+            'CS_number' => $request->cs_number,
+            'actual_invoice_date' => $request->actual_invoice_date,
+            'delivery_date' => $request->delivery_date,
+            'invoice_number' => $request->invoice_number,
+            'remarks' => $request->remarks,
+            'age' => $age,
+            'updated_by' => Auth::id(),
+            'updated_at' => now(),
+            ]);
+            
+            return response()->json(['success' => true, 'message' => 'Inventory updated successfully!']);
+        }catch(\Exception $e){
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
+    }
+
+    public function getAgent(Request $request){
+        $usertype = Usertype::where('name', 'Agent')->first()->id;
+        $agent = User::where('usertype_id', $usertype)
+                        ->whereNull('deleted_at')
+                        ->where('status', 'Active')
+                        ->get();
+        return response()->json($agent);
+    }
+
+    public function getInventoryStatus(Request $request){
+       $data = Status::whereIn('status', ['For Swapping', 'On Stock', 'In Transit', 'Invoice', 'Pull Out', 'Reserved', 'Freeze'])
+                ->get();
+        return response()->json($data);
+    }
+
+    public function updateInventoryStatus(Request $request){
+        try{
+
+            $inventory = Inventory::findOrFail(decrypt($request->id));
+            $inventory->incoming_status = $request->status;
+            $inventory->updated_by = Auth::id();
+            $inventory->updated_at = now();
+            $inventory->save();
+            return response()->json(['success' => true, 'message' => 'Inventory status updated successfully!']);
+
+        }catch(\Exception $e){
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
+    }
+
+    public function updateTags(Request $request){
+        try{
+
+            $user = User::where('id', $request->earmark)->first();
+
+            $inventory = Inventory::findOrFail(decrypt($request->id));
+            $inventory->tag = $request->earmark;
+            $inventory->team_id = $user->team_id;
+            $inventory->status = 'Ear Mark';
+            $inventory->updated_by = Auth::id();
+            $inventory->updated_at = now();
+            $inventory->save();
+
+        }catch(\Exception $e){
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
+    }
+    
 
 }

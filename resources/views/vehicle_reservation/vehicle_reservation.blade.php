@@ -533,7 +533,7 @@
                                         <span class="tf-icons bx bxs-check-circle bx-22px"></span>
                                     </button>
                                       <button type="button" class="btn btn-icon me-2 btn-danger cancel-pending-btn" data-id="${data}">
-                                        <span class="tf-icons bx bxs-trash bx-22px"></span>
+                                        <span class="tf-icons bx bxs-x-circle bx-22px"></span>
                                     </button>
                                 </div>`;
                     }
