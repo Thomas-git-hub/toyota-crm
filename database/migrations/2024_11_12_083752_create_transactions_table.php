@@ -26,6 +26,7 @@ return new class extends Migration
             $table->date('reservation_date')->nullable();
             $table->date('released_date')->nullable();
             $table->string('status')->nullable();
+            $table->longText('lto_remarks')->nullable();
             $table->timestamps();
             $table->softDeletes();
         });

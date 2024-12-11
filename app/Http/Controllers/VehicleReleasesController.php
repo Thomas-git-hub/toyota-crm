@@ -298,7 +298,7 @@ class VehicleReleasesController extends Controller
             return number_format($data->profit ?? 0, 2);
         })
 
-       
+
 
         ->make(true);
     }
@@ -347,7 +347,7 @@ class VehicleReleasesController extends Controller
             $transaction = Transactions::findOrFail(decrypt($request->id));
 
             if($transaction->reservation_transaction_status == $pending_for_release_status){
-               
+
                 $transaction->status = $reserved_status;
                 $transaction->reservation_transaction_status = $reserved_status;
                 $transaction->released_date = null;
@@ -368,7 +368,7 @@ class VehicleReleasesController extends Controller
     }
 
     public function updateProfit(Request $request){
-       try {    
+       try {
             $request->validate([
                 'profit' => 'required|numeric|min:0'
             ]);
@@ -388,5 +388,55 @@ class VehicleReleasesController extends Controller
                 'message' => 'Error updating profit: ' . $e->getMessage()
             ], 500);
        }
+    }
+
+    public function updateLTORemarks(Request $request){
+        try {
+            // dd($request->all());
+            $transaction = Transactions::findOrFail(decrypt($request->id));
+            $transaction->lto_remarks = $request->remarks;
+            $transaction->save();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'LTO remarks updated successfully'
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Error updating LTO remarks: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    public function getStatus(Request $request){
+        $status = Status::whereIn('status', ['Posted', 'Released'])->get();
+        return response()->json($status);
+    }
+
+    public function updateStatus(Request $request) {
+        try {
+            // $request->validate([
+            //     'id' => 'required|exists:transactions,id',
+            //     'status' => 'required|exists:status,id' // Assuming you have a statuses table
+            // ]);
+
+            // dd($request->all());
+
+            $transaction = Transactions::findOrFail(decrypt($request->id));
+            $transaction->status = $request->status;
+            $transaction->reservation_transaction_status = $request->status; // Update the status
+            $transaction->save();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Transaction status updated successfully'
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Error updating transaction status: ' . $e->getMessage()
+            ], 500);
+        }
     }
 }

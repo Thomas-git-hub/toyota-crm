@@ -12,6 +12,34 @@
     </div>
 </div>
 
+<!-- Modal -->
+<div class="modal fade" id="releaseStatus" tabindex="-1" aria-labelledby="releaseStatusLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+            </button>
+        </div>
+        <div class="modal-body">
+          <div class="form-group">
+            <div class="row">
+                <div class="col-md">
+                    <label for="status">Status</label>
+                    <select class="form-control" id="status" name="status">
+                    </select>
+                </div>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-label-danger" data-bs-dismiss="modal">Close</button>
+          <button type="button" class="btn btn-dark" id="saveStatusButton">Update Status</button>
+        </div>
+      </div>
+    </div>
+</div>
+
 {{-- Add Profit Modal --}}
 <div class="modal fade" id="addProfitModal" tabindex="-1" aria-labelledby="addProfitModalLabel" aria-hidden="true">
     <div class="modal-dialog" role="document">
@@ -48,7 +76,33 @@
     </div>
 </div>
 
-{{-- Header Datatables --}}
+{{-- LTO Remarks Modal --}}
+<div class="modal fade" id="LtoRemarksModal" tabindex="-1" aria-labelledby="largeModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header d-flex align-items-center gap-2">
+          <i class='bx bxs-message-rounded-detail'></i>
+          <h5 class="modal-title" id="largeModalLabel">LTO Remarks</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <div id="ltoRemarksContent">
+              <input type="hidden" name="id" id="id">
+              <textarea class="form-control mb-2 d-none" id="ltoRemarksTextArea" name="remarks" rows="5" placeholder=""></textarea>
+              <p class="fs-5 text-dark" id="remarksParagraph">
+              </p>
+          </div>
+          <div class="d-flex justify-content-end gap-2">
+              <button class="btn btn-label-success" id="editLtoRemarksButton">Edit</button>
+              <button class="btn btn-dark d-none save-remark" id="saveEditLtoRemarksButton">Save</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  {{-- Header Datatables --}}
 <div class="row mb-4">
     <div class="col-md">
         <div class="card">
@@ -266,7 +320,7 @@
             infoEmpty: "", // Removes the message when there's no data
             infoFiltered: "", // Removes the "filtered from X entries" part
         },
-       
+
         columns: [
             { data: 'team', name: 'team', title: 'Team' },
             { data: 'quantity', name: 'quantity', title: 'Quantity' },
@@ -310,8 +364,21 @@
             { data: 'agent', name: 'agent', title: 'Agent' },
             { data: 'team', name: 'team', title: 'Team' },
             { data: 'date_assigned', name: 'date_assigned', title: 'Date Assigned' },
-            { data: 'status', name: 'status', title: 'Status' },
-            // { data: 'remarks', name: 'remarks', title: 'Remarks' },
+            {
+                data: 'id',
+                name: 'id',
+                title: 'Status',
+                visible: false,
+                render: function(data, type, row) {
+                    return `
+                        <div class="d-flex">
+                            <button type="button" class="btn btn-icon me-2 btn-label-dark status-btn" data-bs-toggle="modal" data-bs-target="#releaseStatus" data-id="${data}" data-status="${row.status}">
+                                <span class="tf-icons bx bx-transfer-alt bx-22px"></span>
+                            </button>
+                        </div>
+                        `;
+                }
+            },
             {
                 data: 'id',
                 name: 'id',
@@ -341,6 +408,18 @@
                             </button>`;
                 }
             },
+            {
+                data: 'lto_remarks',
+                name: 'lto_remarks',
+                title: 'LTO Remarks',
+                orderable: false,
+                searchable: false,
+                render: function(data, type, row) {
+                    return `<button type="button" class="btn btn-icon me-2 btn-label-dark lto-remarks-btn" data-id="${row.id}" data-bs-toggle="modal" data-bs-target="#LtoRemarksModal" data-remarks="${data}">
+                                <span class="tf-icons bx bx-comment-detail bx-22px"></span>
+                            </button>`;
+                }
+            },
         ],
         order: [[0, 'desc']],  // Sort by 'unit' column by default
         columnDefs: [
@@ -349,6 +428,79 @@
             }
         ],
     });
+
+    $(document).ready(function () {
+        let currentButtonId = null;
+
+        // Capture the button that opens the modal
+        $('[data-bs-target="#releaseStatus"]').on('click', function () {
+            currentButtonId = $(this).attr('id'); // Store the current button ID
+        });
+
+        // Update the button text when "Save changes" is clicked
+        // $('#saveStatusButton').on('click', function () {
+        //     const selectedValue = $('#status').val();
+        //     if (currentButtonId && selectedValue) {
+        //     const $button = $('#' + currentButtonId);
+        //     $button.find('.status-label').text(selectedValue);
+        //     }
+
+        //     // Close the modal
+        //     const modal = bootstrap.Modal.getInstance(document.getElementById('releaseStatus'));
+        //     modal.hide();
+        // });
+
+        $('#saveStatusButton').on('click', function() {
+            const selectedValue = $('#status').val();
+            const transactionId = $('.status-btn').data('id'); // Get the transaction ID from the button
+            if (selectedValue) {
+                $.ajax({
+                    url: '{{ route("vehicle.releases.updateStatus") }}', // Define this route in your controller
+                    type: 'POST',
+                    data: {
+                        id: transactionId,
+                        status: selectedValue,
+                        _token: '{{ csrf_token() }}' // Include CSRF token
+                    },
+                    success: function(response) {
+                        if (response.success) {
+                            Swal.fire('Updated!', response.message, 'success');
+                            $('#releaseStatus').modal('hide');
+                            vehicleReleasesTable.ajax.reload();
+                            statusTable.ajax.reload();
+                            releasedUnitsTable.ajax.reload();
+                            releasedCount();
+                            // Optionally reload the DataTable or update the UI
+                        }
+                    },
+                    error: function(xhr) {
+                        Swal.fire('Error!', xhr.responseJSON?.message || 'Something went wrong!', 'error');
+                    }
+                });
+            }
+        });
+
+        $(document).on('click', '.status-btn', function() {
+            const id = $(this).data('id');
+            const currentStatus = $(this).data('status'); // Get the current status from the button
+            console.log(currentStatus);
+
+            $.ajax({
+                url: '{{ route("vehicle.releases.getStatus") }}',
+                type: 'GET',
+                data: { id: id }, // Send the transaction ID to get the status
+                success: function(response) {
+                    let statusSelect = $('#status');
+                    statusSelect.empty();
+                    statusSelect.append('<option value="">Select Status...</option>');
+                    response.forEach(function(item) {
+                        statusSelect.append(`<option value="${item.id}" ${item.status == currentStatus ? 'selected' : ''}>${item.status}</option>`); // Set selected if it matches current status
+                    });
+                }
+            });
+        });
+    });
+
 
     // button group active tabs
     $('.btn-group .btn').on('click', function(e) {
@@ -360,7 +512,9 @@
         vehicleReleasesTable.column(12).visible(isFoReleasedTab);
 
         const isReleasedTab = $(this).text().trim() === 'Released Units';
+        vehicleReleasesTable.column(11).visible(isReleasedTab);
         vehicleReleasesTable.column(13).visible(isReleasedTab);
+        vehicleReleasesTable.column(14).visible(isReleasedTab);
 
 
         var route = $(this).data('route');
@@ -540,7 +694,7 @@
                 });
             }
 
-            
+
         });
 
         // Reset validation on modal close (optional)
@@ -551,6 +705,63 @@
             $validateProfit.hide();
         });
     });
+
+    // Edit LTO Remarks hide show
+    $(document).ready(function () {
+        $("#editLtoRemarksButton").on("click", function () {
+            // Hide the remarks paragraph and edit button
+            $("#remarksParagraph").addClass("d-none");
+            $("#editLtoRemarksButton").addClass("d-none");
+
+
+            // Show the textarea and save button
+            $("#ltoRemarksTextArea").removeClass("d-none");
+            $("#saveEditLtoRemarksButton").removeClass("d-none");
+        });
+    });
+
+    $(document).on('click', '.lto-remarks-btn', function() {
+        const id = $(this).data('id');
+        const remarks = $(this).data('remarks');
+        $('#id').val(id);
+        $('#ltoRemarksTextArea').val(remarks);
+        $('#remarksParagraph').text(remarks);
+    });
+
+    $(document).on('click', '.save-remark', function() {
+        const id = $('#id').val();
+        const remarks = $('#ltoRemarksTextArea').val();
+        $.ajax({
+            url: '{{ route("vehicle.releases.updateLTORemarks") }}',
+            type: 'POST',
+            data: { id: id, remarks: remarks },
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            },
+            success: function(response) {
+                if (response.success) {
+                    Swal.fire(
+                        'Updated!',
+                        response.message,
+                        'success'
+                    );
+                    $("#remarksParagraph").removeClass("d-none");
+                    $("#editLtoRemarksButton").removeClass("d-none");
+                    $("#ltoRemarksTextArea").addClass("d-none");
+                    $("#saveEditLtoRemarksButton").addClass("d-none");
+                    $('#LtoRemarksModal').modal('hide');
+                    vehicleReleasesTable.ajax.reload();
+                }
+            },
+            error: function(xhr) {
+                Swal.fire(
+                    'Error!',
+                    xhr.responseJSON?.message || 'Something went wrong!',
+                    'error'
+                );
+            }
+        });
+    })
 
 
 </script>
