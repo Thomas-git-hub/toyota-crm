@@ -99,11 +99,11 @@
         </div>
       </div>
     </div>
-  </div>
+</div>
 
 
   {{-- Header Datatables --}}
-<div class="row mb-4">
+  <div class="row mb-4">
     <div class="col-md">
         <div class="card">
             <div class="card-body">
@@ -125,11 +125,16 @@
                         <div class="card shadow-none border custom-card">
                             <div class="card-body">
                                 <h5>Status</h5>
-                                <div class="table-responsive">
+                                <div class="table-responsive mb-2">
                                     <table id="statusTable" class="table table-bordered table-hover" style="width:100%">
                                         <tbody>
                                         </tbody>
                                     </table>
+                                </div>
+                                <div class="card bg-label-danger shadow-none">
+                                    <div class="card-body">
+                                        <div class="d-flex gap-2"><div class="h3">Grand Total Profit:</div><div class="h3 fw-bold">100,000</div></div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
