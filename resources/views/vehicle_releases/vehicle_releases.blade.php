@@ -143,7 +143,7 @@
                                 </div>
                                 <div class="card bg-label-secondary shadow-none">
                                     <div class="card-body d-flex justify-content-center">
-                                        <div class="d-flex gap-2"><div class="h2">Grand Total Profit:</div><div class="h2 fw-bold">100,000</div></div>
+                                        <div class="d-flex gap-2"><div class="h2">Grand Total Profit:</div><div class="h2 fw-bold" id="grandTotalProfit">0</div></div>
                                     </div>
                                 </div>
                             </div>
@@ -219,6 +219,21 @@
     }
 
     releasedCount();
+
+   
+
+    function getGrandTotalProfit(){
+        $.ajax({
+        url: '{{ route("vehicle.releases.GrandTotalProfit") }}',
+        type: 'GET',
+        success: function(response) {
+            $('#grandTotalProfit').text(response);
+            }
+        });
+    }
+
+    getGrandTotalProfit();
+
 
     //Date filter
     flatpickr("#date-range-picker", {
@@ -685,6 +700,8 @@
                             // vehicleReleasesTable.ajax.reload();
                             $('#addProfitModal').modal('hide');
                             statusTable.ajax.reload();
+                            getGrandTotalProfit();
+
 
                             // releasedUnitsTable.ajax.reload();
                             // releasedCount();
@@ -768,6 +785,8 @@
             }
         });
     })
+
+   
 
 
 </script>

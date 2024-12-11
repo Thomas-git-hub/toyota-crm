@@ -439,4 +439,14 @@ class VehicleReleasesController extends Controller
             ], 500);
         }
     }
+
+    public function GrandTotalProfit(){
+        $released_status = Status::where('status', 'like', 'Released')->first();
+        $posted_status = Status::where('status', 'like', 'Posted')->first();
+        $profit = Transactions::with(['inquiry', 'inventory', 'application'])
+        ->whereNull('deleted_at')
+        ->whereIn('reservation_transaction_status', [$released_status->id, $posted_status->id])
+        ->sum('profit');
+        return number_format($profit, 2);
+    }
 }
