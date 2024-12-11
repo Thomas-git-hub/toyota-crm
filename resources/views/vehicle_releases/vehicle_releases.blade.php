@@ -108,6 +108,16 @@
         <div class="card">
             <div class="card-body">
                 <div class="row">
+                    <div class="d-flex w-50 gap-2">
+                        <div class="mb-3 d-flex align-items-center gap-1">
+                            <i class='text-dark bx bx-calendar fs-2'></i>
+                            <div class="input-group">
+                                <input type="text" id="date-range-picker" class="form-control border" placeholder="Filter Date">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
                     <div class="col-md">
                         <div class="card shadow-none border custom-card">
                             <div class="card-body">
@@ -163,15 +173,6 @@
     <div class="col">
         <div class="card custom-card">
             <div class="card-body">
-                <div class="row">
-                    <div class="d-flex w-50 gap-2">
-                        <div class="mb-3">
-                            <div class="input-group">
-                                <input type="text" id="date-range-picker" class="form-control" placeholder="Select date range">
-                            </div>
-                        </div>
-                    </div>
-                </div>
                 <div class="row">
                     <div class="col-md">
                         <div class="btn-group w-100" role="group" aria-label="Basic example">
