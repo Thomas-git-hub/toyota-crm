@@ -141,9 +141,9 @@
                                         </tbody>
                                     </table>
                                 </div>
-                                <div class="card bg-label-danger shadow-none">
-                                    <div class="card-body">
-                                        <div class="d-flex gap-2"><div class="h3">Grand Total Profit:</div><div class="h3 fw-bold">100,000</div></div>
+                                <div class="card bg-label-secondary shadow-none">
+                                    <div class="card-body d-flex justify-content-center">
+                                        <div class="d-flex gap-2"><div class="h2">Grand Total Profit:</div><div class="h2 fw-bold">100,000</div></div>
                                     </div>
                                 </div>
                             </div>
