@@ -91,7 +91,7 @@
             </a>
           </li>
       @endcan
-
+      @can('view_banks')
         <li class="menu-item">
           <div style="margin-left: 5%; margin-top: 5%; color: #b4b0c4;">Bank</div>
         </li>
@@ -101,6 +101,7 @@
               <div class="text-truncate" data-i18n="Page 2">Banks</div>
             </a>
         </li>
+        @endcan
 
 
         <li class="menu-item">
@@ -113,6 +114,7 @@
             </a>
         </li>
 
+        @can('view_users')
         <li class="menu-item">
             <div style="margin-left: 5%; margin-top: 5%; color: #b4b0c4;">User Management</div>
         </li>
@@ -122,6 +124,7 @@
               <div class="text-truncate" data-i18n="Page 2">Users</div>
             </a>
         </li>
+        @endcan
 
       </ul>
   </aside>

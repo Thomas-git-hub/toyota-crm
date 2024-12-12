@@ -23,10 +23,10 @@ Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard
 //LEADS
 Route::get('/leads', [LeadController::class, 'index'])->name('leads')->middleware('permission:view_leads');
 Route::post('/leads', [LeadController::class, 'store'])->name('leads.store')->middleware('permission:create_lead');
-Route::get('/leads/individual/list', [LeadController::class, 'individualList'])->name('leads.individual.list')->middleware('permission:view_individual_leads');
-Route::get('/leads/fleet/list', [LeadController::class, 'fleetList'])->name('leads.fleet.list')->middleware('permission:view_fleet_leads');
-Route::get('/leads/company/list', [LeadController::class, 'companyList'])->name('leads.company.list')->middleware('permission:view_company_leads');
-Route::get('/leads/government/list', [LeadController::class, 'governmentList'])->name('leads.government.list')->middleware('permission:view_government_leads');
+Route::get('/leads/individual/list', [LeadController::class, 'individualList'])->name('leads.individual.list')->middleware('permission:view_leads');
+Route::get('/leads/fleet/list', [LeadController::class, 'fleetList'])->name('leads.fleet.list')->middleware('permission:view_leads');
+Route::get('/leads/company/list', [LeadController::class, 'companyList'])->name('leads.company.list')->middleware('permission:view_leads');
+Route::get('/leads/government/list', [LeadController::class, 'governmentList'])->name('leads.government.list')->middleware('permission:view_leads');
 Route::post('/leads/processing', [LeadController::class, 'processing'])->name('leads.processing')->middleware('permission:process_leads');
 Route::delete('/leads/destroy', [LeadController::class, 'destroy'])->name('leads.destroy')->middleware('permission:delete_leads');
 Route::get('/getProvince', [LeadController::class, 'getProvince'])->name('leads.getProvince');
@@ -51,10 +51,10 @@ Route::get('application/edit/{id}', [ApplicationController::class, 'edit'])->nam
 Route::post('/application/update/{id}', [ApplicationController::class, 'update'])->name('application.update')->middleware('permission:update_application');
 Route::get('/getBanks', [ApplicationController::class, 'getBanks'])->name('application.getBanks')->middleware('permission:get_banks');
 Route::get('/getStatus', [ApplicationController::class, 'getStatus'])->name('application.getStatus');
-Route::post('/application/processing', [ApplicationController::class, 'processing'])->name('application.processing')->middleware('permission:process_applications');
+Route::post('/application/processing', [ApplicationController::class, 'processing'])->name('application.processing')->middleware('permission:process_application');
 Route::post('/application/cancel', [ApplicationController::class, 'cancel'])->name('application.status.cancel')->middleware('permission:cancel_application');
-Route::post('/application/store/banks', [ApplicationController::class, 'updateBanks'])->name('application.store.banks')->middleware('permission:update_banks');
-Route::get('/application/banks/{id}', [ApplicationController::class, 'getApplicationBanks'])->name('application.banks.get')->middleware('permission:get_application_banks');
+Route::post('/application/store/banks', [ApplicationController::class, 'updateBanks'])->name('application.store.banks')->middleware('permission:store_banks');
+Route::get('/application/banks/{id}', [ApplicationController::class, 'getApplicationBanks'])->name('application.banks.get')->middleware('permission:get_banks');
 Route::post('/application/banks/approval/{id}', [ApplicationController::class, 'updateBankApproval'])->name('application.banks.approval')->middleware('permission:update_bank_approval');
 Route::post('/application/terms', [ApplicationController::class, 'updateTerms'])->name('application.terms')->middleware('permission:update_terms');
 Route::post('/application/banks/update', [ApplicationController::class, 'updateApplicationBank'])->name('application.banks.update');

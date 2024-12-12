@@ -204,9 +204,11 @@
            
             <div class="row">
                 <div class="col-md d-flex justify-content-end gap-2">
+                    @if(auth()->user()->can('update_lead'))
                     <button type="button" class="btn btn-success" id="editInquiryModalButton">Edit Details</button>
                     <button type="button" class="btn btn-label-danger d-none" id="cancelInquiryModalButton">Cancel</button>
                     <button type="submit" class="btn btn-dark d-none" id="saveEditInquiryModalButton">Save Changes</button>
+                    @endif
                 </div>
             </div>
         </form>
@@ -395,7 +397,9 @@
 {{-- Trigger Inquiry Form Button --}}
 <div class="row mb-2">
     <div class="col-md d-flex justify-content-end">
+        @if(auth()->user()->can('create_lead'))
         <button class="btn btn-primary" id="addNewInquiryButton">Add New Inquiry</button>
+        @endif
     </div>
 </div>
 
@@ -519,6 +523,7 @@
             { data: 'transaction', name: 'transaction', title: 'Transaction' },
             { data: 'source', name: 'source', title: 'Source' },
             { data: 'status', name: 'status', title: 'Status', render: function(data) { return data.charAt(0).toUpperCase() + data.slice(1); } },
+            @if(auth()->user()->can('update_remarks'))
             {
                 data: 'id',
                 name: 'id',
@@ -533,7 +538,12 @@
                             `;
                 }
             },
+            @endif
             { data: 'date', name: 'date', title: 'Date' },
+            @if(auth()->user()->can('edit_lead')||
+                auth()->user()->can('process_leads')  ||
+                auth()->user()->can('delete_leads')   
+            )
             {
                 data: 'id',
                 title: 'Action',
@@ -542,19 +552,26 @@
                 render: function(data) {
                     return `
                         <div class="d-flex">
+                             @if(auth()->user()->can('edit_lead'))
                             <button type="button" class="btn btn-icon me-2 btn-success edit-btn" data-bs-toggle="modal" data-bs-target="#editInquiryFormModal" data-id="${data}">
                                 <span class="tf-icons bx bxs-show bx-22px"></span>
                             </button>
+                            @endif
+                            @if(auth()->user()->can('process_leads'))
                             <button type="button" class="btn btn-icon me-2 btn-primary processing-btn" data-id="${data}">
                                 <span class="tf-icons bx bxs-check-circle bx-22px"></span>
                             </button>
+                             @endif
+                             @if(auth()->user()->can('delete_leads'))
                             <button type="button" class="btn btn-icon me-2 btn-danger delete-btn" data-id="${data}">
                                 <span class="tf-icons bx bxs-trash bx-22px"></span>
                             </button>
+                            @endif
                         </div>
                     `;
                 }
             }
+            @endif
         ],
         order: [[0, 'desc']],  // Sort by date created by default
         columnDefs: [

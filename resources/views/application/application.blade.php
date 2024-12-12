@@ -342,9 +342,11 @@
             </div>
             <div class="row">
                 <div class="col-md d-flex justify-content-end gap-2">
+                    @if(auth()->user()->can('update_application'))
                     <button type="button" class="btn btn-success" id="editApplicationModalButton">Edit Details</button>
                     <button type="button" class="btn btn-label-danger d-none" id="cancelApplicationModalButton">Cancel</button>
                     <button type="submit" class="btn btn-primary d-none" id="saveEditApplicationModalButton">Save Changes</button>
+                    @endif
                 </div>
             </div>
           </form>
@@ -370,10 +372,18 @@
                 <div class="row">
                     <div class="col-md">
                         <div class="btn-group w-100" role="group" aria-label="Basic example">
-                            <button id="pending-tab" type="button" class="btn btn-label-dark active" data-route="{{ route('application.pending') }}">Pending Applications</button>
+                            @if(auth()->user()->can('list_pending_applications'))
+                            <button id="pending-tab" type="button" class="btn btn-label-dark" data-route="{{ route('application.pending') }}">Pending Applications</button>
+                            @endif
+                            @if(auth()->user()->can('list_cash_applications'))
                             <button id="cash-tab" type="button" class="btn btn-label-dark" data-route="{{ route('application.cash') }}">Cash/PO Applications</button>
+                            @endif
+                            @if(auth()->user()->can('list_approved_applications'))
                             <button id="approved-tab" type="button" class="btn btn-label-dark" data-route="{{ route('application.approved') }}">Approved Applications</button>
+                            @endif
+                            @if(auth()->user()->can('list_cancelled_applications'))
                             <button id="canceled-tab" type="button" class="btn btn-label-dark" data-route="{{ route('application.cancel') }}">Denied/Canceled Applications</button>
+                            @endif
                         </div>
                     </div>
                 </div>
@@ -449,7 +459,16 @@
         processing: true,
         serverSide: true,
         ajax: {
+            @if(auth()->user()->can('list_pending_applications'))
             url: '{{ route("application.pending") }}',
+            @elseif(auth()->user()->can('list_cash_applications'))
+            url: '{{ route('application.cash') }}',
+            @elseif(auth()->user()->can('list_approved_applications'))
+             url: '{{ route('application.approved') }}',
+            @else
+                url: '{{ route('application.cancel') }}',
+            @endif
+            
             data: function(d) {
                 d.date_range = $('#date-range-picker').val();
             },
@@ -476,7 +495,7 @@
             { data: 'reservation_status', name: 'reservation_status', title: 'Reservation Status' },
             { data: 'source', name: 'source', title: 'Source' },
             { data: 'date', name: 'date', title: 'Date' },
-
+            @if(auth()->user()->can('get_banks') || auth()->user()->can('store_banks') || auth()->user()->can('update_bank_approval') )
             {
                 data: 'id',
                 name: 'id',
@@ -499,12 +518,17 @@
 
                         return `
                             <div class="d-flex">
+                                @if(auth()->user()->can('get_banks') && auth()->user()->can('store_banks') )
                                 <button type="button" class="btn btn-icon me-2 btn-label-dark bank-btn" data-bs-toggle="modal" data-bs-target="#selectBankModal" data-id="${data}" style="${bankBtnStyle}">
                                     <span class="tf-icons bx bxs-bank bx-22px"></span>
                                 </button>
-                                <button type="button" class="btn btn-icon me-2 btn-label-dark bank-approval-date-btn" data-bs-toggle="modal" data-bs-target="#bankApprovalDateModal" data-id="${data}" style="${approvalDateBtnStyle}">
-                                    <span class="tf-icons bx bxs-calendar-plus bx-22px"></span>
-                                </button>
+                                @endif
+
+                                @if(auth()->user()->can('update_bank_approval') )
+                                    <button type="button" class="btn btn-icon me-2 btn-label-dark bank-approval-date-btn" data-bs-toggle="modal" data-bs-target="#bankApprovalDateModal" data-id="${data}" style="${approvalDateBtnStyle}">
+                                        <span class="tf-icons bx bxs-calendar-plus bx-22px"></span>
+                                    </button>
+                                @endif
                             </div>
                         `;
                     }else if (row.transaction === 'po'){
@@ -516,15 +540,20 @@
                         let bankBtnStyle =  isCashTab || isApprovedTab  ? '' : 'display: none;'; // Hide for Approved and Cash tabs
 
                         return `
+                         @if(auth()->user()->can('get_banks') && auth()->user()->can('store_banks') )
                             <button type="button" class="btn btn-icon me-2 btn-label-dark single-bank-btn" data-bs-toggle="modal" data-bs-target="#addSingleBankModal" data-id="${data}" style="${bankBtnStyle}">
                                 <span class="tf-icons bx bxs-bank bx-22px"></span>
                             </button>
+                         @endif
                         `;
                     }else {
                         return ''; // Return empty string if transaction type is 'cash'
                     }
                 }
             },
+            @endif
+            @if(auth()->user()->can('update_terms')  )
+
             {
                 data: 'id',
                 name: 'id',
@@ -548,6 +577,8 @@
                     }
                 }
             },
+            @endif
+            @if(auth()->user()->can('edit_application') || auth()->user()->can('update_application') || auth()->user()->can('cancel_application') || auth()->user()->can('process_application'))
             {
                 data: 'id',
                 name: 'id',
@@ -557,19 +588,26 @@
                 render: function(data, type, row) {
                     return `
                         <div class="d-flex">
+                            @if(auth()->user()->can('edit_application'))
                             <button type="button" class="btn btn-icon me-2 btn-success edit-btn" data-bs-toggle="modal" data-bs-target="#editApplicationFormModal"  data-id="${data}">
                                 <span class="tf-icons bx bxs-show bx-22px"></span>
                             </button>
+                            @endif
+                             @if(auth()->user()->can('process_application'))
                             <button type="button" class="btn btn-icon me-2 btn-primary processing-btn" data-id="${data}" data-transaction="${row.transaction}">
                                 <span class="tf-icons bx bxs-check-circle bx-22px"></span>
                             </button>
+                            @endif
+                             @if(auth()->user()->can('cancel_application'))
                             <button type="button" class="btn btn-icon me-2 btn-danger cancel-btn" data-id="${data}">
                                 <span class="tf-icons bx bxs-x-circle bx-22px"></span>
                             </button>
+                            @endif
                         </div>
                     `;
                 }
             }
+            @endif
         ],
         order: [[0, 'desc']],  // Sort by date created by default
         columnDefs: [
@@ -580,40 +618,37 @@
         ],
     });
 
-    // displaying of bank buttons based on active tab
-    $('.btn-group button').on('click', function () {
-        // Remove active class from all buttons and set it to the clicked one
-        $('.btn-group button').removeClass('active');
-        $(this).addClass('active');
+    // Automatically trigger the tab based on user access and remove active from the default active tab
+    $(document).ready(function() {
+        @if(auth()->user()->can('list_pending_applications'))
+        $('.btn-group #pending-tab').addClass('active');
+        @elseif(auth()->user()->can('list_cash_applications'))
+        $('.btn-group #cash-tab').addClass('active');
+        @elseif(auth()->user()->can('list_approved_applications'))
+        $('.btn-group #approved-tab').addClass('active');
+        @else
+        $('.btn-group #canceled-tab').addClass('active');
+        @endif
 
-        // Redraw DataTable to apply new button visibility
-        $('#applicationTable').DataTable().ajax.reload(null, false); // Reloads data without resetting pagination
+        $('.btn-group .btn').click(function() {
+            $('.btn-group .btn').removeClass('active');
+            $(this).addClass('active');
+        });
     });
 
     // Change DataTable route based on button click
     $('.btn-group .btn').on('click', function(e) {
         e.preventDefault();
-          // Clear the date range picker
+         // Clear the date range picker
         $('#date-range-picker').val(''); // Clear the date range input
         applicationTable.ajax.reload(null, false); // Reload the table without resetting the paging
         var route = $(this).data('route'); // Get the route from the clicked button
         applicationTable.ajax.url(route).load();
     });
 
-    // datatables button tabs
-    $(document).ready(function() {
-
-        $('.btn-group .btn').on('click', function() {
-            // Remove 'active' class from all buttons in the group
-            $('.btn-group .btn').removeClass('active');
-            // Add 'active' class to the clicked button
-            $(this).addClass('active');
-        });
-    });
-
     // Application Form Validation
     $(document).ready(function () {
-
+        @if(auth()->user()->can('get_banks'))
         $.ajax({
             url: '{{ route('application.getBanks') }}',
             type: 'GET',
@@ -630,6 +665,7 @@
                 console.error('Error loading unit:', error);
             }
         });
+        @endif
 
         $.ajax({
             url: '{{ route('leads.getUnit') }}',
@@ -1160,7 +1196,7 @@
             resetModalToInitialState();
         });
     });
-
+    @if(auth()->user()->can('get_banks') && auth()->user()->can('store_banks') )
     function populateBankSelects(data, targetSelect = null) {
         if (targetSelect) {
             // Populate only the target select
@@ -1295,6 +1331,7 @@
         const newSelect = newField.find("select[name='bank_id[]']");
         fetchBanks(newSelect);
     });
+    @endif
 
     // Remove bank field
     $(document).on("click", ".removeBankFieldButton", function (e) {
@@ -1437,6 +1474,60 @@
     // Handle bank approval date form submission
     $('#bankApprovalDateForm').on('submit', function(e) {
         e.preventDefault();
+
+        // Validate fields
+        let isValid = true;
+        const bankIds = $('input[name="bank_ids[]"]');
+        const approvalDates = $('input[name="approval_dates[]"]');
+        const approvalStatuses = $('select[name="approval_statuses[]"]');
+        const preferredBank = $('select[name="preferred_bank"]');
+
+        // Validate bank IDs
+        bankIds.each(function() {
+            if ($(this).val() === '') {
+                isValid = false;
+                $(this).addClass('is-invalid');
+            } else {
+                $(this).removeClass('is-invalid');
+            }
+        });
+
+        // Validate approval dates
+        approvalDates.each(function() {
+            if ($(this).val() === '') {
+                isValid = false;
+                $(this).addClass('is-invalid');
+            } else {
+                $(this).removeClass('is-invalid');
+            }
+        });
+
+        // Validate approval statuses
+        approvalStatuses.each(function() {
+            if ($(this).val() === '') {
+                isValid = false;
+                $(this).addClass('is-invalid');
+            } else {
+                $(this).removeClass('is-invalid');
+            }
+        });
+
+        // Validate preferred bank
+        if (preferredBank.val() === '') {
+            isValid = false;
+            preferredBank.addClass('is-invalid');
+        } else {
+            preferredBank.removeClass('is-invalid');
+        }
+
+        if (!isValid) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: 'Please fill in all required fields.'
+            });
+            return;
+        }
 
         $.ajax({
             url: $(this).attr('action'), // Use the updated form action
