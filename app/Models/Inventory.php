@@ -33,4 +33,13 @@ class Inventory extends Model
     public function transaction(){
         return $this->belongsTo(Transactions::class, 'inventory_id', 'id');
     }
+
+    public function user(){
+        return $this->belongsTo(User::class, 'tag', 'id');
+
+    }
+    public function team(){
+        return $this->belongsTo(Team::class, 'team_id', 'id');
+
+    }
 }

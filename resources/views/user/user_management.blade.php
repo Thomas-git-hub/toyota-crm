@@ -53,7 +53,7 @@
                     <div class="row mb-3">
                         <div class="col-md-6">
                             <label for="edit_team" class="form-label required">Team</label>
-                            <select class="form-control" id="edit_team" name="team_id">
+                            <select class="form-control" id="edit_team" name="team_id" disabled>
                                 <option value="">Select Team</option>
                             </select>
                             <small class="text-danger" id="edit_validate_team">Please select team</small>

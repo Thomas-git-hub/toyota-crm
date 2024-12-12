@@ -118,21 +118,21 @@ Route::get('/permissions/usertype/{usertypeId}', [PermissionController::class, '
 
 
 // BANKS
-Route::get('banks', [BankController::class, 'index'])->name('banks');
-Route::post('banks/store', [BankController::class, 'store'])->name('banks.store');
-Route::get('banks/edit/{id}', [BankController::class, 'edit'])->name('banks.edit');
-Route::match(['post', 'put'], 'banks/update/{id}', [BankController::class, 'update'])->name('banks.update');
-Route::delete('banks/destroy/{id}', [BankController::class, 'destroy'])->name('banks.destroy');
-Route::get('banks/list', [BankController::class, 'list'])->name('banks.list');
+Route::get('banks', [BankController::class, 'index'])->name('banks')->middleware('permission:view_banks');
+Route::post('banks/store', [BankController::class, 'store'])->name('banks.store')->middleware('permission:create_bank');
+Route::get('banks/edit/{id}', [BankController::class, 'edit'])->name('banks.edit')->middleware('permission:edit_bank');
+Route::match(['post', 'put'], 'banks/update/{id}', [BankController::class, 'update'])->name('banks.update')->middleware('permission:edit_bank');
+Route::delete('banks/destroy/{id}', [BankController::class, 'destroy'])->name('banks.destroy')->middleware('permission:delete_bank');
+Route::get('banks/list', [BankController::class, 'list'])->name('banks.list')->middleware('permission:view_banks');
 
 
 // USER MANAGEMENT
-Route::get('user-management', [UserManagementController::class, 'index'])->name('user.management');
-Route::get('user-management/list', [UserManagementController::class, 'list'])->name('user.management.list');
-Route::get('user-management/usertypes/list', [UserManagementController::class, 'getUserTypes'])->name('usertypes.list');
-Route::get('user-management/teams/list', [UserManagementController::class, 'getTeams'])->name('teams.list');
-Route::post('user-management/store', [UserManagementController::class, 'store'])->name('user.management.store');
-Route::post('user-management/update', [UserManagementController::class, 'update'])->name('user.management.update');
-Route::delete('user-management/{id}/destroy', [UserManagementController::class, 'destroy'])->name('user.management.destroy');
-Route::get('user-management/{id}/edit', [UserManagementController::class, 'edit'])->name('user.management.edit');
-Route::get('user-management/{id}/send-temporary-password', [UserManagementController::class, 'sendTemporaryPassword'])->name('user.management.sendTemporaryPassword');
+Route::get('user-management', [UserManagementController::class, 'index'])->name('user.management')->middleware('permission:view_users');
+Route::get('user-management/list', [UserManagementController::class, 'list'])->name('user.management.list')->middleware('permission:view_users');
+Route::get('user-management/usertypes/list', [UserManagementController::class, 'getUserTypes'])->name('usertypes.list')->middleware('permission:view_users');
+Route::get('user-management/teams/list', [UserManagementController::class, 'getTeams'])->name('teams.list')->middleware('permission:view_users');
+Route::post('user-management/store', [UserManagementController::class, 'store'])->name('user.management.store')->middleware('permission:create_user');
+Route::post('user-management/update', [UserManagementController::class, 'update'])->name('user.management.update')->middleware('permission:edit_user');
+Route::delete('user-management/{id}/destroy', [UserManagementController::class, 'destroy'])->name('user.management.destroy')->middleware('permission:delete_user');
+Route::get('user-management/{id}/edit', [UserManagementController::class, 'edit'])->name('user.management.edit')->middleware('permission:edit_user');
+Route::get('user-management/{id}/send-temporary-password', [UserManagementController::class, 'sendTemporaryPassword'])->name('user.management.sendTemporaryPassword')->middleware('permission:manage_passwords');

@@ -87,7 +87,7 @@ class UserManagementController extends Controller
                 'last_name' => 'required|string|max:255',
                 'email' => 'required',
                 'usertype_id' => 'required|exists:usertypes,id',
-                'team_id' => 'required|exists:team,id',
+                // 'team_id' => 'required|exists:team,id',
                 'status' => 'required',
             ]);
 
@@ -100,7 +100,7 @@ class UserManagementController extends Controller
             $user->last_name = $request->last_name;
             $user->email = $request->email;
             $user->usertype_id = $request->usertype_id;
-            $user->team_id = $request->team_id;
+            // $user->team_id = $request->team_id;
             $user->status = $request->status;
             $user->updated_by = Auth::user()->id;
             $user->updated_at = now();

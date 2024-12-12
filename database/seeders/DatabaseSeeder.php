@@ -19,12 +19,12 @@ class DatabaseSeeder extends Seeder
             UsertypeSeeder::class,
             TeamSeeder::class,
             ProvinceSeeder::class,
-            // VehicleSeeder::class,
+            VehicleSeeder::class,
             StatusSeeder::class,
             UserSeeder::class,
             BankSeeder::class,
             InquiryTypeSeeder::class,
-            // InventorySeeder::class,
+            InventorySeeder::class,
             PermissionSeeder::class,
 
         ]);

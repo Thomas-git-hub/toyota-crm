@@ -25,6 +25,7 @@
           <div class="form-group">
             <div class="row">
                 <div class="col-md">
+                    <input type="hidden" name="id", id="statusTransactionID">
                     <label for="status">Status</label>
                     <select class="form-control" id="status" name="status">
                     </select>
@@ -202,38 +203,6 @@
         $('.btn-group .btn.active').click();
     });
 
-    function releasedCount() {
-        $.ajax({
-            url: '{{ route("vehicle.releases.getReleasedCount") }}', // Adjust the route as necessary
-            type: 'GET',
-            success: function(response) {
-                if (response.releasedCount !== undefined) {
-                    $('#releasedCount').text(response.releasedCount); // Update the count in the HTML
-                    $('#pendingForReleaseCount').text(response.pendingForReleaseCount); // Update the count in the HTML
-                }
-            },
-            error: function(xhr) {
-                console.error('Error fetching transaction count:', xhr);
-            }
-        });
-    }
-
-    releasedCount();
-
-   
-
-    function getGrandTotalProfit(){
-        $.ajax({
-        url: '{{ route("vehicle.releases.GrandTotalProfit") }}',
-        type: 'GET',
-        success: function(response) {
-            $('#grandTotalProfit').text(response);
-            }
-        });
-    }
-
-    getGrandTotalProfit();
-
 
     //Date filter
     flatpickr("#date-range-picker", {
@@ -252,6 +221,10 @@
                 } else {
                     // Reload the tables if a valid range is selected
                     vehicleReleasesTable.ajax.reload(null, false);
+                    statusTable.ajax.reload(null, false);
+                    releasedUnitsTable.ajax.reload(null, false);
+                    getGrandTotalProfit();
+                    releasedCount();
                 }
             }
         },
@@ -275,6 +248,10 @@
             clearButton.addEventListener("click", function() {
                 instance.clear(); // Clear the date range
                 vehicleReleasesTable.ajax.reload(null, false); // Reload the tables
+                statusTable.ajax.reload(null, false);
+                releasedUnitsTable.ajax.reload(null, false);
+                getGrandTotalProfit();
+                releasedCount();
             });
 
             // Add event listener to close the calendar
@@ -283,6 +260,52 @@
             });
         }
     });
+
+    // function getGrandTotalProfit(){
+    //     $.ajax({
+    //     url: '{{ route("vehicle.releases.GrandTotalProfit") }}',
+    //     type: 'GET',
+    //     success: function(response) {
+    //         $('#grandTotalProfit').text(response);
+    //         }
+    //     });
+    // }
+
+    function getGrandTotalProfit(){
+        $.ajax({
+            url: '{{ route("vehicle.releases.GrandTotalProfit") }}',
+            type: 'GET',
+            data: {
+                date_range: $('#date-range-picker').val() // Add the date range parameter
+            },
+            success: function(response) {
+                $('#grandTotalProfit').text(response);
+            }
+        });
+    }
+
+    getGrandTotalProfit();
+
+    function releasedCount() {
+        $.ajax({
+            url: '{{ route("vehicle.releases.getReleasedCount") }}', // Adjust the route as necessary
+            type: 'GET',
+            data: {
+                date_range: $('#date-range-picker').val() // Add the date range parameter
+            },
+            success: function(response) {
+                if (response.releasedCount !== undefined) {
+                    $('#releasedCount').text(response.releasedCount); // Update the count in the HTML
+                    $('#pendingForReleaseCount').text(response.pendingForReleaseCount); // Update the count in the HTML
+                }
+            },
+            error: function(xhr) {
+                console.error('Error fetching transaction count:', xhr);
+            }
+        });
+    }
+
+    releasedCount();
 
     // datatables button tabs
     $(document).ready(function() {
@@ -300,6 +323,9 @@
         serverSide: true, // Use client-side processing since we're providing static data
         ajax: {
             url: '{{ route("vehicle.releases.units.list") }}',
+            data: function(d) {
+                d.date_range = $('#date-range-picker').val();
+            },
         },
         pageLength: 10,
         paging: true,
@@ -329,6 +355,9 @@
         serverSide: true, // Use client-side processing since we're providing static data
         ajax: {
             url: '{{ route("vehicle.releases.releasedPerTeam") }}',
+            data: function(d) {
+                d.date_range = $('#date-range-picker').val();
+            },
         },
         pageLength: 10,
         paging: true,
@@ -473,20 +502,19 @@
 
         $('#saveStatusButton').on('click', function() {
             const selectedValue = $('#status').val();
-            const transactionId = $('.status-btn').data('id'); // Get the transaction ID from the button
             if (selectedValue) {
                 $.ajax({
                     url: '{{ route("vehicle.releases.updateStatus") }}', // Define this route in your controller
                     type: 'POST',
                     data: {
-                        id: transactionId,
+                        id: $('#statusTransactionID').val(),
                         status: selectedValue,
                         _token: '{{ csrf_token() }}' // Include CSRF token
                     },
                     success: function(response) {
                         if (response.success) {
-                            Swal.fire('Updated!', response.message, 'success');
                             $('#releaseStatus').modal('hide');
+                            Swal.fire('Updated!', response.message, 'success');
                             vehicleReleasesTable.ajax.reload();
                             statusTable.ajax.reload();
                             releasedUnitsTable.ajax.reload();
@@ -505,6 +533,7 @@
             const id = $(this).data('id');
             const currentStatus = $(this).data('status'); // Get the current status from the button
             console.log(currentStatus);
+            $('#statusTransactionID').val(id);
 
             $.ajax({
                 url: '{{ route("vehicle.releases.getStatus") }}',
@@ -756,6 +785,7 @@
         const remarks = $('#ltoRemarksTextArea').val();
         $.ajax({
             url: '{{ route("vehicle.releases.updateLTORemarks") }}',
+
             type: 'POST',
             data: { id: id, remarks: remarks },
             headers: {

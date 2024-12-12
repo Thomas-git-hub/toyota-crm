@@ -69,6 +69,23 @@ class PermissionSeeder extends Seeder
         ['permission_name' => 'get_total_inventory', 'permission_description' => 'Allows the user to get the total vehicle inventory.'],
         ['permission_name' => 'store_vehicle', 'permission_description' => 'Allows the user to store a new vehicle.'],
         ['permission_name' => 'store_inventory', 'permission_description' => 'Allows the user to store inventory information.'],
+
+        // Bank Management Permissions
+        ['permission_name' => 'view_banks', 'permission_description' => 'Allows the user to view bank information.'],
+        ['permission_name' => 'create_bank', 'permission_description' => 'Allows the user to create new bank entries.'],
+        ['permission_name' => 'edit_bank', 'permission_description' => 'Allows the user to edit bank information.'],
+        ['permission_name' => 'delete_bank', 'permission_description' => 'Allows the user to delete bank entries.'],
+        
+        // User Management Permissions
+        ['permission_name' => 'view_users', 'permission_description' => 'Allows the user to view user information.'],
+        ['permission_name' => 'create_user', 'permission_description' => 'Allows the user to create new users.'],
+        ['permission_name' => 'edit_user', 'permission_description' => 'Allows the user to edit user information.'],
+        ['permission_name' => 'delete_user', 'permission_description' => 'Allows the user to delete users.'],
+        ['permission_name' => 'manage_user_roles', 'permission_description' => 'Allows the user to assign and modify user roles.'],
+        ['permission_name' => 'manage_user_permissions', 'permission_description' => 'Allows the user to assign and modify user permissions.'],
+        ['permission_name' => 'manage_passwords', 'permission_description' => 'Allows the user to changes password for the users.'],
+
+        
     ];
 
     foreach ($permissions as $permission) {

@@ -28,7 +28,7 @@ class AppServiceProvider extends ServiceProvider
         if (Schema::hasTable('permissions')) {
             Permission::all()->each(function ($permission) {
                 Gate::define($permission->permission_name, function ($user) use ($permission) {
-                    return $user->role->hasPermission($permission->permission_name) || $user->role->name === 'SuperAdmin';
+                    return $user->usertype->hasPermission($permission->permission_name) || $user->usertype->name === 'SuperAdmin';
                 });
             });
         }

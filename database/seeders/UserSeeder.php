@@ -25,7 +25,7 @@ class UserSeeder extends Seeder
                 'last_name' => 'Doe',
                 'email' => 'user' . $i . '@gmail.com',
                 'usertype_id' => $usertypes->random()->id,
-                'team_id' => $team->id,
+                'team_id' => rand(1, 5),
                 'password' => Hash::make('123456'),
             ]);
         }
