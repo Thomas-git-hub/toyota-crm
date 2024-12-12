@@ -277,6 +277,7 @@
                 },
                 success: function(response) {
                     if (response.success) {
+
                         Swal.fire({
                             icon: 'success',
                             title: 'Success',
@@ -350,7 +351,7 @@
                     });
                 }
             });
-        }); 
+        });
 
         $(document).on('click', '.send-temporary-password', function(e) {
             e.preventDefault();

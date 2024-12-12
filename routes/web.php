@@ -99,6 +99,7 @@ Route::post('/inventory/store', [VehicleInventoryController::class, 'inventorySt
 Route::get('vehicle-inventory/edit', [VehicleInventoryController::class, 'editInventory'])->name('vehicle.inventory.edit');
 Route::post('/inventory/update', [VehicleInventoryController::class, 'updateInventory'])->name('inventory.update');
 Route::get('inventory/status', [VehicleInventoryController::class, 'getInventoryStatus'])->name('inventory.status');
+Route::get('inventory/status/incomng', [VehicleInventoryController::class, 'getIncomingStatus'])->name('inventory.incoming.status');
 Route::post('inventory/updateStatus', [VehicleInventoryController::class, 'updateInventoryStatus'])->name('inventory.updateStatus');
 Route::get('inventory/getAgent', [VehicleInventoryController::class, 'getAgent'])->name('inventory.getAgent');
 Route::post('inventory/updateTags', [VehicleInventoryController::class, 'updateTags'])->name('inventory.updateTags');

@@ -421,8 +421,6 @@ class VehicleReleasesController extends Controller
             //     'status' => 'required|exists:status,id' // Assuming you have a statuses table
             // ]);
 
-            // dd($request->all());
-
             $transaction = Transactions::findOrFail(decrypt($request->id));
             $transaction->status = $request->status;
             $transaction->reservation_transaction_status = $request->status; // Update the status

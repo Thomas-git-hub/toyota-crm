@@ -74,11 +74,14 @@ class VehicleInventoryController extends Controller
 
          ->addColumn('tags', function($data) {
 
-            // $transaction = Transactions::with(['application'])->where('inventory_id', $data->id)->first();
-            // if($transaction){
-            //     return $transaction->application->updatedBy->first_name . ' ' . $transaction->application->updatedBy->last_name;
-            // }
-            return '';
+            $tag = $data->tag;
+
+            if($tag){
+                $user = User::find($tag);
+                return $user->first_name . ' ' . $user->last_name;
+            }else{
+                return '';
+            }
         })
 
          ->addColumn('invoice_number', function($data) {
@@ -176,7 +179,7 @@ class VehicleInventoryController extends Controller
                                  ->count();
             return $inventoryCount;
         })
-       
+
         ->make(true);
 
     }
@@ -304,16 +307,16 @@ class VehicleInventoryController extends Controller
     }
 
     public function updateInventory(Request $request){
-        
+
         try{
 
-            
+
             $vehicle = Vehicle::where('unit', $request->car_unit)
                                ->where('variant', $request->car_variant)
                                ->where('color', $request->car_color)
                                ->first()->id;
-            
-                               
+
+
             $inventory = Inventory::findOrFail(decrypt($request->id));
 
 
@@ -333,7 +336,7 @@ class VehicleInventoryController extends Controller
             'updated_by' => Auth::id(),
             'updated_at' => now(),
             ]);
-            
+
             return response()->json(['success' => true, 'message' => 'Inventory updated successfully!']);
         }catch(\Exception $e){
             return response()->json(['error' => $e->getMessage()], 500);
@@ -349,10 +352,24 @@ class VehicleInventoryController extends Controller
         return response()->json($agent);
     }
 
-    public function getInventoryStatus(Request $request){
-       $data = Status::whereIn('status', ['For Swapping', 'On Stock', 'In Transit', 'Invoice', 'Pull Out', 'Reserved', 'Freeze'])
-                ->get();
-        return response()->json($data);
+    // public function getIncomingStatus(Request $request){
+    //    $data = Status::whereIn('status', ['On Stock', 'In Transit', 'Invoice', 'Pull Out'])
+    //             ->get();
+    //     return response()->json($data);
+    // }
+
+    public function getIncomingStatus(Request $request){
+
+        $inventory = Inventory::findOrFail(decrypt($request->id));
+        if(in_array($inventory->incoming_status, ['On Stock', 'For Swapping', 'Reserved', 'Freeze'])){
+            $data = Status::whereIn('status', ['On Stock','For Swapping', 'Reserved', 'Freeze'])
+            ->get();
+        }else{
+            $data = Status::whereIn('status', ['On Stock', 'In Transit', 'Invoice', 'Pull Out'])
+            ->get();
+        }
+
+         return response()->json($data);
     }
 
     public function updateInventoryStatus(Request $request){
@@ -387,6 +404,6 @@ class VehicleInventoryController extends Controller
             return response()->json(['error' => $e->getMessage()], 500);
         }
     }
-    
+
 
 }

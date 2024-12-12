@@ -138,8 +138,7 @@
       <div class="modal-content">
         <div class="modal-header">
           <h5 class="modal-title" id="exampleModalLabel">Ear Mark</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
-            </button>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <div class="modal-body">
             <form id="earmarkForm">
@@ -398,16 +397,16 @@
     });
 
     // actual invoice date picker
-    var flatpickrDate = document.querySelector("#actualInvoiceDate, #editActualInvoiceDate");
+    var flatpickrDate = document.querySelector("#actualInvoiceDate");
+        flatpickrDate.flatpickr({
+        monthSelectorType: "static"
+    });
+    // delivery date picker
+    var flatpickrDate = document.querySelector("#deliveryDate");
         flatpickrDate.flatpickr({
         monthSelectorType: "static"
     });
 
-    // delivery date picker
-    var flatpickrDate = document.querySelector("#deliveryDate, #editDeliveryDate");
-        flatpickrDate.flatpickr({
-        monthSelectorType: "static"
-    });
 
     // Count of Total Inventory
     function totalInventory() {
@@ -541,6 +540,7 @@
             $('#vehicleFormCard').hide(); // Hide the form card
         });
     });
+
     $(document).ready(function () {
         // When #addInventoryButton is clicked
         $("#addInventoryButton").on("click", function () {
@@ -634,7 +634,7 @@
             infoEmpty: "", // Removes the message when there's no data
             infoFiltered: "", // Removes the "filtered from X entries" part
         },
-       
+
         columns: [
             { data: 'for', name: 'for', title: 'For' },
             { data: 'quantity', name: 'quantity', title: 'Quantity' },
@@ -664,7 +664,7 @@
             search: "",
             searchPlaceholder: "Search..."
         },
-        
+
         columns: [
             { data: 'id', name: 'id', title: 'ID', visible: false },
             { data: 'unit', name: 'unit', title: 'Unit' },
@@ -701,7 +701,7 @@
                 searchable: false,
                 visible: false,
                 render: function(data, type, row) {
-                    const isDisabled = row.status !== 'Available' ? 'disabled' : '';
+                    const isDisabled = row.status !== 'Available' || row.status !== 'Reserved' ? 'disabled' : '';
                     return `<button type="button" class="btn btn-icon me-2 btn-label-dark ear-mark-btn" data-bs-toggle="modal" data-bs-target="#earmarkModal" data-id="${row.id}" data-mark="${row.tags}" ${isDisabled}>
                                 <span class="tf-icons bx bx-star bx-22px"></span>
                             </button>`;
@@ -1083,6 +1083,7 @@
                 success: function(response) {
                     const inventory = response.inventory;
                     const vehicle = response.vehicle;
+                    console.log(inventory);
                     $('#edit_id').val(id);
                     $('#edit_car_unit').val(vehicle.unit).trigger('change');
                     // Disable buttons initially
@@ -1135,11 +1136,19 @@
 
                     $('#editActualInvoiceDate').val(inventory.actual_invoice_date).trigger('change');
                     $('#editDeliveryDate').val(inventory.delivery_date).trigger('change');
+
+                     // Initialize Flatpickr after setting the values
+                flatpickr("#editActualInvoiceDate", {
+                    monthSelectorType: "static"
+                });
+                flatpickr("#editDeliveryDate", {
+                    monthSelectorType: "static"
+                });
                     $('#editInvoiceNumber').val(inventory.invoice_number);
-                    $('#editCsNumber').val(inventory.CS_number); 
+                    $('#editCsNumber').val(inventory.CS_number);
                     $('#editYearModel').val(inventory.year_model).trigger('change');
                     $('#editRemarks').val(inventory.remarks);
-                    
+
                     // Check if all inputs are loaded to enable buttons
                     if ($('#edit_car_unit').val() && $('#edit_car_variant').val() && $('#edit_car_color').val()) {
                         $('#updateButton, #cancelButton').prop('disabled', false);
@@ -1182,8 +1191,6 @@
                 }
             })
         })
-
-       
     })
 
     //Incoming
@@ -1195,9 +1202,10 @@
 
             // Get Inventory Status
             $.ajax({
-                url: '{{ route("inventory.status") }}',
+                url: '{{ route("inventory.incoming.status") }}',
                 type: 'GET',
                 dataType: 'json',
+                data: { id: id },
                 success: function(data) {
                     let statusSelect = $('#selectIncomingStatus');
                     statusSelect.empty();
@@ -1241,7 +1249,7 @@
                         title: 'Success',
                         text: response.message,
                     });
-                   
+
                     vehicleInventoryTable.ajax.reload();
                     incomingUnitsTable.ajax.reload();
 
@@ -1317,10 +1325,10 @@
                     });
                 }
             });
-            
+
         });
     });
-   
+
 </script>
 
 

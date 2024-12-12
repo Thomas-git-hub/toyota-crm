@@ -45,6 +45,19 @@ class UserManagementController extends Controller
     public function store(Request $request){
 
         try{
+
+            $validator = Validator::make($request->all(), [
+                'first_name' => 'required|string|max:255',
+                'last_name' => 'required|string|max:255',
+                'email' => 'required|email|unique:users,email',
+                'usertype_id' => 'required|exists:usertypes,id',
+                'team_id' => 'required|exists:team,id',
+            ]);
+
+            if ($validator->fails()) {
+                return response()->json(['errors' => $validator->errors()], 422);
+            }
+
             $user = new User();
             $user->first_name = $request->first_name;
             $user->last_name = $request->last_name;
@@ -140,7 +153,7 @@ class UserManagementController extends Controller
             $user->save();
 
             // Send email
-            Mail::to($user->email)->send(new TemporaryPasswordMail($user, $password));
+            // Mail::to($user->email)->send(new TemporaryPasswordMail($user, $password));
 
             return response()->json(['success' => 'Temporary password sent successfully', 'password' => $password], 200);
         } catch(\Exception $e) {

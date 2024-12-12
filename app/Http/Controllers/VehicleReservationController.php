@@ -389,7 +389,7 @@ class VehicleReservationController extends Controller
             ], 500);
         }
     }
-    
+
     public function getCSNumberByVehicleId(Request $request, $vehicle_id) {
 
         if($request->color === 'Any Color'){
@@ -401,18 +401,20 @@ class VehicleReservationController extends Controller
            $inventories = Inventory::with('vehicle')
            ->whereIn('vehicle_id', $vehicle_ids)
            ->where('status', 'Available')
-           ->where('CS_number_status', 'Available')->get()->toArray();
+           ->where('CS_number_status', 'Available')
+           ->whereIn('incoming_status', ['Invoice', 'On Stock', 'Pull Out', 'In Transit'])->get()->toArray();
 
 
         }else{
             $inventories = Inventory::with('transaction')
             ->where('vehicle_id', $vehicle_id)
             ->where('status', 'Available')
-            ->where('CS_number_status', 'Available')->get()->toArray();
-           
+            ->where('CS_number_status', 'Available')
+            ->whereIn('incoming_status', ['Invoice', 'On Stock', 'Pull Out', 'In Transit'])->get()->toArray();
+
         }
 
-       
+
         return response()->json($inventories);
     }
 
@@ -425,6 +427,8 @@ class VehicleReservationController extends Controller
                 $inventory = Inventory::find($transaction->inventory_id);
                 if ($inventory) {
 
+                    $inventory->tag = null;
+                    $inventory->team_id = null;
                     $inventory->CS_number_status = 'Available';
                     $inventory->status = 'Available';
                     $inventory->save();
@@ -437,6 +441,9 @@ class VehicleReservationController extends Controller
                 $transaction->inventory_id = $inventory->id;
                 $transaction->save();
 
+
+                $inventory->tag = Auth::user()->id;
+                $inventory->team_id = Auth::user()->team_id;
                 $inventory->CS_number_status = 'Reserved';
                 $inventory->status = 'Reserved';
                 $inventory->save();
