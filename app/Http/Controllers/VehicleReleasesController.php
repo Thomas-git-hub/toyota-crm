@@ -185,11 +185,31 @@ class VehicleReleasesController extends Controller
     public function list_pending_for_release(Request $request){
 
         $pending_for_release_status = Status::where('status', 'like', 'Pending For Release')->first();
-        $query = Transactions::with(['inquiry', 'inventory', 'application'])
+        if(Auth::user()->usertype->name === 'SuperAdmin'){
+            $query = Transactions::with(['inquiry', 'inventory', 'application'])
                         ->whereNull('deleted_at')
                         ->where('reservation_transaction_status', $pending_for_release_status->id)
                         ->whereNotNull('reservation_id')
                        ;
+        }elseif(Auth::user()->usertype->name === 'Group Manager'){
+            $query = Transactions::with(['inquiry', 'inventory', 'application'])
+                        ->whereNull('deleted_at')
+                        ->where('reservation_transaction_status', $pending_for_release_status->id)
+                        ->whereNotNull('reservation_id')
+                        ->whereHas('application', function($subQuery) {
+                            $subQuery->whereHas('user', function($subQuery) {
+                                $subQuery->where('team_id', Auth::user()->team_id);
+                            });
+                        });
+        }else{
+            $query = Transactions::with(['inquiry', 'inventory', 'application'])
+                        ->whereNull('deleted_at')
+                        ->where('reservation_transaction_status', $pending_for_release_status->id)
+                        ->whereNotNull('reservation_id')
+                        ->whereHas('application', function($subQuery) {
+                            $subQuery->where('created_by', Auth::user()->id);
+                        });
+        }
 
         if ($request->has('date_range') && !empty($request->date_range)) {
             [$startDate, $endDate] = explode(' to ', $request->date_range);
@@ -276,11 +296,31 @@ class VehicleReleasesController extends Controller
 
         $release_status = Status::where('status', 'like', 'Released')->first();
         $posted_status = Status::where('status', 'like', 'Posted')->first();
-        $query = Transactions::with(['inquiry', 'inventory', 'application'])
+        if(Auth::user()->usertype->name === 'SuperAdmin'){
+            $query = Transactions::with(['inquiry', 'inventory', 'application'])
                         ->whereNull('deleted_at')
                         ->whereIn('reservation_transaction_status', [$release_status->id, $posted_status->id])
                         ->whereNotNull('reservation_id')
                        ;
+        }elseif(Auth::user()->usertype->name === 'Group Manager'){
+            $query = Transactions::with(['inquiry', 'inventory', 'application'])
+                        ->whereNull('deleted_at')
+                        ->whereIn('reservation_transaction_status', [$release_status->id, $posted_status->id])
+                        ->whereNotNull('reservation_id')
+                        ->whereHas('application', function($subQuery) {
+                            $subQuery->whereHas('user', function($subQuery) {
+                                $subQuery->where('team_id', Auth::user()->team_id);
+                            });
+                        });
+        }else{
+            $query = Transactions::with(['inquiry', 'inventory', 'application'])
+                        ->whereNull('deleted_at')
+                        ->whereIn('reservation_transaction_status', [$release_status->id, $posted_status->id])
+                        ->whereNotNull('reservation_id')
+                        ->whereHas('application', function($subQuery) {
+                            $subQuery->where('created_by', Auth::user()->id);
+                        });
+        }
 
         if ($request->has('date_range') && !empty($request->date_range)) {
             [$startDate, $endDate] = explode(' to ', $request->date_range);

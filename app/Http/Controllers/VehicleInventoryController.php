@@ -268,7 +268,7 @@ class VehicleInventoryController extends Controller
             'year_model' => 'required|string|max:255',
             'cs_number' => 'required|string|max:255',
             'actual_invoice_date' => 'required|date',
-            'delivery_date' => 'required|date',
+            'delivery_date' => 'nullable|date',
             'invoice_number' => 'required|string|max:255',
             // Add other fields as necessary
         ]);
@@ -278,16 +278,21 @@ class VehicleInventoryController extends Controller
                            ->where('color', $request->car_color)
                            ->first()->id;
 
-        $deliveryDate = Carbon::parse($request->input('delivery_date'));
-        $currentDate = Carbon::now();
-        $age = $deliveryDate->diffInDays($currentDate);
+        if($request->input('delivery_date')){
+            $deliveryDate = Carbon::parse($request->input('delivery_date'));
+            $currentDate = Carbon::now();
+            $age = $deliveryDate->diffInDays($currentDate);
+        }
+        $age = null;
+
+      
         // Create a new inventory record
         Inventory::create([
             'vehicle_id' => $vehicle,
             'year_model' => $request->year_model,
             'CS_number' => $request->cs_number,
             'actual_invoice_date' => $request->actual_invoice_date,
-            'delivery_date' => $request->delivery_date,
+            'delivery_date' => $request->delivery_date ? $request->delivery_date : null,
             'invoice_number' => $request->invoice_number,
             'age' => $age,
             // Add other fields as necessary
@@ -310,7 +315,6 @@ class VehicleInventoryController extends Controller
 
         try{
 
-
             $vehicle = Vehicle::where('unit', $request->car_unit)
                                ->where('variant', $request->car_variant)
                                ->where('color', $request->car_color)
@@ -329,7 +333,7 @@ class VehicleInventoryController extends Controller
             'year_model' => $request->year_model,
             'CS_number' => $request->cs_number,
             'actual_invoice_date' => $request->actual_invoice_date,
-            'delivery_date' => $request->delivery_date,
+            'delivery_date' => $request->delivery_date ? $request->delivery_date : null ,
             'invoice_number' => $request->invoice_number,
             'remarks' => $request->remarks,
             'age' => $age,

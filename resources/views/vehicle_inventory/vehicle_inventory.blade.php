@@ -977,14 +977,14 @@
                 }
 
                 // Validate Actual Invoice Date
-                if ($("#deliveryDate").val() === "") {
-                    isValid = false;
-                    $("#deliveryDate").addClass("border-danger");
-                    $("#validateDeliveryDate").show();
-                } else {
-                    $("#deliveryDate").removeClass("border-danger");
-                    $("#validateDeliveryDate").hide();
-                }
+                // if ($("#deliveryDate").val() === "") {
+                //     isValid = false;
+                //     $("#deliveryDate").addClass("border-danger");
+                //     $("#validateDeliveryDate").show();
+                // } else {
+                //     $("#deliveryDate").removeClass("border-danger");
+                //     $("#validateDeliveryDate").hide();
+                // }
 
                 // Validate Actual Invoice Date
                 if ($("#invoiceNumber").val() === "") {

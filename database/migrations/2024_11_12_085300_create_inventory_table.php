@@ -17,9 +17,9 @@ return new class extends Migration
             $table->unsignedBigInteger('vehicle_id');
             $table->string('CS_number');
             $table->date('actual_invoice_date');
-            $table->date('delivery_date');
+            $table->date('delivery_date')->nullable();
             $table->string('invoice_number');
-            $table->integer('age');
+            $table->integer('age')->nullable();
             $table->string('status')->default('Available');
             $table->string('CS_number_status')->default('Available');
             $table->string('incoming_status')->default('Invoice');
