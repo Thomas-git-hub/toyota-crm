@@ -104,7 +104,7 @@
     <div class="modal-dialog" role="document">
       <div class="modal-content">
         <div class="modal-header">
-          <h5 class="modal-title" id="exampleModalLabel">Vehicle Transportation Status</h5>
+          <h5 class="modal-title" id="exampleModalLabel">Vehicle Status</h5>
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
             </button>
         </div>
@@ -684,7 +684,7 @@
             {
                 data: 'incoming_status',
                 name: 'incoming_status',
-                title: 'Incoming Status',
+                title: 'Vehicle Status',
                 orderable: false,
                 searchable: false,
                 render: function(data, type, row) {
@@ -722,7 +722,7 @@
                     }
             },
         ],
-        order: [[5, 'asc']],  // Sort by 'cs_number' column in ascending order
+        order: [[6, 'asc']],  // Sort by 'cs_number' column in ascending order
         columnDefs: [
             {
                 targets: [0, 1], // Columns to apply additional formatting (if needed)
