@@ -64,6 +64,10 @@ class PermissionSeeder extends Seeder
         ['permission_name' => 'get_total_inventory', 'permission_description' => 'Allows the user to get the total vehicle inventory.'],
         ['permission_name' => 'store_vehicle', 'permission_description' => 'Allows the user to store a new vehicle.'],
         ['permission_name' => 'store_inventory', 'permission_description' => 'Allows the user to store inventory information.'],
+        ['permission_name' => 'edit_inventory', 'permission_description' => 'Allows the user to edit inventory information.'],
+        ['permission_name' => 'update_inventory', 'permission_description' => 'Allows the user to update inventory information.'],
+        ['permission_name' => 'update_status_inventory', 'permission_description' => 'Allows the user to update status inventory information.'],
+        ['permission_name' => 'update_tags_inventory', 'permission_description' => 'Allows the user to update tag inventory information.'],
 
         // Bank Management Permissions
         ['permission_name' => 'view_banks', 'permission_description' => 'Allows the user to view bank information.'],
@@ -80,15 +84,17 @@ class PermissionSeeder extends Seeder
         ['permission_name' => 'manage_user_permissions', 'permission_description' => 'Allows the user to assign and modify user permissions.'],
         ['permission_name' => 'manage_passwords', 'permission_description' => 'Allows the user to changes password for the users.'],
 
+        // Dispute Permissions
         ['permission_name' => 'view_disputes', 'permission_description' => 'Allows the user to view disputes.'],
         ['permission_name' => 'list_disputes', 'permission_description' => 'Allows the user to list disputes.'],
         ['permission_name' => 'process_disputes', 'permission_description' => 'Allows the user to process disputes.'],
         ['permission_name' => 'cancel_disputes', 'permission_description' => 'Allows the user to cancel disputes.'],
 
+        // Sales Permissions
         ['permission_name' => 'view_sales', 'permission_description' => 'Allows the user to view sales.'],
         ['permission_name' => 'list_sales', 'permission_description' => 'Allows the user to list sales.'],
 
-
+        // Permissions
         ['permission_name' => 'view_permissions', 'permission_description' => 'Allows the user to view permissions.'],
         ['permission_name' => 'manage_permissions', 'permission_description' => 'Allows the user to manage permissions.'],
 

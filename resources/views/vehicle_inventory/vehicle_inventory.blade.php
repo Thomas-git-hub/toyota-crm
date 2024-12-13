@@ -348,6 +348,7 @@
 {{-- Trigger Vehicle and Inventory Form - Button --}}
 <div class="row mb-2">
     <div class="col-md d-flex justify-content-end gap-2">
+        
         <button class="btn btn-primary" id="addVehicleButton">Add New Vehicle</button>
         <button class="btn btn-primary" id="addInventoryButton">Add to Inventory</button>
     </div>
