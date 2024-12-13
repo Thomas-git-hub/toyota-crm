@@ -31,17 +31,36 @@ class LeadController extends Controller
 
         // dd($request->start_date);
         $status = Status::where('status', 'like', 'Processed')->first()->id;
+
+        if(Auth::user()->usertype->name === 'SuperAdmin'){
         $query = Inquiry::with([ 'user', 'customer', 'vehicle', 'status', 'inquiryType'])
                         ->whereNull('deleted_at')
                         ->whereHas('inquiryType', function($subQuery) {
                             $subQuery->where('inquiry_type', 'Individual');
                         })
                         ->where('status_id', '<>', $status);
+        }elseif(Auth::user()->usertype->name === 'Group Manager'){
+            $query = Inquiry::with([ 'user', 'customer', 'vehicle', 'status', 'inquiryType'])
+                        ->whereNull('deleted_at')
+                        ->whereHas('inquiryType', function($subQuery) {
+                            $subQuery->where('inquiry_type', 'Individual');
+                        })
+                        ->whereHas('user', function($subQuery) {
+                            $subQuery->where('team_id', Auth::user()->team_id);
+                        })
+                        ->where('status_id', '<>', $status);
+        }
+        else{
+            $query = Inquiry::with([ 'user', 'customer', 'vehicle', 'status', 'inquiryType'])
+                        ->whereNull('deleted_at')
+                        ->where('created_by', Auth::user()->id)
+                        ->whereHas('inquiryType', function($subQuery) {
+                            $subQuery->where('inquiry_type', 'Individual');
+                        })
+                        ->where('status_id', '<>', $status);
+        }
 
-                        if(!Auth::user()->usertype->name === 'SuperAdmin'){
-
-                            $query->where('created_by', Auth::user()->id);
-                        }
+                       
 
         if ($request->has('date_range') && !empty($request->date_range)) {
             [$startDate, $endDate] = explode(' to ', $request->date_range);
@@ -111,17 +130,34 @@ class LeadController extends Controller
 
         // dd($request->start_date);
         $status = Status::where('status', 'like', 'Processed')->first()->id;
-        $query = Inquiry::with([ 'user', 'customer', 'vehicle', 'status', 'inquiryType'])
+        
+        if(Auth::user()->usertype->name === 'SuperAdmin'){
+            $query = Inquiry::with([ 'user', 'customer', 'vehicle', 'status', 'inquiryType'])
                         ->whereNull('deleted_at')
                         ->whereHas('inquiryType', function($subQuery) {
                             $subQuery->where('inquiry_type', 'Fleet');
                         })
                         ->where('status_id', '<>', $status);
-
-                        if(!Auth::user()->usertype->name === 'SuperAdmin'){
-
-                            $query->where('created_by', Auth::user()->id);
-                        }
+        }elseif(Auth::user()->usertype->name === 'Group Manager'){
+            $query = Inquiry::with([ 'user', 'customer', 'vehicle', 'status', 'inquiryType'])
+                        ->whereNull('deleted_at')
+                        ->whereHas('inquiryType', function($subQuery) {
+                            $subQuery->where('inquiry_type', 'Fleet');
+                        })
+                        ->whereHas('user', function($subQuery) {
+                            $subQuery->where('team_id', Auth::user()->team_id);
+                        })
+                        ->where('status_id', '<>', $status);
+        }
+        else{
+            $query = Inquiry::with([ 'user', 'customer', 'vehicle', 'status', 'inquiryType'])
+                        ->whereNull('deleted_at')
+                        ->where('created_by', Auth::user()->id)
+                        ->whereHas('inquiryType', function($subQuery) {
+                            $subQuery->where('inquiry_type', 'Fleet');
+                        })
+                        ->where('status_id', '<>', $status);
+        }
 
         if ($request->has('date_range') && !empty($request->date_range)) {
             [$startDate, $endDate] = explode(' to ', $request->date_range);
@@ -191,17 +227,34 @@ class LeadController extends Controller
 
         // dd($request->start_date);
         $status = Status::where('status', 'like', 'Processed')->first()->id;
-        $query = Inquiry::with([ 'user', 'customer', 'vehicle', 'status', 'inquiryType'])
+        if(Auth::user()->usertype->name === 'SuperAdmin'){
+            $query = Inquiry::with([ 'user', 'customer', 'vehicle', 'status', 'inquiryType'])
                         ->whereNull('deleted_at')
                         ->whereHas('inquiryType', function($subQuery) {
                             $subQuery->where('inquiry_type', 'Company');
                         })
                         ->where('status_id', '<>', $status);
+        }elseif(Auth::user()->usertype->name === 'Group Manager'){
+            $query = Inquiry::with([ 'user', 'customer', 'vehicle', 'status', 'inquiryType'])
+                        ->whereNull('deleted_at')
+                        ->whereHas('inquiryType', function($subQuery) {
+                            $subQuery->where('inquiry_type', 'Company');
+                        })
+                        ->whereHas('user', function($subQuery) {
+                            $subQuery->where('team_id', Auth::user()->team_id);
+                        })
+                        ->where('status_id', '<>', $status);
+        }
+        else{
+            $query = Inquiry::with([ 'user', 'customer', 'vehicle', 'status', 'inquiryType'])
+                        ->whereNull('deleted_at')
+                        ->where('created_by', Auth::user()->id)
+                        ->whereHas('inquiryType', function($subQuery) {
+                            $subQuery->where('inquiry_type', 'Company');
+                        })
+                        ->where('status_id', '<>', $status);
+        }
 
-                        if(!Auth::user()->usertype->name === 'SuperAdmin'){
-
-                            $query->where('created_by', Auth::user()->id);
-                        }
 
 
         if ($request->has('date_range') && !empty($request->date_range)) {
@@ -272,18 +325,33 @@ class LeadController extends Controller
 
         // dd($request->start_date);
         $status = Status::where('status', 'like', 'Processed')->first()->id;
-        $query = Inquiry::with([ 'user', 'customer', 'vehicle', 'status', 'inquiryType'])
+        if(Auth::user()->usertype->name === 'SuperAdmin'){
+            $query = Inquiry::with([ 'user', 'customer', 'vehicle', 'status', 'inquiryType'])
                         ->whereNull('deleted_at')
                         ->whereHas('inquiryType', function($subQuery) {
                             $subQuery->where('inquiry_type', 'Government');
                         })
                         ->where('status_id', '<>', $status);
-
-                        if(!Auth::user()->usertype->name === 'SuperAdmin'){
-
-                            $query->where('created_by', Auth::user()->id);
-                        }
-
+        }elseif(Auth::user()->usertype->name === 'Group Manager'){
+            $query = Inquiry::with([ 'user', 'customer', 'vehicle', 'status', 'inquiryType'])
+                        ->whereNull('deleted_at')
+                        ->whereHas('inquiryType', function($subQuery) {
+                            $subQuery->where('inquiry_type', 'Government');
+                        })
+                        ->whereHas('user', function($subQuery) {
+                            $subQuery->where('team_id', Auth::user()->team_id);
+                        })
+                        ->where('status_id', '<>', $status);
+        }
+        else{
+            $query = Inquiry::with([ 'user', 'customer', 'vehicle', 'status', 'inquiryType'])
+                        ->whereNull('deleted_at')
+                        ->where('created_by', Auth::user()->id)
+                        ->whereHas('inquiryType', function($subQuery) {
+                            $subQuery->where('inquiry_type', 'Government');
+                        })
+                        ->where('status_id', '<>', $status);
+        }
 
         if ($request->has('date_range') && !empty($request->date_range)) {
             [$startDate, $endDate] = explode(' to ', $request->date_range);

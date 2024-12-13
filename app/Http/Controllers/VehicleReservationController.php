@@ -77,11 +77,32 @@ class VehicleReservationController extends Controller
         // dd($request->start_date);
         DB::statement("SET SQL_MODE=''");
         $pending_status = Status::where('status', 'like', 'pending')->first();
-        $query = Transactions::with(['inquiry', 'inventory', 'application'])
-                        ->where('reservation_transaction_status', $pending_status->id)
-                        ->whereNull('deleted_at')
+        if(Auth::user()->usertype->name === 'SuperAdmin'){              
+            $query = Transactions::with(['inquiry', 'inventory', 'application'])
+                            ->where('reservation_transaction_status', $pending_status->id)
+                            ->whereNull('deleted_at')
                         ->whereNotNull('reservation_id')
                         ;
+        }elseif(Auth::user()->usertype->name === 'Group Manager'){
+            $query = Transactions::with(['inquiry', 'inventory', 'application'])
+                            ->where('reservation_transaction_status', $pending_status->id)
+                            ->whereNull('deleted_at')
+                        ->whereNotNull('reservation_id')
+                        ->whereHas('application', function($subQuery) {
+                            $subQuery->whereHas('user', function($subQuery) {
+                                $subQuery->where('team_id', Auth::user()->team_id);
+                            });
+                        });
+        }
+        else{
+            $query = Transactions::with(['inquiry', 'inventory', 'application'])
+                            ->where('reservation_transaction_status', $pending_status->id)
+                            ->whereNull('deleted_at')
+                        ->whereNotNull('reservation_id')
+                        ->whereHas('application', function($subQuery) {
+                            $subQuery->where('created_by', Auth::user()->id);
+                        });
+        }
 
         if ($request->has('date_range') && !empty($request->date_range)) {
             [$startDate, $endDate] = explode(' to ', $request->date_range);
@@ -435,7 +456,11 @@ class VehicleReservationController extends Controller
                 }
             }
 
-            $inventory = Inventory::where('CS_number', $request->cs_number)->first();
+            $inventory = Inventory::where('CS_number', $request->cs_number)
+                ->where('status', 'Available')
+                ->where('CS_number_status', 'Available')
+                ->whereIn('incoming_status', ['Invoice', 'On Stock', 'Pull Out', 'In Transit'])
+                ->first();
 
             if ($inventory) {
                 $transaction->inventory_id = $inventory->id;

@@ -135,10 +135,25 @@ class ApplicationController extends Controller
 
         // dd($request->start_date);
         $status = Status::where('status', 'like', 'approved')->first();
-        $query = Application::with(['user', 'customer', 'vehicle','status', 'bank', 'transactions'])
+        if(Auth::user()->usertype->name === 'SuperAdmin'){
+            $query = Application::with(['user', 'customer', 'vehicle','status', 'bank', 'transactions'])
+                        ->whereNull('deleted_at')
+                        ->where('status_id', $status->id);
+        }
+        elseif(Auth::user()->usertype->name === 'Group Manager'){
+            $query = Application::with(['user', 'customer', 'vehicle','status', 'bank', 'transactions'])
                         ->whereNull('deleted_at')
                         ->where('status_id', $status->id)
-                        ;
+                        ->whereHas('user', function($subQuery) {
+                            $subQuery->where('team_id', Auth::user()->team_id);
+                        });
+
+        }else{
+            $query = Application::with(['user', 'customer', 'vehicle','status', 'bank', 'transactions'])
+                        ->whereNull('deleted_at')
+                        ->where('status_id', $status->id)
+                        ->where('created_by', Auth::user()->id);
+        }
 
         if ($request->has('date_range') && !empty($request->date_range)) {
             [$startDate, $endDate] = explode(' to ', $request->date_range);
@@ -236,9 +251,27 @@ class ApplicationController extends Controller
 
         // dd($request->start_date);
         $statusIds = Status::whereIn('status', ['Denied', 'Cancel'])->pluck('id')->toArray();
-        $query = Application::with(['user', 'customer', 'vehicle','status', 'bank', 'transactions'])
+
+        if(Auth::user()->usertype->name === 'SuperAdmin'){
+            $query = Application::with(['user', 'customer', 'vehicle','status', 'bank', 'transactions'])
                         ->whereNull('deleted_at')
-                        ->whereIn('status_id', $statusIds);
+                        ->where('status_id', $statusIds);
+        }
+        elseif(Auth::user()->usertype->name === 'Group Manager'){
+            $query = Application::with(['user', 'customer', 'vehicle','status', 'bank', 'transactions'])
+                        ->whereNull('deleted_at')
+                        ->where('status_id', $statusIds)
+                        ->whereHas('user', function($subQuery) {
+                            $subQuery->where('team_id', Auth::user()->team_id);
+                        });
+
+        }else{
+            $query = Application::with(['user', 'customer', 'vehicle','status', 'bank', 'transactions'])
+                        ->whereNull('deleted_at')
+                        ->where('status_id', $statusIds)
+                        ->where('created_by', Auth::user()->id);
+        }
+                
 
         if ($request->has('date_range') && !empty($request->date_range)) {
             [$startDate, $endDate] = explode(' to ', $request->date_range);
@@ -335,10 +368,29 @@ class ApplicationController extends Controller
 
         // dd($request->start_date);
         $statusIds = Status::whereIn('status', ['Denied', 'Cancel', 'Processed', 'Approved', 'Reserved'])->pluck('id')->toArray();
-        $query = Application::with(['user', 'customer', 'vehicle','status', 'bank', 'transactions'])
-                        ->whereNull('deleted_at')
-                        ->whereNotIn('status_id', $statusIds)
-                        ->whereIn('transaction', ['cash', 'po']);
+        
+        if(Auth::user()->usertype->name === 'SuperAdmin'){
+            $query = Application::with(['user', 'customer', 'vehicle','status', 'bank', 'transactions'])
+                ->whereNull('deleted_at')
+                ->whereNotIn('status_id', $statusIds)
+                ->whereIn('transaction', ['cash', 'po']);
+        }
+        elseif(Auth::user()->usertype->name === 'Group Manager'){
+            $query = Application::with(['user', 'customer', 'vehicle','status', 'bank', 'transactions'])
+                ->whereNull('deleted_at')
+                ->whereNotIn('status_id', $statusIds)
+                ->whereIn('transaction', ['cash', 'po'])
+                ->whereHas('user', function($subQuery) {
+                    $subQuery->where('team_id', Auth::user()->team_id);
+                });
+
+        }else{
+            $query = Application::with(['user', 'customer', 'vehicle','status', 'bank', 'transactions'])
+                ->whereNull('deleted_at')
+                ->whereNotIn('status_id', $statusIds)
+                ->whereIn('transaction', ['cash', 'po'])
+                ->where('created_by', Auth::user()->id);
+        }
 
         if ($request->has('date_range') && !empty($request->date_range)) {
             [$startDate, $endDate] = explode(' to ', $request->date_range);
@@ -435,10 +487,26 @@ class ApplicationController extends Controller
 
         // dd($request->start_date);
         $pending_status = Status::where('status', 'like', 'pending')->first();
-        $query = Application::with(['user', 'customer', 'vehicle','status', 'bank', 'transactions'])
+        if(Auth::user()->usertype->name === 'SuperAdmin'){
+            $query = Application::with(['user', 'customer', 'vehicle','status', 'bank', 'transactions'])
                         ->whereNull('deleted_at')
                         ->whereNotIn('transaction', ['cash', 'po'])
                         ->where('status_id', $pending_status->id);
+        }elseif(Auth::user()->usertype->name === 'Group Manager'){
+            $query = Application::with(['user', 'customer', 'vehicle','status', 'bank', 'transactions'])
+                        ->whereNull('deleted_at')
+                        ->whereNotIn('transaction', ['cash', 'po'])
+                        ->where('status_id', $pending_status->id)
+                        ->whereHas('user', function($subQuery) {
+                            $subQuery->where('team_id', Auth::user()->team_id);
+                        });
+        }else{
+            $query = Application::with(['user', 'customer', 'vehicle','status', 'bank', 'transactions'])
+                        ->whereNull('deleted_at')
+                        ->whereNotIn('transaction', ['cash', 'po'])
+                        ->where('status_id', $pending_status->id)
+                        ->where('created_by', Auth::user()->id);
+        }
 
         if ($request->has('date_range') && !empty($request->date_range)) {
             [$startDate, $endDate] = explode(' to ', $request->date_range);

@@ -17,10 +17,6 @@ class PermissionSeeder extends Seeder
         ['permission_name' => 'view_dashboard', 'permission_description' => 'Allows the user to view the dashboard.'],
         ['permission_name' => 'view_leads', 'permission_description' => 'Allows the user to view leads.'],
         ['permission_name' => 'create_lead', 'permission_description' => 'Allows the user to create a new lead.'],
-        // ['permission_name' => 'view_individual_leads', 'permission_description' => 'Allows the user to view individual leads.'],
-        // ['permission_name' => 'view_fleet_leads', 'permission_description' => 'Allows the user to view fleet leads.'],
-        // ['permission_name' => 'view_company_leads', 'permission_description' => 'Allows the user to view company leads.'],
-        // ['permission_name' => 'view_government_leads', 'permission_description' => 'Allows the user to view government leads.'],
         ['permission_name' => 'process_leads', 'permission_description' => 'Allows the user to process leads.'],
         ['permission_name' => 'delete_leads', 'permission_description' => 'Allows the user to delete leads.'],
         ['permission_name' => 'edit_lead', 'permission_description' => 'Allows the user to edit a lead.'],
@@ -32,21 +28,17 @@ class PermissionSeeder extends Seeder
         ['permission_name' => 'list_approved_applications', 'permission_description' => 'Allows the user to list approved applications.'],
         ['permission_name' => 'list_cancelled_applications', 'permission_description' => 'Allows the user to list cancelled applications.'],
         ['permission_name' => 'list_cash_applications', 'permission_description' => 'Allows the user to list cash applications.'],
-        ['permission_name' => 'store_application', 'permission_description' => 'Allows the user to store a new application.'],
         ['permission_name' => 'edit_application', 'permission_description' => 'Allows the user to edit an application.'],
         ['permission_name' => 'update_application', 'permission_description' => 'Allows the user to update application information.'],
         ['permission_name' => 'get_banks', 'permission_description' => 'Allows the user to retrieve bank information.'],
         ['permission_name' => 'process_application', 'permission_description' => 'Allows the user to process applications.'],
         ['permission_name' => 'cancel_application', 'permission_description' => 'Allows the user to cancel an application.'],
         ['permission_name' => 'store_banks', 'permission_description' => 'Allows the user to store bank information.'],
-        // ['permission_name' => 'get_application_banks', 'permission_description' => 'Allows the user to retrieve application banks.'],
         ['permission_name' => 'update_bank_approval', 'permission_description' => 'Allows the user to update bank approval status.'],
         ['permission_name' => 'update_terms', 'permission_description' => 'Allows the user to update terms and percentage.'],
 
         ['permission_name' => 'view_vehicle_reservation', 'permission_description' => 'Allows the user to view vehicle reservations.'],
         ['permission_name' => 'list_available_units', 'permission_description' => 'Allows the user to list available vehicle units.'],
-        ['permission_name' => 'list_pending_reservations', 'permission_description' => 'Allows the user to list pending vehicle reservations.'],
-        ['permission_name' => 'list_reserved_vehicles', 'permission_description' => 'Allows the user to list reserved vehicles.'],
         ['permission_name' => 'get_reserved_count', 'permission_description' => 'Allows the user to get the count of reserved vehicles.'],
         ['permission_name' => 'reservation_per_team', 'permission_description' => 'Allows the user to view reservations per team.'],
         ['permission_name' => 'process_pending_reservation', 'permission_description' => 'Allows the user to process pending reservations.'],
@@ -56,13 +48,16 @@ class PermissionSeeder extends Seeder
         ['permission_name' => 'cancel_pending_reservation', 'permission_description' => 'Allows the user to cancel a pending vehicle reservation.'],
 
         ['permission_name' => 'view_vehicle_releases', 'permission_description' => 'Allows the user to view vehicle releases.'],
-        ['permission_name' => 'list_pending_releases', 'permission_description' => 'Allows the user to list pending vehicle releases.'],
-        ['permission_name' => 'list_released_vehicles', 'permission_description' => 'Allows the user to list released vehicles.'],
         ['permission_name' => 'released_units_list', 'permission_description' => 'Allows the user to view a list of released units.'],
         ['permission_name' => 'released_per_team', 'permission_description' => 'Allows the user to view released vehicles per team.'],
         ['permission_name' => 'get_released_count', 'permission_description' => 'Allows the user to get the count of released vehicles.'],
         ['permission_name' => 'process_vehicle_release', 'permission_description' => 'Allows the user to process vehicle releases.'],
         ['permission_name' => 'cancel_vehicle_release', 'permission_description' => 'Allows the user to cancel a vehicle release.'],
+        ['permission_name' => 'update_profit', 'permission_description' => 'Allows the user to update profit.'],
+        ['permission_name' => 'update_ltoremarks', 'permission_description' => 'Allows the user to update LTO remarks.'],
+        ['permission_name' => 'get_status', 'permission_description' => 'Allows the user to get the status of a vehicle release.'],
+        ['permission_name' => 'update_status', 'permission_description' => 'Allows the user to update the status of a vehicle release.'],
+        ['permission_name' => 'grand_total_profit', 'permission_description' => 'Allows the user to get the grand total profit.'],
 
         ['permission_name' => 'view_vehicle_inventory', 'permission_description' => 'Allows the user to view vehicle inventory.'],
         ['permission_name' => 'list_inventory', 'permission_description' => 'Allows the user to list vehicle inventory.'],
@@ -84,6 +79,18 @@ class PermissionSeeder extends Seeder
         ['permission_name' => 'manage_user_roles', 'permission_description' => 'Allows the user to assign and modify user roles.'],
         ['permission_name' => 'manage_user_permissions', 'permission_description' => 'Allows the user to assign and modify user permissions.'],
         ['permission_name' => 'manage_passwords', 'permission_description' => 'Allows the user to changes password for the users.'],
+
+        ['permission_name' => 'view_disputes', 'permission_description' => 'Allows the user to view disputes.'],
+        ['permission_name' => 'list_disputes', 'permission_description' => 'Allows the user to list disputes.'],
+        ['permission_name' => 'process_disputes', 'permission_description' => 'Allows the user to process disputes.'],
+        ['permission_name' => 'cancel_disputes', 'permission_description' => 'Allows the user to cancel disputes.'],
+
+        ['permission_name' => 'view_sales', 'permission_description' => 'Allows the user to view sales.'],
+        ['permission_name' => 'list_sales', 'permission_description' => 'Allows the user to list sales.'],
+
+
+        ['permission_name' => 'view_permissions', 'permission_description' => 'Allows the user to view permissions.'],
+        ['permission_name' => 'manage_permissions', 'permission_description' => 'Allows the user to manage permissions.'],
 
         
     ];

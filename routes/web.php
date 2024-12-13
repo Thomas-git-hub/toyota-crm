@@ -46,7 +46,7 @@ Route::get('/list/pending', [ApplicationController::class, 'list_pending'])->nam
 Route::get('/list/approved', [ApplicationController::class, 'list_approved'])->name('application.approved')->middleware('permission:list_approved_applications');
 Route::get('/list/cancel', [ApplicationController::class, 'list_cancel'])->name('application.cancel')->middleware('permission:list_cancelled_applications');
 Route::get('/list/cash', [ApplicationController::class, 'list_cash'])->name('application.cash')->middleware('permission:list_cash_applications');
-Route::post('/application/store', [ApplicationController::class, 'store'])->name('application.store')->middleware('permission:create_application');
+// Route::post('/application/store', [ApplicationController::class, 'store'])->name('application.store')->middleware('permission:create_application');
 Route::get('application/edit/{id}', [ApplicationController::class, 'edit'])->name('application.edit')->middleware('permission:edit_application');
 Route::post('/application/update/{id}', [ApplicationController::class, 'update'])->name('application.update')->middleware('permission:update_application');
 Route::get('/getBanks', [ApplicationController::class, 'getBanks'])->name('application.getBanks')->middleware('permission:get_banks');
@@ -63,8 +63,8 @@ Route::post('/application/banks/update', [ApplicationController::class, 'updateA
 
 // VEHICLE RESERVATION
 Route::get('vehicle-reservation', [VehicleReservationController::class, 'index'])->name('vehicle.reservation')->middleware('permission:view_vehicle_reservation');
-Route::get('vehicle-reservation/units/list', [VehicleReservationController::class, 'availableUnitsList'])->name('vehicle.reservation.units.list')->middleware('permission:list_available_units');
-Route::get('vehicle-reservation/pending/list', [VehicleReservationController::class, 'list_pending'])->name('vehicle.reservation.pending.list')->middleware('permission:list_pending_reservations');
+Route::get('vehicle-reservation/units/list', [VehicleReservationController::class, 'availableUnitsList'])->name('vehicle.reservation.units.list')->middleware('permission:view_vehicle_reservation');
+Route::get('vehicle-reservation/pending/list', [VehicleReservationController::class, 'list_pending'])->name('vehicle.reservation.pending.list')->middleware('permission:view_vehicle_reservation');
 Route::get('vehicle-reservation/list', [VehicleReservationController::class, 'list_reserved'])->name('vehicle.reservation.list')->middleware('permission:list_reserved_vehicles');
 Route::get('vehicle-reservation/getReservedCount', [VehicleReservationController::class, 'getReservedCount'])->name('vehicle.reservation.getReservedCount')->middleware('permission:get_reserved_count');
 Route::get('vehicle-reservation/reservationPerTeam', [VehicleReservationController::class, 'reservationPerTeam'])->name('vehicle.reservation.reservationPerTeam')->middleware('permission:reservation_per_team');
@@ -77,18 +77,18 @@ Route::post('vehicle/reservation/cancel/pending', [VehicleReservationController:
 
 // VEHICLE RELEASES
 Route::get('vehicle-releases', [VehicleReleasesController::class, 'index'])->name('vehicle.releases')->middleware('permission:view_vehicle_releases');
-Route::get('vehicle-releases/pending/list', [VehicleReleasesController::class, 'list_pending_for_release'])->name('vehicle.releases.pending.list')->middleware('permission:list_pending_releases');
-Route::get('vehicle-releases/released/list', [VehicleReleasesController::class, 'list_release'])->name('vehicle.releases.list')->middleware('permission:list_released_vehicles');
-Route::get('vehicle-releases/releasedUnitsList', [VehicleReleasesController::class, 'releasedUnitsList'])->name('vehicle.releases.units.list')->middleware('permission:list_released_units');
+Route::get('vehicle-releases/pending/list', [VehicleReleasesController::class, 'list_pending_for_release'])->name('vehicle.releases.pending.list')->middleware('permission:view_vehicle_releases');
+Route::get('vehicle-releases/released/list', [VehicleReleasesController::class, 'list_release'])->name('vehicle.releases.list')->middleware('permission:view_vehicle_releases');
+Route::get('vehicle-releases/releasedUnitsList', [VehicleReleasesController::class, 'releasedUnitsList'])->name('vehicle.releases.units.list')->middleware('permission:released_units_list');
 Route::get('vehicle-releases/releasedPerTeam', [VehicleReleasesController::class, 'releasedPerTeam'])->name('vehicle.releases.releasedPerTeam')->middleware('permission:released_per_team');
 Route::get('vehicle-releases/getReleasedCount', [VehicleReleasesController::class, 'getReleasedCount'])->name('vehicle.releases.getReleasedCount')->middleware('permission:get_released_count');
-Route::post('vehicle-releases/processing', [VehicleReleasesController::class, 'processing'])->name('vehicle.releases.processing')->middleware('permission:process_releases');
-Route::post('vehicle-releases/cancel', [VehicleReleasesController::class, 'cancel_release'])->name('vehicle.releases.cancel');
-Route::post('vehicle-releases/updateProfit', [VehicleReleasesController::class, 'updateProfit'])->name('vehicle.releases.updateProfit');
-Route::post('vehicle-releases/updateLTORemarks', [VehicleReleasesController::class, 'updateLTORemarks'])->name('vehicle.releases.updateLTORemarks');
-Route::get('vehicle-releases/getStatus', [VehicleReleasesController::class, 'getStatus'])->name('vehicle.releases.getStatus');
-Route::post('vehicle-releases/updateStatus', [VehicleReleasesController::class, 'updateStatus'])->name('vehicle.releases.updateStatus');
-Route::get('vehicle-releases/GrandTotalProfit', [VehicleReleasesController::class, 'GrandTotalProfit'])->name('vehicle.releases.GrandTotalProfit');
+Route::post('vehicle-releases/processing', [VehicleReleasesController::class, 'processing'])->name('vehicle.releases.processing')->middleware('permission:process_vehicle_release');
+Route::post('vehicle-releases/cancel', [VehicleReleasesController::class, 'cancel_release'])->name('vehicle.releases.cancel')->middleware('permission:cancel_vehicle_release');
+Route::post('vehicle-releases/updateProfit', [VehicleReleasesController::class, 'updateProfit'])->name('vehicle.releases.updateProfit')->middleware('permission:update_profit');
+Route::post('vehicle-releases/updateLTORemarks', [VehicleReleasesController::class, 'updateLTORemarks'])->name('vehicle.releases.updateLTORemarks')->middleware('permission:update_ltoremarks');
+Route::get('vehicle-releases/getStatus', [VehicleReleasesController::class, 'getStatus'])->name('vehicle.releases.getStatus')->middleware('permission:get_status');
+Route::post('vehicle-releases/updateStatus', [VehicleReleasesController::class, 'updateStatus'])->name('vehicle.releases.updateStatus')->middleware('permission:update_status');
+Route::get('vehicle-releases/GrandTotalProfit', [VehicleReleasesController::class, 'GrandTotalProfit'])->name('vehicle.releases.GrandTotalProfit')->middleware('permission:grand_total_profit');
 // VEHICLE INVENTORY
 Route::get('vehicle-inventory', [VehicleInventoryController::class, 'index'])->name('vehicle.inventory')->middleware('permission:view_vehicle_inventory');
 Route::get('vehicle-inventory/list/incoming', [VehicleInventoryController::class, 'inventoryIncomingList'])->name('vehicle.inventory.incoming.list')->middleware('permission:list_inventory');
@@ -107,13 +107,13 @@ Route::get('inventory/incomingUnitsList', [VehicleInventoryController::class, 'i
 Route::get('inventory/tagsPerTeam', [VehicleInventoryController::class, 'tagsPerTeam'])->name('inventory.tagsPerTeam');
 
 // PERMISSIONS
-Route::get('permissions', [PermissionController::class, 'index'])->name('permissions');
-Route::get('permissions/list', [PermissionController::class, 'list'])->name('permissions.list');
-Route::post('permissions/store', [PermissionController::class, 'store'])->name('permissions.store');
-Route::post('permissions/update', [PermissionController::class, 'updatePermissions'])->name('permissions.update');
-Route::get('permissions/user-types', [PermissionController::class, 'getUserTypes'])->name('permissions.user-types');
+Route::get('permissions', [PermissionController::class, 'index'])->name('permissions')->middleware('permission:view_permissions');
+Route::get('permissions/list', [PermissionController::class, 'list'])->name('permissions.list')->middleware('permission:view_permissions');
+Route::post('permissions/store', [PermissionController::class, 'store'])->name('permissions.store')->middleware('permission:manage_permissions');
+Route::post('permissions/update', [PermissionController::class, 'updatePermissions'])->name('permissions.update')->middleware('permission:manage_permissions');
+Route::get('permissions/user-types', [PermissionController::class, 'getUserTypes'])->name('permissions.user-types')->middleware('permission:view_permissions');
 Route::get('/permissions/usertype/{usertypeId}', [PermissionController::class, 'getUserTypePermissions'])
-    ->name('permissions.usertype.permissions');
+    ->name('permissions.usertype.permissions')->middleware('permission:view_permissions');
 
 
 

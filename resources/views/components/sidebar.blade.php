@@ -68,7 +68,8 @@
             </a>
         </li>
       @endcan
-        
+
+      @can('view_disputes')
         <li class="menu-item">
             <div style="margin-left: 5%; margin-top: 5%; color: #b4b0c4;">Cancelations</div>
         </li>
@@ -79,6 +80,8 @@
               <div class="text-truncate" data-i18n="Page 2">Disputes</div>
             </a>
         </li>
+      @endcan
+
       @can('view_vehicle_inventory')
         <li class="menu-item">
             <div style="margin-left: 5%; margin-top: 5%; color: #b4b0c4;">Inventory</div>
@@ -103,7 +106,7 @@
         </li>
         @endcan
 
-
+      @can('view_sales')
         <li class="menu-item">
             <div style="margin-left: 5%; margin-top: 5%; color: #b4b0c4;">Statistics</div>
         </li>
@@ -113,7 +116,7 @@
               <div class="text-truncate" data-i18n="Page 2">Sales</div>
             </a>
         </li>
-
+      @endcan
         @can('view_users')
         <li class="menu-item">
             <div style="margin-left: 5%; margin-top: 5%; color: #b4b0c4;">User Management</div>
