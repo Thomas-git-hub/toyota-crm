@@ -56,7 +56,7 @@ class VehicleReleasesController extends Controller
                 [$startDate, $endDate] = explode(' to ', $request->date_range);
                 $startDate = Carbon::createFromFormat('m/d/Y', $startDate)->startOfDay();
                 $endDate = Carbon::createFromFormat('m/d/Y', $endDate)->endOfDay();
-                
+
                 $count->whereBetween('updated_at', [$startDate, $endDate]);
             } else {
                 $count->whereMonth('updated_at', now()->month)  // Filter by current month
@@ -73,7 +73,7 @@ class VehicleReleasesController extends Controller
         DB::statement("SET SQL_MODE=''");
 
         $query = Team::whereNull('deleted_at');
-        
+
 
         $list = $query->get();
 
@@ -98,13 +98,13 @@ class VehicleReleasesController extends Controller
                 [$startDate, $endDate] = explode(' to ', $request->date_range);
                 $startDate = Carbon::createFromFormat('m/d/Y', $startDate)->startOfDay();
                 $endDate = Carbon::createFromFormat('m/d/Y', $endDate)->endOfDay();
-                
+
                 $count->whereBetween('updated_at', [$startDate, $endDate]);
             } else {
                 $count->whereMonth('updated_at', now()->month)  // Filter by current month
                       ->whereYear('updated_at', now()->year);   // Filter by current year
             };
-          
+
            $quantity =  $count->count();
 
             return $quantity;
@@ -123,7 +123,7 @@ class VehicleReleasesController extends Controller
                 [$startDate, $endDate] = explode(' to ', $request->date_range);
                 $startDate = Carbon::createFromFormat('m/d/Y', $startDate)->startOfDay();
                 $endDate = Carbon::createFromFormat('m/d/Y', $endDate)->endOfDay();
-                
+
                 $profit->whereBetween('updated_at', [$startDate, $endDate]);
             } else {
                 $profit->whereMonth('updated_at', now()->month)  // Filter by current month
@@ -150,7 +150,7 @@ class VehicleReleasesController extends Controller
                 [$startDate, $endDate] = explode(' to ', $request->date_range);
                 $startDate = Carbon::createFromFormat('m/d/Y', $startDate)->startOfDay();
                 $endDate = Carbon::createFromFormat('m/d/Y', $endDate)->endOfDay();
-                
+
                 $query->whereBetween('updated_at', [$startDate, $endDate]);
             } else {
                 $query->whereMonth('updated_at', now()->month)  // Filter by current month
@@ -168,14 +168,14 @@ class VehicleReleasesController extends Controller
                 [$startDate, $endDate] = explode(' to ', $request->date_range);
                 $startDate = Carbon::createFromFormat('m/d/Y', $startDate)->startOfDay();
                 $endDate = Carbon::createFromFormat('m/d/Y', $endDate)->endOfDay();
-                
+
                 $pendingForReleaseQuery->whereBetween('updated_at', [$startDate, $endDate]);
             } else {
                 $query->whereMonth('updated_at', now()->month)  // Filter by current month
                       ->whereYear('updated_at', now()->year);   // Filter by current year
             }
 
-            
+
         $pendingForReleaseCount = $pendingForReleaseQuery->count();
 
         return response()->json(['releasedCount' => $releasedCount, 'pendingForReleaseCount' => $pendingForReleaseCount]);
@@ -185,7 +185,7 @@ class VehicleReleasesController extends Controller
     public function list_pending_for_release(Request $request){
 
         $pending_for_release_status = Status::where('status', 'like', 'Pending For Release')->first();
-        $query = Transactions::with(['inquiry', 'inventory', 'application', 'team'])
+        $query = Transactions::with(['inquiry', 'inventory', 'application'])
                         ->whereNull('deleted_at')
                         ->where('reservation_transaction_status', $pending_for_release_status->id)
                         ->whereNotNull('reservation_id')
@@ -248,7 +248,7 @@ class VehicleReleasesController extends Controller
         })
 
         ->addColumn('team', function($data) {
-            
+
             return $data->inventory->team->name;
         })
 
@@ -479,7 +479,7 @@ class VehicleReleasesController extends Controller
             //     'id' => 'required|exists:transactions,id',
             //     'status' => 'required|exists:status,id' // Assuming you have a statuses table
             // ]);
-            
+
             $transaction = Transactions::findOrFail(decrypt($request->id));
             $transaction->status = $request->status;
             $transaction->reservation_transaction_status = $request->status; // Update the status
@@ -500,7 +500,7 @@ class VehicleReleasesController extends Controller
     public function GrandTotalProfit(Request $request){
         $released_status = Status::where('status', 'like', 'Released')->first();
         $posted_status = Status::where('status', 'like', 'Posted')->first();
-        
+
         $query = Transactions::with(['inquiry', 'inventory', 'application'])
             ->whereNull('deleted_at')
             ->whereIn('reservation_transaction_status', [$released_status->id, $posted_status->id]);
@@ -510,7 +510,7 @@ class VehicleReleasesController extends Controller
             [$startDate, $endDate] = explode(' to ', $request->date_range);
             $startDate = Carbon::createFromFormat('m/d/Y', $startDate)->startOfDay();
             $endDate = Carbon::createFromFormat('m/d/Y', $endDate)->endOfDay();
-            
+
             $query->whereBetween('updated_at', [$startDate, $endDate]);
         } else {
             $query->whereMonth('updated_at', now()->month)  // Filter by current month
@@ -518,7 +518,7 @@ class VehicleReleasesController extends Controller
         }
 
         $profit = $query->sum('profit');
-            
+
         return number_format($profit, 2);
     }
 }

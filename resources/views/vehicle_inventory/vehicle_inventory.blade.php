@@ -89,7 +89,7 @@
                 </div>
                 <div class="row">
                     <div class="col-md d-flex justify-content-end gap-2">
-                        <button type="button" class="btn btn-label-danger" id="cancelEditInventoryFormButton">Cancel</button>
+                        <button type="button" class="btn btn-label-danger" id="cancelEditInventoryFormButton" data-bs-dismiss="modal">Cancel</button>
                         <button type="submit" class="btn btn-dark" id="addEditInventoryFormButton">Update Inventory</button>
                     </div>
                 </div>
