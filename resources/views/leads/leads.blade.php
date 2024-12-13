@@ -12,6 +12,34 @@
     </div>
 </div>
 
+<!-- Button trigger modal -->
+{{-- <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#dataPrivacy">
+    Launch demo modal
+  </button> --}}
+
+  <!-- Data Privacy -->
+  <div class="modal fade" id="dataPrivacy" tabindex="-1" aria-labelledby="dataPrivacyLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-xl" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+            <div class="d-flex align-items-center gap-2">
+                <i class='bx bxs-error-alt' style="color: #ff0000;"></i>
+                <h5 class="modal-title" id="exampleModalLabel" style="color: #ff0000;">Data Privacy</h5>
+            </div>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+            </button>
+        </div>
+        <div class="modal-body">
+          <p>Croissant jelly beans donut apple pie. Caramels bonbon lemon drops. Sesame snaps lemon drops lemon drops liquorice icing bonbon pastry pastry carrot cake. Dragée sweet sweet roll sugar plum.</p>
+          <p>Jelly-o cookie jelly gummies pudding cheesecake lollipop macaroon. Sweet chocolate bar sweet roll carrot cake. Sweet roll sesame snaps fruitcake brownie bear claw toffee bonbon brownie.</p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-dark" id="addNewInquiryButton" data-bs-dismiss="modal">Proceed</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
 {{-- View Remarks Modal --}}
 <div class="modal fade" id="viewRemarksModal" tabindex="-1" aria-labelledby="largeModalLabel" aria-hidden="true">
   <div class="modal-dialog modal-lg">
@@ -201,7 +229,7 @@
                     <small class="text-danger" id="validateCategory">Please Select Category</small>
                 </div>
             </div>
-           
+
             <div class="row">
                 <div class="col-md d-flex justify-content-end gap-2">
                     @if(auth()->user()->can('update_lead'))
@@ -398,7 +426,7 @@
 <div class="row mb-2">
     <div class="col-md d-flex justify-content-end">
         @if(auth()->user()->can('create_lead'))
-        <button class="btn btn-primary" id="addNewInquiryButton">Add New Inquiry</button>
+        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#dataPrivacy">Add New Inquiry</button>
         @endif
     </div>
 </div>
@@ -492,7 +520,6 @@
         }
     });
 
-
     // DataTable initialization
     const inquiryTable = $('#inquiryTable').DataTable({
             processing: true,
@@ -542,7 +569,7 @@
             { data: 'date', name: 'date', title: 'Date' },
             @if(auth()->user()->can('edit_lead')||
                 auth()->user()->can('process_leads')  ||
-                auth()->user()->can('delete_leads')   
+                auth()->user()->can('delete_leads')
             )
             {
                 data: 'id',
@@ -1245,7 +1272,7 @@
     $(document).ready(function () {
             // Show #inquiryFormCard when #addNewInquiryButton is clicked
             $("#addNewInquiryButton").on("click", function () {
-                $("#addNewInquiryButton").hide();
+                // $("#addNewInquiryButton").hide();
                 $("#inquiryFormCard").show(); // Display the form card
                 // Clear validation messages
                 $(".text-danger").hide();
