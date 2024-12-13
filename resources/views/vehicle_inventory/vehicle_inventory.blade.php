@@ -88,6 +88,7 @@
                     </div>
                 </div>
                 <div class="row">
+
                     <div class="col-md d-flex justify-content-end gap-2">
                         <button type="button" class="btn btn-label-danger" id="cancelEditInventoryFormButton" data-bs-dismiss="modal">Cancel</button>
                         <button type="submit" class="btn btn-dark" id="addEditInventoryFormButton">Update Inventory</button>
@@ -348,9 +349,12 @@
 {{-- Trigger Vehicle and Inventory Form - Button --}}
 <div class="row mb-2">
     <div class="col-md d-flex justify-content-end gap-2">
-        
+        @if(auth()->user()->can('store_vehicle'))
         <button class="btn btn-primary" id="addVehicleButton">Add New Vehicle</button>
+        @endif
+        @if(auth()->user()->can('store_inventory'))
         <button class="btn btn-primary" id="addInventoryButton">Add to Inventory</button>
+        @endif
     </div>
 </div>
 
@@ -410,6 +414,7 @@
 
 
     // Count of Total Inventory
+
     function totalInventory() {
         $.ajax({
             url: '{{ route("vehicle.inventory.getTotalInventory") }}', // Adjust the route as necessary
@@ -425,7 +430,9 @@
         });
     }
 
+    @if(auth()->user()->can('get_total_inventory'))
     totalInventory();
+    @endif
 
     //Date filter
     flatpickr("#date-range-picker", {
@@ -556,7 +563,7 @@
         });
     });
 
-
+    @if(auth()->user()->can('list_inventory'))
     // DataTable initialization
     const availableUnitsTable = $('#availableUnitsTable').DataTable({
         processing: true,
@@ -682,6 +689,7 @@
             { data: 'age', name: 'age', title: 'Age' },
             { data: 'status', name: 'status', title: 'Status' },
             { data: 'remarks', name: 'remarks', title: 'Remarks' },
+            @if(auth()->user()->can('update_incoming_status'))
             {
                 data: 'incoming_status',
                 name: 'incoming_status',
@@ -694,6 +702,8 @@
                             </button>`;
                 }
             },
+            @endif
+            @if(auth()->user()->can('update_tags_inventory'))
             {
                 data: 'ear_mark',
                 name: 'ear_mark',
@@ -708,6 +718,8 @@
                             </button>`;
                 }
             },
+            @endif
+            @if(auth()->user()->can('edit_inventory') || auth()->user()->can('update_inventory') )
             {
                 data: 'id',
                 name: 'id',
@@ -722,6 +734,7 @@
                                 </div>`;
                     }
             },
+            @endif
         ],
         order: [[6, 'asc']],  // Sort by 'cs_number' column in ascending order
         columnDefs: [
@@ -730,6 +743,7 @@
             }
         ],
     });
+    @endif
 
     // datatables button tabs
     $(document).ready(function() {
