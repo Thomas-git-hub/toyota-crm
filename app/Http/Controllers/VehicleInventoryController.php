@@ -366,10 +366,10 @@ class VehicleInventoryController extends Controller
 
         $inventory = Inventory::findOrFail(decrypt($request->id));
         if(in_array($inventory->incoming_status, ['On Stock', 'For Swapping', 'Reserved', 'Freeze'])){
-            $data = Status::whereIn('status', ['On Stock','For Swapping', 'Reserved', 'Freeze'])
+            $data = Status::whereIn('status', ['On Stock','For Swapping', 'Reserved', 'Freeze'])->orderBy('id', 'asc')
             ->get();
         }else{
-            $data = Status::whereIn('status', ['On Stock', 'In Transit', 'Invoice', 'Pull Out'])
+            $data = Status::whereIn('status', ['On Stock', 'In Transit', 'Invoice', 'Pull Out'])->orderBy('id', 'asc')
             ->get();
         }
 
