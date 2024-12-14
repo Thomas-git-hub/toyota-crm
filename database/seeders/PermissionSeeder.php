@@ -100,6 +100,8 @@ class PermissionSeeder extends Seeder
         ['permission_name' => 'manage_permissions', 'permission_description' => 'Allows the user to manage permissions.'],
 
         
+
+        
     ];
 
     foreach ($permissions as $permission) {
