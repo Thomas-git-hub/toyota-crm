@@ -11,6 +11,7 @@ use App\Http\Controllers\VehicleReleasesController;
 use App\Http\Controllers\VehicleInventoryController;
 use App\Http\Controllers\BankController;
 use App\Http\Controllers\UserManagementController;
+use App\Http\Controllers\ProfileController;
 
 //LOGIN
 Route::get('/', [LoginController::class, 'index']);
@@ -135,3 +136,9 @@ Route::post('user-management/update', [UserManagementController::class, 'update'
 Route::delete('user-management/{id}/destroy', [UserManagementController::class, 'destroy'])->name('user.management.destroy')->middleware('permission:delete_user');
 Route::get('user-management/{id}/edit', [UserManagementController::class, 'edit'])->name('user.management.edit')->middleware('permission:edit_user');
 Route::get('user-management/{id}/send-temporary-password', [UserManagementController::class, 'sendTemporaryPassword'])->name('user.management.sendTemporaryPassword')->middleware('permission:manage_passwords');
+
+// USER MANAGEMENT
+Route::middleware(['auth'])->group(function () {
+    Route::get('/profile', [ProfileController::class, 'index'])->name('profile.index');
+});
+ 
