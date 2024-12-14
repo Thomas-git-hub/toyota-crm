@@ -13,6 +13,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Inquiry;
+use Illuminate\Foundation\Auth\User;
 use Yajra\DataTables\Facades\DataTables;
 
 class VehicleReservationController extends Controller
@@ -29,12 +30,12 @@ class VehicleReservationController extends Controller
         DB::statement("SET SQL_MODE=''");
 
         $query = Vehicle::with('inventory')
-                        ->whereNull('deleted_at')
-                        ->whereHas('inventory', function($subQuery) {
-                            $subQuery->where('status', 'available');
-                            $subQuery->where('CS_number_status', 'available');
-                        })
-                        ->groupBy('unit');
+            ->whereNull('deleted_at')
+            ->whereHas('inventory', function($subQuery) {
+                $subQuery->where('status', 'available');
+                $subQuery->where('CS_number_status', 'available');
+            })
+        ->groupBy('unit');
 
         $list = $query->get();
 
@@ -62,11 +63,30 @@ class VehicleReservationController extends Controller
 
     public function getReservedCount(){
         $reserved_status = Status::where('status', 'like', 'Reserved')->first();
-        $query = Transactions::with(['inquiry', 'inventory', 'application'])
+
+        if(Auth::user()->usertype->name === 'SuperAdmin' || Auth::user()->usertype->name === 'General Manager'|| Auth::user()->usertype->name === 'Admin Staff' || Auth::user()->usertype->name === 'Sales Admin Staff'){
+            $query = Transactions::with(['inquiry', 'inventory', 'application'])
             ->whereNull('deleted_at')
             ->whereNotNull('inventory_id')
             ->whereNotNull('reservation_id')
             ->where('reservation_transaction_status', $reserved_status->id);
+        }elseif(Auth::user()->usertype->name === 'Group Manager'){
+            $query = Transactions::with(['inquiry', 'inventory', 'application'])
+            ->whereNull('deleted_at')
+            ->whereNotNull('inventory_id')
+            ->whereNotNull('reservation_id')
+            ->where('reservation_transaction_status', $reserved_status->id)
+            ->where('team_id', Auth::user()->team_id);
+        }else{
+            $query = Transactions::with(['inquiry', 'inventory', 'application'])
+            ->whereNull('deleted_at')
+            ->whereNotNull('inventory_id')
+            ->whereNotNull('reservation_id')
+            ->where('reservation_transaction_status', $reserved_status->id)
+            ->whereHas('application', function($subQuery) {
+                $subQuery->where('created_by', Auth::user()->id);
+            });
+        }
         $count = $query->count();
 
         return response()->json(['count' => $count]);
@@ -77,7 +97,7 @@ class VehicleReservationController extends Controller
         // dd($request->start_date);
         DB::statement("SET SQL_MODE=''");
         $pending_status = Status::where('status', 'like', 'pending')->first();
-        if(Auth::user()->usertype->name === 'SuperAdmin'){              
+        if(Auth::user()->usertype->name === 'SuperAdmin' || Auth::user()->usertype->name === 'General Manager'|| Auth::user()->usertype->name === 'Admin Staff' || Auth::user()->usertype->name === 'Sales Admin Staff'){
             $query = Transactions::with(['inquiry', 'inventory', 'application'])
                             ->where('reservation_transaction_status', $pending_status->id)
                             ->whereNull('deleted_at')
@@ -180,11 +200,28 @@ class VehicleReservationController extends Controller
 
         // dd($request->start_date);
         $reserved_status = Status::where('status', 'like', 'Reserved')->first();
-        $query = Transactions::with(['inquiry', 'inventory', 'application'])
+        if(Auth::user()->usertype->name === 'SuperAdmin' || Auth::user()->usertype->name === 'General Manager'|| Auth::user()->usertype->name === 'Admin Staff' || Auth::user()->usertype->name === 'Sales Admin Staff'){
+            $query = Transactions::with(['inquiry', 'inventory', 'application'])
                         ->whereNull('deleted_at')
                         ->where('reservation_transaction_status', $reserved_status->id)
                         ->whereNotNull('reservation_id')
                        ;
+        }elseif(Auth::user()->usertype->name === 'Group Manager'){
+            $query = Transactions::with(['inquiry', 'inventory', 'application'])
+                        ->whereNull('deleted_at')
+                        ->where('reservation_transaction_status', $reserved_status->id)
+                        ->whereNotNull('reservation_id')
+                        ->where('team_id', Auth::user()->team_id)
+                       ;
+        }else{
+            $query = Transactions::with(['inquiry', 'inventory', 'application'])
+                        ->whereNull('deleted_at')
+                        ->where('reservation_transaction_status', $reserved_status->id)
+                        ->whereNotNull('reservation_id')
+                        ->whereHas('application', function($subQuery) {
+                            $subQuery->where('created_by', Auth::user()->id);
+                        });
+        }
 
         if ($request->has('date_range') && !empty($request->date_range)) {
             [$startDate, $endDate] = explode(' to ', $request->date_range);
@@ -265,7 +302,15 @@ class VehicleReservationController extends Controller
     public function reservationPerTeam(){
         DB::statement("SET SQL_MODE=''");
 
-        $query = Team::whereNull('deleted_at');
+        if(Auth::user()->usertype->name === 'SuperAdmin' || Auth::user()->usertype->name === 'General Manager'|| Auth::user()->usertype->name === 'Admin Staff' || Auth::user()->usertype->name === 'Sales Admin Staff'){
+            $query = Team::whereNull('deleted_at');
+        }elseif(Auth::user()->usertype->name === 'Group Manager'){
+            $query = Team::whereNull('deleted_at')
+                        ->where('id', Auth::user()->team_id);
+        }else{
+            $query = Team::whereNull('deleted_at')
+                        ->where('id', Auth::user()->team_id);
+        }
 
 
         $list = $query->get();
@@ -296,13 +341,8 @@ class VehicleReservationController extends Controller
 
     public function processing_pending(Request $request){
         try {
-
-            $approved_status = Status::where('status', 'like', 'approved')->first()->id;
             $pending_status = Status::where('status', 'like', 'pending')->first()->id;
-            $cancel_status = Status::where('status', 'like', 'cancel')->first()->id;
-            $processing_status = Status::where('status', 'like', 'Processed')->first()->id;
             $reserved_status = Status::where('status', 'like', 'Reserved')->first()->id;
-            $pending_for_release_status = Status::where('status', 'like', 'Pending For Release')->first()->id;
 
             $transaction_pendings = Transactions::where('application_id', $request->id)
             ->where('reservation_transaction_status', $pending_status)
@@ -316,6 +356,12 @@ class VehicleReservationController extends Controller
                 $transaction->save();
 
             }
+
+            $application = Application::findOrFail($transaction->application_id);
+            $application->updated_by = Auth::user()->id;
+            $application->updated_at = now();
+            $application->save();
+
 
             return response()->json([
                 'success' => true,
@@ -333,10 +379,6 @@ class VehicleReservationController extends Controller
     public function processing_reserved(Request $request){
         try {
 
-            $approved_status = Status::where('status', 'like', 'approved')->first()->id;
-            $pending_status = Status::where('status', 'like', 'pending')->first()->id;
-            $cancel_status = Status::where('status', 'like', 'cancel')->first()->id;
-            $processing_status = Status::where('status', 'like', 'Processed')->first()->id;
             $reserved_status = Status::where('status', 'like', 'Reserved')->first()->id;
             $pending_for_release_status = Status::where('status', 'like', 'Pending For Release')->first()->id;
 
@@ -351,14 +393,17 @@ class VehicleReservationController extends Controller
                     'message' => 'CS Number is required for this transaction.'
                 ], 500);
             }
-            // foreach ($transaction_pendings as $transaction) {
 
             $transaction_pendings->status = $pending_for_release_status;
             $transaction_pendings->reservation_transaction_status = $pending_for_release_status;
             $transaction_pendings->reservation_date = now();
             $transaction_pendings->save();
 
-            // }
+            $application = Application::findOrFail($transaction_pendings->application_id);
+            $application->updated_by = Auth::user()->id;
+            $application->updated_at = now();
+            $application->save();
+
 
             return response()->json([
                 'success' => true,
@@ -444,6 +489,9 @@ class VehicleReservationController extends Controller
         // dd($request->all());
         try {
             $transaction = Transactions::FindOrFail(decrypt($request->transaction_id));
+            $application = Application::findOrFail($transaction->application_id);
+            $application_team = User::findOrFail($application->created_by);
+
             if ($transaction->inventory_id) {
                 $inventory = Inventory::find($transaction->inventory_id);
                 if ($inventory) {
@@ -452,6 +500,8 @@ class VehicleReservationController extends Controller
                     $inventory->team_id = null;
                     $inventory->CS_number_status = 'Available';
                     $inventory->status = 'Available';
+                    $inventory->updated_by = Auth::id();
+                    $inventory->updated_at = now();
                     $inventory->save();
                 }
             }
@@ -463,14 +513,17 @@ class VehicleReservationController extends Controller
                 ->first();
 
             if ($inventory) {
+                $transaction->team_id = $application_team->team_id;
                 $transaction->inventory_id = $inventory->id;
                 $transaction->save();
 
 
-                $inventory->tag = Auth::user()->id;
-                $inventory->team_id = Auth::user()->team_id;
+                $inventory->tag = $application->created_by;
+                $inventory->team_id = $application_team->team_id;
                 $inventory->CS_number_status = 'Reserved';
                 $inventory->status = 'Reserved';
+                $inventory->updated_by = Auth::id();
+                $inventory->updated_at = now();
                 $inventory->save();
 
                 return response()->json([

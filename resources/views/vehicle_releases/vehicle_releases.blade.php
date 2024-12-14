@@ -35,7 +35,9 @@
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-label-danger" data-bs-dismiss="modal">Close</button>
+          @if(auth()->user()->can('update_status'))
           <button type="button" class="btn btn-dark" id="saveStatusButton">Update Status</button>
+          @endif
         </div>
       </div>
     </div>
@@ -438,13 +440,17 @@
                 visible:false,
                 render: function(data, type, row) {
                         return `<div class="d-flex">
+                                @if(auth()->user()->can('process_vehicle_release'))
                                     <button type="button" class="btn btn-icon me-2 btn-primary processing-btn" data-id="${data}">
                                         <span class="tf-icons bx bxs-check-circle bx-22px"></span>
                                     </button>
+                                    @endif
+                                    @if(auth()->user()->can('cancel_vehicle_release'))
                                      <button type="button" class="btn btn-icon me-2 btn-danger cancel-btn" data-id="${data}">
                                         <span class="tf-icons bx bxs-x-circle bx-22px"></span>
                                     </button>
-                                </div>`;
+                            @endif
+                        </div>`;
                     }
             },
             {
@@ -464,10 +470,13 @@
                 title: 'LTO Remarks',
                 orderable: false,
                 searchable: false,
+                visible: false,
                 render: function(data, type, row) {
-                    return `<button type="button" class="btn btn-icon me-2 btn-label-dark lto-remarks-btn" data-id="${row.id}" data-bs-toggle="modal" data-bs-target="#LtoRemarksModal" data-remarks="${data}">
+                    return `@if(auth()->user()->can('update_ltoremarks'))
+                            <button type="button" class="btn btn-icon me-2 btn-label-dark lto-remarks-btn" data-id="${row.id}" data-bs-toggle="modal" data-bs-target="#LtoRemarksModal" data-remarks="${data}">
                                 <span class="tf-icons bx bx-comment-detail bx-22px"></span>
-                            </button>`;
+                            </button>
+                            @endif`;
                 }
             },
         ],
@@ -559,12 +568,23 @@
 
         // Toggle column visibility based on the active tab
         const isFoReleasedTab = $(this).text().trim() === 'For Release Units';
+        @if(auth()->user()->can('process_vehicle_release') || auth()->user()->can('cancel_vehicle_release'))
         vehicleReleasesTable.column(12).visible(isFoReleasedTab);
+        @endif
 
         const isReleasedTab = $(this).text().trim() === 'Released Units';
+        @if(auth()->user()->can('get_status') && auth()->user()->can('update_status'))
+
         vehicleReleasesTable.column(11).visible(isReleasedTab);
+        @endif
+
+        @if(auth()->user()->can('update_profit'))
         vehicleReleasesTable.column(13).visible(isReleasedTab);
+        @endif
+
+        @if(auth()->user()->can('update_ltoremarks'))
         vehicleReleasesTable.column(14).visible(isReleasedTab);
+        @endif
 
 
         var route = $(this).data('route');
@@ -816,7 +836,7 @@
         });
     })
 
-   
+
 
 
 </script>

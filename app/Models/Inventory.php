@@ -31,7 +31,7 @@ class Inventory extends Model
         return $this->belongsTo(Vehicle::class, 'vehicle_id', 'id');
     }
     public function transaction(){
-        return $this->belongsTo(Transactions::class, 'inventory_id', 'id');
+        return $this->belongsTo(Transactions::class, 'id', 'inventory_id');
     }
 
     public function user(){
@@ -42,4 +42,5 @@ class Inventory extends Model
         return $this->belongsTo(Team::class, 'team_id', 'id');
 
     }
+
 }

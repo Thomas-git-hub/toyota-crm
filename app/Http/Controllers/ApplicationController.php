@@ -13,6 +13,7 @@ use App\Models\Inquiry;
 use App\Models\Inventory;
 use App\Models\InquryType;
 use App\Models\BankTransaction;
+use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -271,7 +272,7 @@ class ApplicationController extends Controller
                         ->where('status_id', $statusIds)
                         ->where('created_by', Auth::user()->id);
         }
-                
+
 
         if ($request->has('date_range') && !empty($request->date_range)) {
             [$startDate, $endDate] = explode(' to ', $request->date_range);
@@ -368,7 +369,7 @@ class ApplicationController extends Controller
 
         // dd($request->start_date);
         $statusIds = Status::whereIn('status', ['Denied', 'Cancel', 'Processed', 'Approved', 'Reserved'])->pluck('id')->toArray();
-        
+
         if(Auth::user()->usertype->name === 'SuperAdmin'){
             $query = Application::with(['user', 'customer', 'vehicle','status', 'bank', 'transactions'])
                 ->whereNull('deleted_at')
@@ -742,6 +743,7 @@ class ApplicationController extends Controller
             $processing_status = Status::where('status', 'like', 'Processed')->first()->id;
 
             $application = Application::findOrFail(decrypt($request->id));
+            $application_team = User::findOrFail($application->created_by);
 
             if( $application->status_id == $pending_status  ){
 
@@ -809,16 +811,17 @@ class ApplicationController extends Controller
                         ], 500);
                     }
 
-                   }
-                   if($request->transaction === 'po'){
-                        $bankId = $application->bank_id;
-                        if (!$bankId) {
-                            return response()->json([
-                                'success' => false,
-                                'message' => 'Bank is required for PO transactions.'
-                            ], 500);
-                        }
-                   }
+                }
+
+                if($request->transaction === 'po'){
+                    $bankId = $application->bank_id;
+                    if (!$bankId) {
+                        return response()->json([
+                            'success' => false,
+                            'message' => 'Bank is required for PO transactions.'
+                        ], 500);
+                    }
+                }
                 $transactions = Transactions::where('application_id', $application->id)
                 ->whereNull('inventory_id')
                 ->whereNull('deleted_at')
@@ -830,7 +833,7 @@ class ApplicationController extends Controller
                     $transaction->status = $approved_status;
                     $transaction->reservation_id = Transactions::max('reservation_id') + 1;
                     $transaction->reservation_transaction_status = $pending_status;
-                    $transaction->team_id = Auth::user()->team_id;
+                    $transaction->team_id = $application_team->team_id;
                     $transaction->save();
 
                 }
@@ -1002,6 +1005,8 @@ class ApplicationController extends Controller
             if ($preferredBankIndex !== false && $validated['approval_statuses'][$preferredBankIndex] === 'approve') {
                 $application = Application::findOrFail(decrypt($id));
                 $application->bank_id = $validated['preferred_bank'];
+                $application->updated_by = Auth::id();
+                $application->updated_at = now();
                 $application->save();
             }
 
@@ -1085,7 +1090,7 @@ class ApplicationController extends Controller
             $application->updated_at = now();
             $application->save();
 
-           
+
             return response()->json([
                 'success' => true,
                 'message' => 'Application bank updated successfully'

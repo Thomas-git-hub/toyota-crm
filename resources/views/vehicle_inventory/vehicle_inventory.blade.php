@@ -430,9 +430,7 @@
         });
     }
 
-    @if(auth()->user()->can('get_total_inventory'))
     totalInventory();
-    @endif
 
     //Date filter
     flatpickr("#date-range-picker", {
@@ -563,7 +561,6 @@
         });
     });
 
-    @if(auth()->user()->can('list_inventory'))
     // DataTable initialization
     const availableUnitsTable = $('#availableUnitsTable').DataTable({
         processing: true,
@@ -743,7 +740,6 @@
             }
         ],
     });
-    @endif
 
     // datatables button tabs
     $(document).ready(function() {

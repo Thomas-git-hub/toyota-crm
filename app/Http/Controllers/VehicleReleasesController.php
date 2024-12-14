@@ -30,9 +30,47 @@ class VehicleReleasesController extends Controller
     public function releasedUnitsList(Request $request){
         DB::statement("SET SQL_MODE=''");
 
-        $query = Vehicle::with('inventory')
-                        ->whereNull('deleted_at')
-                        ->groupBy('unit');
+        if(Auth::user()->usertype->name === 'SuperAdmin'
+        || Auth::user()->usertype->name === 'Sales Admin Staff'
+        || Auth::user()->usertype->name === 'General Manager'
+        ){
+            $query = Vehicle::with('inventory')
+                            ->whereNull('deleted_at')
+                            ->whereHas('inventory', function($subQuery) {
+                                $subQuery->where('status', 'like', 'Released')
+                                         ->where('CS_number_status', 'like', 'Released');
+                            })
+                            ->groupBy('unit');
+
+        }elseif(Auth::user()->usertype->name === 'Group Manager'){
+            $query = Vehicle::with('inventory')
+                            ->whereNull('deleted_at')
+                            ->whereHas('inventory', function($subQuery) {
+                                $subQuery->where('status', 'like', 'Released')
+                                         ->where('CS_number_status', 'like', 'Released');
+                            })
+                            ->whereHas('inventory', function($subQuery) {
+                                $subQuery->whereHas('transaction', function($subQuery) {
+                                    $subQuery->where('team_id', Auth::user()->team_id);
+                                });
+                            })
+                            ->groupBy('unit');
+        }else{
+            $query = Vehicle::with('inventory')
+                            ->whereNull('deleted_at')
+                            ->whereHas('inventory', function($subQuery) {
+                                $subQuery->where('status', 'like', 'Released')
+                                         ->where('CS_number_status', 'like', 'Released');
+                            })
+                            ->whereHas('inventory', function($subQuery) {
+                                $subQuery->whereHas('transaction', function($subQuery) {
+                                    $subQuery->whereHas('application', function($subQuery) {
+                                        $subQuery->where('created_by', Auth::user()->id);
+                                    });
+                                });
+                            })
+                            ->groupBy('unit');
+        }
 
         $list = $query->get();
 
@@ -45,12 +83,38 @@ class VehicleReleasesController extends Controller
         })
         ->addColumn('quantity', function($data) use($request) {
 
-            $count = Inventory::with('vehicle')
-            ->whereHas('vehicle', function($subQuery) use($data) {
-                $subQuery->where('unit', $data->unit);
-            })
-            ->where('status', 'released')
-            ->where('CS_number_status', 'released');
+            if(Auth::user()->usertype->name === 'SuperAdmin' || Auth::user()->usertype->name === 'General Manager'){
+                $count = Inventory::with('vehicle', 'team', 'user')
+                ->whereHas('vehicle', function($subQuery) use($data) {
+                    $subQuery->where('unit', $data->unit);
+                })
+                ->where('status', 'Released')
+                ->where('CS_number_status', 'Released');
+
+            }elseif(Auth::user()->usertype->name === 'Group Manager'){
+                $count = Inventory::with('vehicle', 'team', 'user', 'transaction')
+                ->whereHas('vehicle', function($subQuery) use($data) {
+                    $subQuery->where('unit', $data->unit);
+                })
+                ->where('status', 'Released')
+                ->where('CS_number_status', 'Released')
+                ->whereHas('transaction', function($subQuery) {
+                    $subQuery->where('team_id', Auth::user()->team_id);
+                });
+            }else{
+                $count = Inventory::with('vehicle', 'team', 'user', 'transaction')
+                ->whereHas('vehicle', function($subQuery) use($data) {
+                    $subQuery->where('unit', $data->unit);
+                })
+                ->where('status', 'Released')
+                ->where('CS_number_status', 'Released')
+                ->whereHas('transaction', function($subQuery) {
+                    $subQuery->whereHas('application', function($subQuery) {
+                        $subQuery->where('created_by', Auth::user()->id);
+                    });
+                });
+            }
+
 
             if ($request->has('date_range') && !empty($request->date_range)) {
                 [$startDate, $endDate] = explode(' to ', $request->date_range);
@@ -72,7 +136,18 @@ class VehicleReleasesController extends Controller
     public function releasedPerTeam(Request $request){
         DB::statement("SET SQL_MODE=''");
 
-        $query = Team::whereNull('deleted_at');
+        if(Auth::user()->usertype->name === 'SuperAdmin'
+        || Auth::user()->usertype->name === 'Sales Admin Staff'
+        || Auth::user()->usertype->name === 'General Manager'
+        ){
+            $query = Team::whereNull('deleted_at');
+        }elseif(Auth::user()->usertype->name === 'Group Manager'){
+            $query = Team::whereNull('deleted_at')
+                        ->where('id', Auth::user()->team_id);
+        }else{
+            $query = Team::whereNull('deleted_at')
+                        ->where('id', Auth::user()->team_id);
+        }
 
 
         $list = $query->get();
@@ -86,13 +161,29 @@ class VehicleReleasesController extends Controller
         })
 
         ->addColumn('quantity', function($data) use($request) {
-            $released_status = Status::where('status', 'like', 'Released')->first();
-            $posted_status = Status::where('status', 'like', 'Posted')->first();
-            $count = Transactions::with(['inquiry', 'inventory', 'application'])
-            ->whereNull('deleted_at')
-            ->where('team_id', $data->id)
-            ->whereNotNull('reservation_id')
-            ->whereIn('reservation_transaction_status', [$released_status->id, $posted_status->id]);
+            if(Auth::user()->usertype->name === 'Agent' ){
+
+                $released_status = Status::where('status', 'like', 'Released')->first();
+                $posted_status = Status::where('status', 'like', 'Posted')->first();
+                $count = Transactions::with(['inquiry', 'inventory', 'application'])
+                ->whereNull('deleted_at')
+                ->where('team_id', $data->id)
+                ->whereNotNull('reservation_id')
+                ->whereIn('reservation_transaction_status', [$released_status->id, $posted_status->id])
+                ->whereHas('application', function($subQuery) {
+                    $subQuery->where('created_by', Auth::user()->id);
+                });
+
+            }else{
+                $released_status = Status::where('status', 'like', 'Released')->first();
+                $posted_status = Status::where('status', 'like', 'Posted')->first();
+                $count = Transactions::with(['inquiry', 'inventory', 'application'])
+                ->whereNull('deleted_at')
+                ->where('team_id', $data->id)
+                ->whereNotNull('reservation_id')
+                ->whereIn('reservation_transaction_status', [$released_status->id, $posted_status->id]);
+
+            }
 
             if ($request->has('date_range') && !empty($request->date_range)) {
                 [$startDate, $endDate] = explode(' to ', $request->date_range);
@@ -113,11 +204,25 @@ class VehicleReleasesController extends Controller
         ->addColumn('total_profit', function($data) use($request) {
             $released_status = Status::where('status', 'like', 'Released')->first();
             $posted_status = Status::where('status', 'like', 'Posted')->first();
-           $profit = Transactions::with(['inquiry', 'inventory', 'application'])
-           ->whereNull('deleted_at')
-           ->where('team_id', $data->id)
-           ->whereNotNull('reservation_id')
-           ->whereIn('reservation_transaction_status', [$released_status->id, $posted_status->id]);
+
+            if(Auth::user()->usertype->name === 'Agent' ){
+                $profit = Transactions::with(['inquiry', 'inventory', 'application'])
+                ->whereNull('deleted_at')
+                ->where('team_id', $data->id)
+                ->whereNotNull('reservation_id')
+                ->whereIn('reservation_transaction_status', [$released_status->id, $posted_status->id])
+                ->whereHas('application', function($subQuery) {
+                    $subQuery->where('created_by', Auth::user()->id);
+                });
+
+            }else{
+                $profit = Transactions::with(['inquiry', 'inventory', 'application'])
+                ->whereNull('deleted_at')
+                ->where('team_id', $data->id)
+                ->whereNotNull('reservation_id')
+                ->whereIn('reservation_transaction_status', [$released_status->id, $posted_status->id]);
+
+            }
 
            if ($request->has('date_range') && !empty($request->date_range)) {
                 [$startDate, $endDate] = explode(' to ', $request->date_range);
@@ -141,10 +246,32 @@ class VehicleReleasesController extends Controller
     public function getReleasedCount(Request $request){
         $released_status = Status::where('status', 'like', 'Released')->first();
         $pending_for_release_status = Status::where('status', 'like', 'Pending For Release')->first();
-        $query = Transactions::with(['inquiry', 'inventory', 'application'])
+
+        if(Auth::user()->usertype->name === 'SuperAdmin'
+        || Auth::user()->usertype->name === 'Sales Admin Staff'
+        || Auth::user()->usertype->name === 'General Manager'
+        ){
+            $query = Transactions::with(['inquiry', 'inventory', 'application'])
             ->whereNull('deleted_at')
             ->whereNotNull('reservation_id')
             ->where('reservation_transaction_status', $released_status->id);
+        }elseif(Auth::user()->usertype->name === 'Group Manager'){
+            $query = Transactions::with(['inquiry', 'inventory', 'application'])
+            ->whereNull('deleted_at')
+            ->whereNotNull('reservation_id')
+            ->where('reservation_transaction_status', $released_status->id)
+            ->where('team_id', Auth::user()->team_id);
+        }else{
+            $query = Transactions::with(['inquiry', 'inventory', 'application'])
+            ->whereNull('deleted_at')
+            ->whereNotNull('reservation_id')
+            ->where('reservation_transaction_status', $released_status->id)
+            ->whereHas('application', function($subQuery) {
+                $subQuery->where('created_by', Auth::user()->id);
+            });
+        }
+
+
 
             if ($request->has('date_range') && !empty($request->date_range)) {
                 [$startDate, $endDate] = explode(' to ', $request->date_range);
@@ -159,10 +286,29 @@ class VehicleReleasesController extends Controller
 
         $releasedCount = $query->count();
 
-        $pendingForReleaseQuery = Transactions::with(['inquiry', 'inventory', 'application'])
+        if(Auth::user()->usertype->name === 'SuperAdmin'
+        || Auth::user()->usertype->name === 'Sales Admin Staff'
+        || Auth::user()->usertype->name === 'General Manager'
+        ){
+            $pendingForReleaseQuery = Transactions::with(['inquiry', 'inventory', 'application'])
             ->whereNull('deleted_at')
             ->whereNotNull('reservation_id')
             ->where('reservation_transaction_status', $pending_for_release_status->id);
+        }elseif(Auth::user()->usertype->name === 'Group Manager'){
+            $pendingForReleaseQuery = Transactions::with(['inquiry', 'inventory', 'application'])
+            ->whereNull('deleted_at')
+            ->whereNotNull('reservation_id')
+            ->where('reservation_transaction_status', $pending_for_release_status->id)
+            ->where('team_id', Auth::user()->team_id);
+        }else{
+            $pendingForReleaseQuery = Transactions::with(['inquiry', 'inventory', 'application'])
+            ->whereNull('deleted_at')
+            ->whereNotNull('reservation_id')
+            ->where('reservation_transaction_status', $pending_for_release_status->id)
+            ->whereHas('application', function($subQuery) {
+                $subQuery->where('created_by', Auth::user()->id);
+            });
+        }
 
             if ($request->has('date_range') && !empty($request->date_range)) {
                 [$startDate, $endDate] = explode(' to ', $request->date_range);
@@ -171,7 +317,7 @@ class VehicleReleasesController extends Controller
 
                 $pendingForReleaseQuery->whereBetween('updated_at', [$startDate, $endDate]);
             } else {
-                $query->whereMonth('updated_at', now()->month)  // Filter by current month
+                $pendingForReleaseQuery->whereMonth('updated_at', now()->month)  // Filter by current month
                       ->whereYear('updated_at', now()->year);   // Filter by current year
             }
 
@@ -185,7 +331,10 @@ class VehicleReleasesController extends Controller
     public function list_pending_for_release(Request $request){
 
         $pending_for_release_status = Status::where('status', 'like', 'Pending For Release')->first();
-        if(Auth::user()->usertype->name === 'SuperAdmin'){
+        if(Auth::user()->usertype->name === 'SuperAdmin'
+        || Auth::user()->usertype->name === 'Sales Admin Staff'
+        || Auth::user()->usertype->name === 'General Manager'
+        ){
             $query = Transactions::with(['inquiry', 'inventory', 'application'])
                         ->whereNull('deleted_at')
                         ->where('reservation_transaction_status', $pending_for_release_status->id)
@@ -268,8 +417,8 @@ class VehicleReleasesController extends Controller
         })
 
         ->addColumn('team', function($data) {
-
-            return $data->inventory->team->name;
+            $team = Team::where('id',  $data->application->updatedBy->team_id)->first();
+            return $team->name ?? '';
         })
 
         ->addColumn('agent', function($data) {
@@ -296,7 +445,10 @@ class VehicleReleasesController extends Controller
 
         $release_status = Status::where('status', 'like', 'Released')->first();
         $posted_status = Status::where('status', 'like', 'Posted')->first();
-        if(Auth::user()->usertype->name === 'SuperAdmin'){
+        if(Auth::user()->usertype->name === 'SuperAdmin'
+        || Auth::user()->usertype->name === 'Sales Admin Staff'
+        || Auth::user()->usertype->name === 'General Manager'
+        ){
             $query = Transactions::with(['inquiry', 'inventory', 'application'])
                         ->whereNull('deleted_at')
                         ->whereIn('reservation_transaction_status', [$release_status->id, $posted_status->id])
@@ -541,9 +693,23 @@ class VehicleReleasesController extends Controller
         $released_status = Status::where('status', 'like', 'Released')->first();
         $posted_status = Status::where('status', 'like', 'Posted')->first();
 
-        $query = Transactions::with(['inquiry', 'inventory', 'application'])
-            ->whereNull('deleted_at')
-            ->whereIn('reservation_transaction_status', [$released_status->id, $posted_status->id]);
+        if(Auth::user()->usertype->name === 'SuperAdmin' || Auth::user()->usertype->name === 'General Manager'){
+            $query = Transactions::with(['inquiry', 'inventory', 'application'])
+                ->whereNull('deleted_at')
+                ->whereIn('reservation_transaction_status', [$released_status->id, $posted_status->id]);
+        }elseif(Auth::user()->usertype->name === 'Group Manager'){
+            $query = Transactions::with(['inquiry', 'inventory', 'application'])
+                ->whereNull('deleted_at')
+                ->whereIn('reservation_transaction_status', [$released_status->id, $posted_status->id])
+                ->where('team_id', Auth::user()->team_id);
+        }else{
+            $query = Transactions::with(['inquiry', 'inventory', 'application'])
+                ->whereNull('deleted_at')
+                ->whereIn('reservation_transaction_status', [$released_status->id, $posted_status->id])
+                ->whereHas('application', function($subQuery) {
+                    $subQuery->where('created_by', Auth::user()->id);
+                });
+        }
 
         // Apply date range filter if provided, otherwise use current month/year
         if ($request->has('date_range') && !empty($request->date_range)) {

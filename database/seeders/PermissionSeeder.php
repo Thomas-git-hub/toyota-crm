@@ -22,7 +22,7 @@ class PermissionSeeder extends Seeder
         ['permission_name' => 'edit_lead', 'permission_description' => 'Allows the user to edit a lead.'],
         ['permission_name' => 'update_lead', 'permission_description' => 'Allows the user to update lead information.'],
         ['permission_name' => 'update_remarks', 'permission_description' => 'Allows the user to update remarks on leads.'],
-        
+
         ['permission_name' => 'view_application', 'permission_description' => 'Allows the user to view applications.'],
         ['permission_name' => 'list_pending_applications', 'permission_description' => 'Allows the user to list pending applications.'],
         ['permission_name' => 'list_approved_applications', 'permission_description' => 'Allows the user to list approved applications.'],
@@ -38,9 +38,9 @@ class PermissionSeeder extends Seeder
         ['permission_name' => 'update_terms', 'permission_description' => 'Allows the user to update terms and percentage.'],
 
         ['permission_name' => 'view_vehicle_reservation', 'permission_description' => 'Allows the user to view vehicle reservations.'],
-        ['permission_name' => 'list_available_units', 'permission_description' => 'Allows the user to list available vehicle units.'],
-        ['permission_name' => 'get_reserved_count', 'permission_description' => 'Allows the user to get the count of reserved vehicles.'],
-        ['permission_name' => 'reservation_per_team', 'permission_description' => 'Allows the user to view reservations per team.'],
+        // ['permission_name' => 'list_available_units', 'permission_description' => 'Allows the user to list available vehicle units.'],
+        // ['permission_name' => 'get_reserved_count', 'permission_description' => 'Allows the user to get the count of reserved vehicles.'],
+        // ['permission_name' => 'reservation_per_team', 'permission_description' => 'Allows the user to view reservations per team.'],
         ['permission_name' => 'process_pending_reservation', 'permission_description' => 'Allows the user to process pending reservations.'],
         ['permission_name' => 'process_reserved_reservation', 'permission_description' => 'Allows the user to process reserved reservations.'],
         ['permission_name' => 'get_cs_number', 'permission_description' => 'Allows the user to retrieve CS numbers for vehicles.'],
@@ -60,8 +60,8 @@ class PermissionSeeder extends Seeder
         ['permission_name' => 'grand_total_profit', 'permission_description' => 'Allows the user to get the grand total profit.'],
 
         ['permission_name' => 'view_vehicle_inventory', 'permission_description' => 'Allows the user to view vehicle inventory.'],
-        ['permission_name' => 'list_inventory', 'permission_description' => 'Allows the user to list vehicle inventory.'],
-        ['permission_name' => 'get_total_inventory', 'permission_description' => 'Allows the user to get the total vehicle inventory.'],
+        // ['permission_name' => 'list_inventory', 'permission_description' => 'Allows the user to list vehicle inventory.'],
+        // ['permission_name' => 'get_total_inventory', 'permission_description' => 'Allows the user to get the total vehicle inventory.'],
         ['permission_name' => 'store_vehicle', 'permission_description' => 'Allows the user to store a new vehicle.'],
         ['permission_name' => 'store_inventory', 'permission_description' => 'Allows the user to store inventory information.'],
         ['permission_name' => 'edit_inventory', 'permission_description' => 'Allows the user to edit inventory information.'],
@@ -75,7 +75,7 @@ class PermissionSeeder extends Seeder
         ['permission_name' => 'create_bank', 'permission_description' => 'Allows the user to create new bank entries.'],
         ['permission_name' => 'edit_bank', 'permission_description' => 'Allows the user to edit bank information.'],
         ['permission_name' => 'delete_bank', 'permission_description' => 'Allows the user to delete bank entries.'],
-        
+
         // User Management Permissions
         ['permission_name' => 'view_users', 'permission_description' => 'Allows the user to view user information.'],
         ['permission_name' => 'create_user', 'permission_description' => 'Allows the user to create new users.'],
@@ -99,9 +99,9 @@ class PermissionSeeder extends Seeder
         ['permission_name' => 'view_permissions', 'permission_description' => 'Allows the user to view permissions.'],
         ['permission_name' => 'manage_permissions', 'permission_description' => 'Allows the user to manage permissions.'],
 
-        
 
-        
+
+
     ];
 
     foreach ($permissions as $permission) {

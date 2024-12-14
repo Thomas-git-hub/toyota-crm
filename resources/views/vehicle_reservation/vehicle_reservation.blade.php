@@ -481,6 +481,7 @@
                 title: 'CS Number',
                 orderable: false,
                 searchable: false,
+                visible: false,
                 render: function(data, type, row) {
                     if (type === 'display') {
                         return `
@@ -529,12 +530,16 @@
                 visible: false,
                 render: function(data, type, row) {
                         return `<div class="d-flex">
+                                    @if(auth()->user()->can('process_pending_reservation'))
                                     <button type="button" class="btn btn-icon me-2 btn-primary processing-pending-btn" data-id="${data}">
                                         <span class="tf-icons bx bxs-check-circle bx-22px"></span>
                                     </button>
+                                    @endif
+                                    @if(auth()->user()->can('cancel_pending_reservation'))
                                       <button type="button" class="btn btn-icon me-2 btn-danger cancel-pending-btn" data-id="${data}">
                                         <span class="tf-icons bx bxs-x-circle bx-22px"></span>
                                     </button>
+                                    @endif
                                 </div>`;
                     }
             },
@@ -658,11 +663,18 @@
         // Toggle column visibility based on the active tab
         const isReservationTab = $(this).text().trim() === 'Reservation';
         vehicleReservationTable.column(2).visible(isReservationTab); // year_model
+        @if(auth()->user()->can('add_cs_number') && auth()->user()->can('get_cs_number'))
         vehicleReservationTable.column(5).visible(isReservationTab); // cs_number
+        @endif
+
+        @if(auth()->user()->can('process_reserved_reservation'))
         vehicleReservationTable.column(12).visible(isReservationTab); // application_id
+        @endif
 
         const isPendingTab = $(this).text().trim() === 'Pending';
+        @if(auth()->user()->can('process_pending_reservation') || auth()->user()->can('cancel_pending_reservation'))
         vehicleReservationTable.column(11).visible(isPendingTab); // id
+        @endif
 
         var route = $(this).data('route');
         vehicleReservationTable.ajax.url(route).load();
