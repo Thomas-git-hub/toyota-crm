@@ -68,6 +68,7 @@ class PermissionSeeder extends Seeder
         ['permission_name' => 'update_inventory', 'permission_description' => 'Allows the user to update inventory information.'],
         ['permission_name' => 'update_status_inventory', 'permission_description' => 'Allows the user to update status inventory information.'],
         ['permission_name' => 'update_tags_inventory', 'permission_description' => 'Allows the user to update tag inventory information.'],
+        ['permission_name' => 'update_incoming_status', 'permission_description' => 'Allows the user to update status of the inventory information.'],
 
         // Bank Management Permissions
         ['permission_name' => 'view_banks', 'permission_description' => 'Allows the user to view bank information.'],

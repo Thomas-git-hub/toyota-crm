@@ -100,7 +100,7 @@ Route::post('/inventory/store', [VehicleInventoryController::class, 'inventorySt
 Route::get('vehicle-inventory/edit', [VehicleInventoryController::class, 'editInventory'])->name('vehicle.inventory.edit')->middleware('permission:edit_inventory');
 Route::post('/inventory/update', [VehicleInventoryController::class, 'updateInventory'])->name('inventory.update')->middleware('permission:update_inventory');
 Route::get('inventory/status', [VehicleInventoryController::class, 'getInventoryStatus'])->name('inventory.status');
-Route::get('inventory/status/incomng', [VehicleInventoryController::class, 'getIncomingStatus'])->name('inventory.incoming.status');
+Route::get('inventory/status/incomng', [VehicleInventoryController::class, 'getIncomingStatus'])->name('inventory.incoming.status')->middleware('permission: update_incoming_status');
 Route::post('inventory/updateStatus', [VehicleInventoryController::class, 'updateInventoryStatus'])->name('inventory.updateStatus')->middleware('permission:update_status_inventory');
 Route::get('inventory/getAgent', [VehicleInventoryController::class, 'getAgent'])->name('inventory.getAgent');
 Route::post('inventory/updateTags', [VehicleInventoryController::class, 'updateTags'])->name('inventory.updateTags')->middleware('permission:update_tags_inventory');
