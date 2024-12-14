@@ -140,6 +140,8 @@ Route::get('user-management/{id}/send-temporary-password', [UserManagementContro
 // USER MANAGEMENT
 Route::middleware(['auth'])->group(function () {
     Route::get('/profile', [ProfileController::class, 'index'])->name('profile.index');
+    Route::get('/profile/show', [ProfileController::class, 'show'])->name('profile.show');
+    Route::post('/profile/update', [ProfileController::class, 'update'])->name('profile.update');
 });
 
 
