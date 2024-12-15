@@ -64,7 +64,7 @@ Route::post('/application/banks/update', [ApplicationController::class, 'updateA
 
 // VEHICLE RESERVATION
 Route::get('vehicle-reservation', [VehicleReservationController::class, 'index'])->name('vehicle.reservation')->middleware('permission:view_vehicle_reservation');
-Route::get('vehicle-reservation/units/list', [VehicleReservationController::class, 'availableUnitsList'])->name('vehicle.reservation.units.list')->middleware('permission:view_vehicle_reservation');
+Route::get('vehicle-reservation/units/list', [VehicleReservationController::class, 'availableUnitsList'])->name('vehicle.reservation.units.list')->middleware('permission:list_available_units');
 Route::get('vehicle-reservation/pending/list', [VehicleReservationController::class, 'list_pending'])->name('vehicle.reservation.pending.list')->middleware('permission:view_vehicle_reservation');
 Route::get('vehicle-reservation/list', [VehicleReservationController::class, 'list_reserved'])->name('vehicle.reservation.list')->middleware('permission:view_vehicle_reservation');
 Route::get('vehicle-reservation/getReservedCount', [VehicleReservationController::class, 'getReservedCount'])->name('vehicle.reservation.getReservedCount')->middleware('permission:view_vehicle_reservation');
@@ -100,10 +100,10 @@ Route::post('/vehicle/store', [VehicleInventoryController::class, 'store'])->nam
 Route::post('/inventory/store', [VehicleInventoryController::class, 'inventoryStore'])->name('inventory.store')->middleware('permission:store_inventory');
 Route::get('vehicle-inventory/edit', [VehicleInventoryController::class, 'editInventory'])->name('vehicle.inventory.edit')->middleware('permission:edit_inventory');
 Route::post('/inventory/update', [VehicleInventoryController::class, 'updateInventory'])->name('inventory.update')->middleware('permission:update_inventory');
-Route::get('inventory/status', [VehicleInventoryController::class, 'getInventoryStatus'])->name('inventory.status');
-Route::get('inventory/status/incomng', [VehicleInventoryController::class, 'getIncomingStatus'])->name('inventory.incoming.status')->middleware('permission: update_incoming_status');
+// Route::get('inventory/status', [VehicleInventoryController::class, 'getInventoryStatus'])->name('inventory.status')->middleware('permission:view_vehicle_inventory');
+Route::get('inventory/status/incomng', [VehicleInventoryController::class, 'getIncomingStatus'])->name('inventory.incoming.status')->middleware('permission:update_incoming_status');
 Route::post('inventory/updateStatus', [VehicleInventoryController::class, 'updateInventoryStatus'])->name('inventory.updateStatus')->middleware('permission:update_status_inventory');
-Route::get('inventory/getAgent', [VehicleInventoryController::class, 'getAgent'])->name('inventory.getAgent');
+Route::get('inventory/getAgent', [VehicleInventoryController::class, 'getAgent'])->name('inventory.getAgent')->middleware('permission:view_vehicle_inventory');
 Route::post('inventory/updateTags', [VehicleInventoryController::class, 'updateTags'])->name('inventory.updateTags')->middleware('permission:update_tags_inventory');
 Route::get('inventory/incomingUnitsList', [VehicleInventoryController::class, 'incomingUnitsList'])->name('inventory.incomingUnitsList')->middleware('permission:view_vehicle_inventory');
 Route::get('inventory/tagsPerTeam', [VehicleInventoryController::class, 'tagsPerTeam'])->name('inventory.tagsPerTeam')->middleware('permission:view_vehicle_inventory');

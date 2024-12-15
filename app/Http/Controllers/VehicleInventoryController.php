@@ -285,7 +285,7 @@ class VehicleInventoryController extends Controller
         }
         $age = null;
 
-      
+
         // Create a new inventory record
         Inventory::create([
             'vehicle_id' => $vehicle,
@@ -356,11 +356,6 @@ class VehicleInventoryController extends Controller
         return response()->json($agent);
     }
 
-    // public function getIncomingStatus(Request $request){
-    //    $data = Status::whereIn('status', ['On Stock', 'In Transit', 'Invoice', 'Pull Out'])
-    //             ->get();
-    //     return response()->json($data);
-    // }
 
     public function getIncomingStatus(Request $request){
 

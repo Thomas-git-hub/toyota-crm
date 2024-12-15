@@ -709,7 +709,7 @@
                 searchable: false,
                 visible: false,
                 render: function(data, type, row) {
-                    const isDisabled = row.status !== 'Available' || row.status !== 'Reserved' ? 'disabled' : '';
+                    const isDisabled = row.status === 'Ear Mark' ? 'disabled' : '';
                     return `<button type="button" class="btn btn-icon me-2 btn-label-dark ear-mark-btn" data-bs-toggle="modal" data-bs-target="#earmarkModal" data-id="${row.id}" data-mark="${row.tags}" ${isDisabled}>
                                 <span class="tf-icons bx bx-star bx-22px"></span>
                             </button>`;

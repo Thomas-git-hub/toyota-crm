@@ -19,19 +19,18 @@
 
   <!-- Data Privacy -->
   <div class="modal fade" id="dataPrivacy" tabindex="-1" aria-labelledby="dataPrivacyLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered modal-xl" role="document">
+    <div class="modal-dialog" role="document">
       <div class="modal-content">
         <div class="modal-header">
-            <div class="d-flex align-items-center gap-2">
-                <i class='bx bxs-error-alt' style="color: #ff0000;"></i>
-                <h5 class="modal-title" id="exampleModalLabel" style="color: #ff0000;">Data Privacy</h5>
+            <div class="d-flex align-items-center gap-1">
+                <i class='bx bxs-error-alt fs-4' style="color: #ff0000;"></i>
+                <h4 class="modal-title" id="exampleModalLabel" style="color: #ff0000;">Data Privacy</h4>
             </div>
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
             </button>
         </div>
         <div class="modal-body">
-          <p>Croissant jelly beans donut apple pie. Caramels bonbon lemon drops. Sesame snaps lemon drops lemon drops liquorice icing bonbon pastry pastry carrot cake. Dragée sweet sweet roll sugar plum.</p>
-          <p>Jelly-o cookie jelly gummies pudding cheesecake lollipop macaroon. Sweet chocolate bar sweet roll carrot cake. Sweet roll sesame snaps fruitcake brownie bear claw toffee bonbon brownie.</p>
+          <p class="" style="color: #ff0000;">Reminder that all the information that is processed in this system is covered by the data privacy act of 2012.</p>
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-dark" id="addNewInquiryButton" data-bs-dismiss="modal">Proceed</button>
@@ -248,7 +247,7 @@
 {{-- Inquiry Form --}}
 <div class="row mb-4">
     <div class="col-md">
-        <div class="card" id="inquiryFormCard" style="display: none;">
+        <div class="card border border-primary shadow-none" id="inquiryFormCard" style="display: none;">
             <div class="card-header">
                 <h5 class="text-primary card-title">Inquiry Form</h5>
             </div>

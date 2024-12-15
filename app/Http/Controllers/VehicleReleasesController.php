@@ -36,10 +36,10 @@ class VehicleReleasesController extends Controller
         ){
             $query = Vehicle::with('inventory')
                             ->whereNull('deleted_at')
-                            ->whereHas('inventory', function($subQuery) {
-                                $subQuery->where('status', 'like', 'Released')
-                                         ->where('CS_number_status', 'like', 'Released');
-                            })
+                            // ->whereHas('inventory', function($subQuery) {
+                            //     $subQuery->where('status', 'like', 'Released')
+                            //              ->where('CS_number_status', 'like', 'Released');
+                            // })
                             ->groupBy('unit');
 
         }elseif(Auth::user()->usertype->name === 'Group Manager'){

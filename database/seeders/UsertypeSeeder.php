@@ -23,9 +23,9 @@ class UsertypeSeeder extends Seeder
         Usertype::create([
             'name' => 'Group Manager',
         ]);
-        Usertype::create([
-            'name' => 'Admin Staff',
-        ]);
+        // Usertype::create([
+        //     'name' => 'Admin Staff',
+        // ]);
         Usertype::create([
             'name' => 'Sales Admin Staff',
         ]);

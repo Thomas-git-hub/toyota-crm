@@ -136,7 +136,11 @@ class ApplicationController extends Controller
 
         // dd($request->start_date);
         $status = Status::where('status', 'like', 'approved')->first();
-        if(Auth::user()->usertype->name === 'SuperAdmin'){
+        if(Auth::user()->usertype->name === 'SuperAdmin'
+        || Auth::user()->usertype->name === 'Group Manager'
+        || Auth::user()->usertype->name === 'Sales Admin Staff'
+        || Auth::user()->usertype->name === 'Financing Staff'
+        ){
             $query = Application::with(['user', 'customer', 'vehicle','status', 'bank', 'transactions'])
                         ->whereNull('deleted_at')
                         ->where('status_id', $status->id);
@@ -253,7 +257,11 @@ class ApplicationController extends Controller
         // dd($request->start_date);
         $statusIds = Status::whereIn('status', ['Denied', 'Cancel'])->pluck('id')->toArray();
 
-        if(Auth::user()->usertype->name === 'SuperAdmin'){
+        if(Auth::user()->usertype->name === 'SuperAdmin'
+        || Auth::user()->usertype->name === 'Group Manager'
+        || Auth::user()->usertype->name === 'Sales Admin Staff'
+        || Auth::user()->usertype->name === 'Financing Staff'
+        ){
             $query = Application::with(['user', 'customer', 'vehicle','status', 'bank', 'transactions'])
                         ->whereNull('deleted_at')
                         ->where('status_id', $statusIds);
@@ -370,7 +378,11 @@ class ApplicationController extends Controller
         // dd($request->start_date);
         $statusIds = Status::whereIn('status', ['Denied', 'Cancel', 'Processed', 'Approved', 'Reserved'])->pluck('id')->toArray();
 
-        if(Auth::user()->usertype->name === 'SuperAdmin'){
+        if(Auth::user()->usertype->name === 'SuperAdmin'
+        || Auth::user()->usertype->name === 'Group Manager'
+        || Auth::user()->usertype->name === 'Sales Admin Staff'
+        || Auth::user()->usertype->name === 'Financing Staff'
+        ){
             $query = Application::with(['user', 'customer', 'vehicle','status', 'bank', 'transactions'])
                 ->whereNull('deleted_at')
                 ->whereNotIn('status_id', $statusIds)
@@ -488,7 +500,11 @@ class ApplicationController extends Controller
 
         // dd($request->start_date);
         $pending_status = Status::where('status', 'like', 'pending')->first();
-        if(Auth::user()->usertype->name === 'SuperAdmin'){
+        if(Auth::user()->usertype->name === 'SuperAdmin'
+        || Auth::user()->usertype->name === 'Group Manager'
+        || Auth::user()->usertype->name === 'Sales Admin Staff'
+        || Auth::user()->usertype->name === 'Financing Staff'
+        ){
             $query = Application::with(['user', 'customer', 'vehicle','status', 'bank', 'transactions'])
                         ->whereNull('deleted_at')
                         ->whereNotIn('transaction', ['cash', 'po'])

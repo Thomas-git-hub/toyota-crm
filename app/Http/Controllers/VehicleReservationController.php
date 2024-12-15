@@ -64,7 +64,7 @@ class VehicleReservationController extends Controller
     public function getReservedCount(){
         $reserved_status = Status::where('status', 'like', 'Reserved')->first();
 
-        if(Auth::user()->usertype->name === 'SuperAdmin' || Auth::user()->usertype->name === 'General Manager'|| Auth::user()->usertype->name === 'Admin Staff' || Auth::user()->usertype->name === 'Sales Admin Staff'){
+        if(Auth::user()->usertype->name === 'SuperAdmin' || Auth::user()->usertype->name === 'General Manager' || Auth::user()->usertype->name === 'Sales Admin Staff'){
             $query = Transactions::with(['inquiry', 'inventory', 'application'])
             ->whereNull('deleted_at')
             ->whereNotNull('inventory_id')
@@ -97,7 +97,7 @@ class VehicleReservationController extends Controller
         // dd($request->start_date);
         DB::statement("SET SQL_MODE=''");
         $pending_status = Status::where('status', 'like', 'pending')->first();
-        if(Auth::user()->usertype->name === 'SuperAdmin' || Auth::user()->usertype->name === 'General Manager'|| Auth::user()->usertype->name === 'Admin Staff' || Auth::user()->usertype->name === 'Sales Admin Staff'){
+        if(Auth::user()->usertype->name === 'SuperAdmin' || Auth::user()->usertype->name === 'General Manager' || Auth::user()->usertype->name === 'Sales Admin Staff'){
             $query = Transactions::with(['inquiry', 'inventory', 'application'])
                             ->where('reservation_transaction_status', $pending_status->id)
                             ->whereNull('deleted_at')
@@ -200,7 +200,7 @@ class VehicleReservationController extends Controller
 
         // dd($request->start_date);
         $reserved_status = Status::where('status', 'like', 'Reserved')->first();
-        if(Auth::user()->usertype->name === 'SuperAdmin' || Auth::user()->usertype->name === 'General Manager'|| Auth::user()->usertype->name === 'Admin Staff' || Auth::user()->usertype->name === 'Sales Admin Staff'){
+        if(Auth::user()->usertype->name === 'SuperAdmin' || Auth::user()->usertype->name === 'General Manager' || Auth::user()->usertype->name === 'Sales Admin Staff'){
             $query = Transactions::with(['inquiry', 'inventory', 'application'])
                         ->whereNull('deleted_at')
                         ->where('reservation_transaction_status', $reserved_status->id)
@@ -302,7 +302,7 @@ class VehicleReservationController extends Controller
     public function reservationPerTeam(){
         DB::statement("SET SQL_MODE=''");
 
-        if(Auth::user()->usertype->name === 'SuperAdmin' || Auth::user()->usertype->name === 'General Manager'|| Auth::user()->usertype->name === 'Admin Staff' || Auth::user()->usertype->name === 'Sales Admin Staff'){
+        if(Auth::user()->usertype->name === 'SuperAdmin' || Auth::user()->usertype->name === 'General Manager' || Auth::user()->usertype->name === 'Sales Admin Staff'){
             $query = Team::whereNull('deleted_at');
         }elseif(Auth::user()->usertype->name === 'Group Manager'){
             $query = Team::whereNull('deleted_at')

@@ -38,7 +38,7 @@ class PermissionSeeder extends Seeder
         ['permission_name' => 'update_terms', 'permission_description' => 'Allows the user to update terms and percentage.'],
 
         ['permission_name' => 'view_vehicle_reservation', 'permission_description' => 'Allows the user to view vehicle reservations.'],
-        // ['permission_name' => 'list_available_units', 'permission_description' => 'Allows the user to list available vehicle units.'],
+        ['permission_name' => 'list_available_units', 'permission_description' => 'Allows the user to list available vehicle units.'],
         // ['permission_name' => 'get_reserved_count', 'permission_description' => 'Allows the user to get the count of reserved vehicles.'],
         // ['permission_name' => 'reservation_per_team', 'permission_description' => 'Allows the user to view reservations per team.'],
         ['permission_name' => 'process_pending_reservation', 'permission_description' => 'Allows the user to process pending reservations.'],
