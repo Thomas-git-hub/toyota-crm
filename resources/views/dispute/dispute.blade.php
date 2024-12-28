@@ -89,28 +89,58 @@
 
     // Datatable Initilization
     const teamTable = $('#disputeTable').DataTable({
-            processing: true,
-            serverSide: false,
-            columns: [
-                { data: 'id', name: 'id', title: 'ID', visible: false },
-                { data: 'agent', name: 'agent', title: 'Agent 1' },
-                { data: 'updated_at', name: 'updated_at', title: 'Created At' },
-                { data: 'updated_by', name: 'updated_by', title: 'Created By' },
-                { data: 'status', name: 'status', title: 'Status' },
-                {
-                    data: 'action',
-                    name: 'action',
-                    title: 'Action',
-                    render: function (data, type, row) {
-                        return `
-                            <button type="button" class="btn btn-icon me-2 btn-success edit-btn" data-bs-toggle="modal" data-bs-target="#editTeamModal" data-id="${row.id}" data-name="${row.name}" data-status="${row.status}" data-created-by="${row.created_by}" data-updated-by="${row.updated_by}">
-                                <span class="tf-icons bx bx-pencil bx-22px"></span>
-                            </button>
-                        `;
-                    }
-                }
-            ],
-            order: [[2, 'desc']],
-        });
+        processing: false,
+        serverSide: false,
+        data: [
+            {
+                id: 1,
+                customer: 'John Doe',
+                agent: 'Agent A',
+                disputed_agent: 'Agent B',
+                created_at: '2023-01-01',
+                created_by: 'Admin',
+                updated_at: '2023-01-02',
+                updated_by: 'Manager',
+                status: 'Pending'
+            },
+            {
+                id: 2,
+                customer: 'Jane Smith',
+                agent: 'Agent X',
+                disputed_agent: 'Agent Y',
+                created_at: '2023-01-03',
+                created_by: 'Admin',
+                updated_at: '2023-01-04',
+                updated_by: 'Manager',
+                status: 'Approved'
+            }
+        ],
+        columns: [
+            { data: 'id', name: 'id', title: 'ID', visible: false },
+            { data: 'customer', name: 'customer', title: 'Customer Name' },
+            { data: 'agent', name: 'agent', title: 'Primary Agent' },
+            { data: 'disputed_agent', name: 'disputed_agent', title: 'Disputed Agent' },
+            { data: 'created_at', name: 'created_at', title: 'Created At' },
+            { data: 'created_by', name: 'created_by', title: 'Created By' },
+            { data: 'updated_at', name: 'updated_at', title: 'Updated At' },
+            { data: 'updated_by', name: 'updated_by', title: 'Approve By' },
+            { data: 'status', name: 'status', title: 'Status' },
+            {
+                data: null,
+                name: 'action',
+                title: 'Action',
+                defaultContent: `
+                    <button type="button" class="btn btn-icon me-2 btn-success edit-btn" data-bs-toggle="modal" data-bs-target="#editTeamModal">
+                        <span class="tf-icons bx bxs-like bx-22px"></span>
+                    </button>
+                    <button type="button" class="btn btn-icon me-2 btn-danger edit-btn" data-bs-toggle="modal" data-bs-target="#editTeamModal">
+                        <span class="tf-icons bx bxs-dislike bx-22px"></span>
+                    </button>
+                `
+            }
+        ],
+        order: [[2, 'desc']],
+    });
+
 </script>
 @endsection
