@@ -54,7 +54,7 @@
                     });
                 } else {
                     // Reload the tables if a valid range is selected
-                    inquiryTable.ajax.reload(null, false);
+                    teamTable.ajax.reload(null, false);
                 }
             }
         },
@@ -77,7 +77,7 @@
             // Add event listener to clear the date and reload the tables
             clearButton.addEventListener("click", function() {
                 instance.clear(); // Clear the date range
-                inquiryTable.ajax.reload(null, false); // Reload the tables
+                teamTable.ajax.reload(null, false); // Reload the tables
             });
 
             // Add event listener to close the calendar
@@ -89,35 +89,42 @@
 
     // Datatable Initilization
     const teamTable = $('#disputeTable').DataTable({
-        processing: false,
-        serverSide: false,
-        data: [
-            {
-                id: 1,
-                customer: 'John Doe',
-                agent: 'Agent A',
-                disputed_agent: 'Agent B',
-                created_at: '2023-01-01',
-                created_by: 'Admin',
-                updated_at: '2023-01-02',
-                updated_by: 'Manager',
-                status: 'Pending'
+        processing: true,
+        serverSide: true,
+        ajax: {
+            url: '{{ route("dispute.getDisputes") }}',
+            data: function(d) {
+                d.date_range = $('#date-range-picker').val();
             },
-            {
-                id: 2,
-                customer: 'Jane Smith',
-                agent: 'Agent X',
-                disputed_agent: 'Agent Y',
-                created_at: '2023-01-03',
-                created_by: 'Admin',
-                updated_at: '2023-01-04',
-                updated_by: 'Manager',
-                status: 'Approved'
-            }
-        ],
+        },
+
+        // data: [
+        //     {
+        //         id: 1,
+        //         customer: 'John Doe',
+        //         agent: 'Agent A',
+        //         disputed_agent: 'Agent B',
+        //         created_at: '2023-01-01',
+        //         created_by: 'Admin',
+        //         updated_at: '2023-01-02',
+        //         updated_by: 'Manager',
+        //         status: 'Pending'
+        //     },
+        //     {
+        //         id: 2,
+        //         customer: 'Jane Smith',
+        //         agent: 'Agent X',
+        //         disputed_agent: 'Agent Y',
+        //         created_at: '2023-01-03',
+        //         created_by: 'Admin',
+        //         updated_at: '2023-01-04',
+        //         updated_by: 'Manager',
+        //         status: 'Approved'
+        //     }
+        // ],
         columns: [
             { data: 'id', name: 'id', title: 'ID', visible: false },
-            { data: 'customer', name: 'customer', title: 'Customer Name' },
+            { data: 'client_name', name: 'client_name', title: 'Customer Name' },
             { data: 'agent', name: 'agent', title: 'Primary Agent' },
             { data: 'disputed_agent', name: 'disputed_agent', title: 'Disputed Agent' },
             { data: 'created_at', name: 'created_at', title: 'Created At' },
@@ -126,17 +133,19 @@
             { data: 'updated_by', name: 'updated_by', title: 'Approve By' },
             { data: 'status', name: 'status', title: 'Status' },
             {
-                data: null,
-                name: 'action',
+                data: 'id',
+                name: 'id',
                 title: 'Action',
-                defaultContent: `
-                    <button type="button" class="btn btn-icon me-2 btn-success edit-btn" data-bs-toggle="modal" data-bs-target="#editTeamModal">
+                render: function(data) {
+                    return `
+                    <button type="button" class="btn btn-icon me-2 btn-success edit-btn" data-bs-toggle="modal" data-bs-target="#editTeamModal" data-id="${data}">
                         <span class="tf-icons bx bxs-like bx-22px"></span>
                     </button>
-                    <button type="button" class="btn btn-icon me-2 btn-danger edit-btn" data-bs-toggle="modal" data-bs-target="#editTeamModal">
+                    <button type="button" class="btn btn-icon me-2 btn-danger edit-btn" data-bs-toggle="modal" data-bs-target="#editTeamModal" data-id="${data}">
                         <span class="tf-icons bx bxs-dislike bx-22px"></span>
                     </button>
                 `
+                }
             }
         ],
         order: [[2, 'desc']],

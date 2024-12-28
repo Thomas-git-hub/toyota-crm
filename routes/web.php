@@ -156,5 +156,6 @@ Route::middleware(['auth'])->group(function () {
 
 //DISPUTE
     Route::get('/dispute', [DisputeController::class, 'index'])->name('dispute.index');
+    Route::get('/dispute/getDisputes', [DisputeController::class, 'getDisputes'])->name('dispute.getDisputes');
 
 
