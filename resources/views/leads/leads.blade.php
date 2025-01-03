@@ -208,7 +208,7 @@
                         <option value="">Select Source</option>
                         <option value="Repeat-Customer">Repeat Customer</option>
                         <option value="Social-Media">Social-Media</option>
-                        <option value="Referal">Referal</option>
+                        <option value="Referral">"Referral"</option>
                         <option value="Mall Duty">Mall Duty</option>
                         <option value="Show Room">Show Room</option>
                         <option value="Saturation">Saturation</option>
@@ -383,7 +383,7 @@
                                 <option value="">Select Source</option>
                                 <option value="Repeat-Customer">Repeat Customer</option>
                                 <option value="Social-Media">Social-Media</option>
-                                <option value="Referal">Referal</option>
+                                <option value="Referral">Referral</option>
                                 <option value="Mall Duty">Mall Duty</option>
                                 <option value="Show Room">Show Room</option>
                                 <option value="Saturation">Saturation</option>

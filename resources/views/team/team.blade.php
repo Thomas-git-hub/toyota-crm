@@ -56,17 +56,18 @@
     <div class="col-md">
         <div class="card">
             <div class="card-body">
-                <form action="" id="teamForm">
+                <form id="teamForm">
                     <div class="row mb-2">
                         <div class="col-md">
                             <label for="defaultFormControlInput" class="form-label required">Team Name</label>
                             <input type="text" class="form-control" id="team" name="name" placeholder="" aria-describedby="defaultFormControlHelp"/>
+                            <div id="validateTeamName"></div>
                         </div>
                     </div>
                     <div class="row">
                         <div class="col-md d-flex justify-content-end gap-2">
-                            <button class="btn btn-label-danger" id=cancelTeamButton>Cancel</button>
-                            <button class="btn btn-dark" id="addTeamButton">Add Team</button>
+                            <button type="button" class="btn btn-label-danger" id=cancelTeamButton>Cancel</button>
+                            <button type= "submit" class="btn btn-dark" id="addTeamButton">Add Team</button>
                         </div>
                     </div>
                 </form>
@@ -149,6 +150,16 @@
             e.preventDefault();
             const formData = $(this).serialize();
 
+            const teamName = $('#team').val().trim();
+            if (!teamName) {
+                $('#team').addClass('is-invalid');
+                $('#validateTeamName').html('<span style="color: red;">Please enter a team name</span>').show();
+                return;
+            } else {
+                $('#team').removeClass('is-invalid');
+                $('#validateTeamName').hide();
+            }
+
             $.ajax({
                 url: "{{ route('team.create') }}",
                 type: 'POST',
@@ -217,8 +228,9 @@
 
         // Hide the team form and reset it when the "Cancel" button is clicked
         $('#cancelTeamButton').click(function () {
-            $('#teamForm').hide();
             $('#teamForm').trigger('reset');
+            $('#teamFormRow').hide();
+
         });
     });
 

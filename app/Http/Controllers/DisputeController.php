@@ -43,13 +43,20 @@ class DisputeController extends Controller
             $query = Inquiry::with([ 'user', 'customer', 'vehicle', 'status', 'inquiryType', 'updateBy'])
                         ->whereNull('deleted_at')
                         ->where('is_dispute', '1')
-                        ->where('created_by', Auth::user()->id)
+                        ->where(function($subQuery) {
+                            $subQuery->where('created_by', Auth::user()->id)
+                                     ->orWhereHas('customer', function($customerQuery) {
+                                         $customerQuery->whereHas('inquiries', function($inquiryQuery) {
+                                             $inquiryQuery->where('is_dispute', '0')
+                                                          ->where('created_by', Auth::user()->id);
+                                         });
+                                     });
+                        })
                         ->whereHas('inquiryType', function($subQuery) {
                             $subQuery->where('inquiry_type', 'Individual');
                         })
                         ->where('status_id', '<>', $status);
         }
-
 
 
         if ($request->has('date_range') && !empty($request->date_range)) {
