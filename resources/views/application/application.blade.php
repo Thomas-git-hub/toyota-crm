@@ -484,7 +484,7 @@
         columns: [
             { data: 'id', name: 'id', title: 'ID' , visible: false},
             @if(auth()->user()->usertype->name === 'SuperAdmin' || auth()->user()->usertype->name === 'Financing Staff' || auth()->user()->usertype->name === 'Sales Admin Staff')
-            { data: 'team', name: 'team', title: 'Team' },
+            { data: 'team', name: 'team', title: 'Group' },
             @endif
             { data: 'type', name: 'type', title: 'Type' },
             @if (auth()->user()->usertype->name === 'SuperAdmin' || auth()->user()->usertype->name === 'Group Manager')

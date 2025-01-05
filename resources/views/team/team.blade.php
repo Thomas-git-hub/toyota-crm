@@ -59,7 +59,7 @@
                 <form id="teamForm">
                     <div class="row mb-2">
                         <div class="col-md">
-                            <label for="defaultFormControlInput" class="form-label required">Team Name</label>
+                            <label for="defaultFormControlInput" class="form-label required">Group Name</label>
                             <input type="text" class="form-control" id="team" name="name" placeholder="" aria-describedby="defaultFormControlHelp"/>
                             <div id="validateTeamName"></div>
                         </div>
@@ -67,7 +67,7 @@
                     <div class="row">
                         <div class="col-md d-flex justify-content-end gap-2">
                             <button type="button" class="btn btn-label-danger" id=cancelTeamButton>Cancel</button>
-                            <button type= "submit" class="btn btn-dark" id="addTeamButton">Add Team</button>
+                            <button type= "submit" class="btn btn-dark" id="addTeamButton">Add Group</button>
                         </div>
                     </div>
                 </form>
@@ -79,7 +79,7 @@
 {{-- Create Team Button --}}
 <div class="row mb-2">
     <div class="col-md d-flex justify-content-end">
-        <button class="btn btn-primary" id="createTeamButton">Create Team</button>
+        <button class="btn btn-primary" id="createTeamButton">Create Group</button>
     </div>
 </div>
 
@@ -153,7 +153,7 @@
             const teamName = $('#team').val().trim();
             if (!teamName) {
                 $('#team').addClass('is-invalid');
-                $('#validateTeamName').html('<span style="color: red;">Please enter a team name</span>').show();
+                $('#validateTeamName').html('<span style="color: red;">Please enter a group name</span>').show();
                 return;
             } else {
                 $('#team').removeClass('is-invalid');
@@ -197,7 +197,7 @@
             },
             columns: [
                 { data: 'id', name: 'id', title: 'ID', visible: false },
-                { data: 'name', name: 'name', title: 'Team Name' },
+                { data: 'name', name: 'name', title: 'Group Name' },
                 { data: 'updated_at', name: 'updated_at', title: 'Created At' },
                 { data: 'updated_by', name: 'updated_by', title: 'Created By' },
                 { data: 'status', name: 'status', title: 'Status' },

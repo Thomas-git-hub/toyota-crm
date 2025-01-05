@@ -330,8 +330,8 @@
                     </div>
                     <div class="row mb-3">
                         <div class="col-md">
-                            <label for="exampleFormControlTextarea1" class="form-label">Remarks</label>
-                            <textarea class="form-control" id="remarks" rows="3"></textarea>
+                            <label for="remarks" class="form-label" >Remarks</label>
+                            <textarea class="form-control" id="remarks" id="remarks" name="remarks" rows="3"></textarea>
                         </div>
                     </div>
                     <div class="row">
@@ -611,7 +611,7 @@
             infoFiltered: "", // Removes the "filtered from X entries" part
         },
         columns: [
-            { data: 'team', name: 'team', title: 'Team' },
+            { data: 'team', name: 'team', title: 'Group' },
             { data: 'quantity', name: 'quantity', title: 'Quantity' },
         ],
         order: [[0, 'asc']],  // Sort by 'unit' column by default
@@ -1030,6 +1030,7 @@
                 actual_invoice_date: $('#actualInvoiceDate').val(),
                 delivery_date: $('#deliveryDate').val(),
                 invoice_number: $('#invoiceNumber').val(),
+                remarks: $('#remarks').val(),
                 // Add other fields as necessary
             };
 

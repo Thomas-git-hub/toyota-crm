@@ -540,7 +540,7 @@
             },
         columns: [
             @if(auth()->user()->usertype->name === 'SuperAdmin' || auth()->user()->usertype->name === 'General Manager')
-            { data: 'team', name: 'team', title: 'Team' },
+            { data: 'team', name: 'team', title: 'Group' },
             @endif
             @if(auth()->user()->usertype->name === 'SuperAdmin' || auth()->user()->usertype->name === 'Group Manager')
             { data: 'agent', name: 'agent', title: 'Agent' },
