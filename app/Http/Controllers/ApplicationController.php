@@ -246,7 +246,7 @@ class ApplicationController extends Controller
         })
 
         ->editColumn('date', function($data) {
-            return $data->transactions->application_transaction_date ? \Carbon\Carbon::parse($data->transactions->application_transaction_date)->format('d/m/Y') : '';
+            return $data->updated_at->format('d/m/Y');
         })
 
         ->make(true);
@@ -367,7 +367,7 @@ class ApplicationController extends Controller
         })
 
         ->editColumn('date', function($data) {
-            return $data->transactions->application_transaction_date ? \Carbon\Carbon::parse($data->transactions->application_transaction_date)->format('d/m/Y') : '';
+            return $data->updated_at->format('d/m/Y');
         })
 
         ->make(true);
@@ -490,7 +490,7 @@ class ApplicationController extends Controller
         })
 
         ->editColumn('date', function($data) {
-            return $data->transactions->application_transaction_date ? \Carbon\Carbon::parse($data->transactions->application_transaction_date)->format('d/m/Y') : '';
+            return $data->updated_at->format('d/m/Y');
         })
 
         ->make(true);
@@ -610,7 +610,7 @@ class ApplicationController extends Controller
         })
 
         ->editColumn('date', function($data) {
-            return $data->transactions->application_transaction_date ? \Carbon\Carbon::parse($data->transactions->application_transaction_date)->format('d/m/Y') : '';
+            return $data->updated_at->format('d/m/Y');
         })
 
         ->make(true);
