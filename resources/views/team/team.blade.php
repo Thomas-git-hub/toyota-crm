@@ -187,6 +187,11 @@
             });
         });
 
+        // Real-time Uppercase Transformation
+        $("input[type='text'], textarea").on("input", function () {
+            $(this).val($(this).val().toUpperCase());
+        });
+
         // Datatable Initilization
         const teamTable = $('#teamTable').DataTable({
             processing: true,

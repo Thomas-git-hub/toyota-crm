@@ -305,7 +305,7 @@
                         </div>
                         <div class="col-md">
                             <label for="exampleFormControlInput1" class="form-label required">CS Number</label>
-                            <input type="email" class="form-control" id="csNumber" placeholder="" />
+                            <input type="text" class="form-control" id="csNumber" placeholder="" />
                             <small class="text-danger" id="validateCSNumber">Input CS Number</small>
                         </div>
                     </div>
@@ -324,7 +324,7 @@
                         </div>
                         <div class="col-md">
                             <label for="exampleFormControlInput1" class="form-label required">Invoice Number</label>
-                            <input type="email" class="form-control" id="invoiceNumber" placeholder="" />
+                            <input type="text" class="form-control" id="invoiceNumber" placeholder="" />
                             <small class="text-danger" id="validateInvoiceNumber">Input Invoice Number</small>
                         </div>
                     </div>
@@ -414,7 +414,6 @@
 
 
     // Count of Total Inventory
-
     function totalInventory() {
         $.ajax({
             url: '{{ route("vehicle.inventory.getTotalInventory") }}', // Adjust the route as necessary
@@ -1014,6 +1013,11 @@
                     $("#inventoryFormData").submit();
                 }
             });
+
+        // Real-time Uppercase Transformation
+        $("input[type='text'], textarea").on("input", function () {
+            $(this).val($(this).val().toUpperCase());
+        });
     });
 
     // Inventory Form Submission
