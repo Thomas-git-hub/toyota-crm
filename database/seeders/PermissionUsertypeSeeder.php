@@ -38,7 +38,7 @@ class PermissionUsertypeSeeder extends Seeder
             'view_application', 'list_pending_applications', 'list_approved_applications', 'edit_application',
             'update_application', 'get_banks', 'process_application', 'store_banks', 'update_bank_approval', 'update_terms',
             'view_vehicle_releases', 'released_units_list',
-            'view_vehicle_inventory', 'list_inventory', 'list_available_units', 'get_total_inventory'
+            'view_vehicle_inventory', 'list_inventory', 'list_available_units', 'get_total_inventory', 'edit_unit'
         ];
 
         // ADMIN STAFF Permissions

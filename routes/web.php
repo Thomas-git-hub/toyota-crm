@@ -77,6 +77,8 @@ Route::post('vehicle-reservation/processing_reserved', [VehicleReservationContro
 Route::get('get-cs-number/{id}', [VehicleReservationController::class, 'getCSNumberByVehicleId'])->name('get-cs-number')->middleware('permission:get_cs_number');
 Route::post('vehicle/reservation/addCSNumber', [VehicleReservationController::class, 'addCSNumber'])->name('vehicle.reservation.addCSNumber')->middleware('permission:add_cs_number');
 Route::post('vehicle/reservation/cancel/pending', [VehicleReservationController::class, 'cancel_pending'])->name('vehicle.reservation.cancel.pending')->middleware('permission:cancel_pending_reservation');
+Route::get('vehicle-reservation/edit/{id}', [VehicleReservationController::class, 'editUnit'])->name('vehicle.reservation.edit')->middleware('permission:edit_unit');
+
 
 
 // VEHICLE RELEASES
@@ -94,6 +96,7 @@ Route::get('vehicle-releases/getStatus', [VehicleReleasesController::class, 'get
 Route::post('vehicle-releases/updateStatus', [VehicleReleasesController::class, 'updateStatus'])->name('vehicle.releases.updateStatus')->middleware('permission:update_status');
 Route::get('vehicle-releases/GrandTotalProfit', [VehicleReleasesController::class, 'GrandTotalProfit'])->name('vehicle.releases.GrandTotalProfit')->middleware('permission:view_vehicle_releases');
 Route::post('vehicle-releases/updateReleasedRemarks', [VehicleReleasesController::class, 'updateReleasedRemarks'])->name('vehicle.releases.updateReleasedRemarks')->middleware('permission:update_released_remarks');
+Route::post('vehicle-releases/addFolderNumber', [VehicleReleasesController::class, 'addFolderNumber'])->name('vehicle.releases.addFolderNumber')->middleware('permission:add_folder_number');
 
 // VEHICLE INVENTORY
 Route::get('vehicle-inventory', [VehicleInventoryController::class, 'index'])->name('vehicle.inventory')->middleware('permission:view_vehicle_inventory');

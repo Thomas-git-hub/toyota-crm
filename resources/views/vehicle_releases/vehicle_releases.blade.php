@@ -167,14 +167,15 @@
           </div>
           <div class="row">
             <div class="col-md">
+                <input type="hidden" class="form-control" id="id" name="id"  />
                 <label for="defaultFormControlInput" class="form-label">Add Folder Number</label>
-                <input type="text" class="form-control" id="defaultFormControlInput" placeholder="" aria-describedby="defaultFormControlHelp" />
+                <input type="text" class="form-control" id="folderNumber" name="folder_number"  />
             </div>
           </div>
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-label-danger" data-bs-dismiss="modal">Close</button>
-          <button type="button" class="btn btn-dark">Proceed</button>
+          <button type="button" class="btn btn-dark save-folder">Proceed</button>
         </div>
       </form>
     </div>
@@ -475,6 +476,7 @@
         },
 
         columns: [
+            { data: 'folder_number', name: 'folder_number', title: 'Folder ' },
             { data: 'unit', name: 'unit', title: 'Unit' },
             { data: 'customer_name', name: 'customer_name', title: 'Customer Name' },
             { data: 'year_model', name: 'year_model', title: 'Year Model' },
@@ -511,8 +513,8 @@
                 visible:false,
                 render: function(data, type, row) {
                         return `<div class="d-flex">
-                                <button type="button" class="btn btn-icon me-2 btn-dark folder-number-btn" data-bs-toggle="modal" data-bs-target="#folderNumberModal">
-                                        <span class="tf-icons bx bxs-check-circle bx-22px"></span>
+                                <button type="button" class="btn btn-icon me-2 btn-dark folder-number-btn" data-id="${data}" data-folder="${row.folder_number}" data-bs-toggle="modal" data-bs-target="#folderNumberModal">
+                                        <span class="tf-icons bx bx-folder-plus bx-22px"></span>
                                 </button>
                                 @if(auth()->user()->can('process_vehicle_release'))
                                     <button type="button" class="btn btn-icon me-2 btn-primary processing-btn" data-id="${data}">
@@ -580,18 +582,6 @@
             currentButtonId = $(this).attr('id'); // Store the current button ID
         });
 
-        // Update the button text when "Save changes" is clicked
-        // $('#saveStatusButton').on('click', function () {
-        //     const selectedValue = $('#status').val();
-        //     if (currentButtonId && selectedValue) {
-        //     const $button = $('#' + currentButtonId);
-        //     $button.find('.status-label').text(selectedValue);
-        //     }
-
-        //     // Close the modal
-        //     const modal = bootstrap.Modal.getInstance(document.getElementById('releaseStatus'));
-        //     modal.hide();
-        // });
 
         $('#saveStatusButton').on('click', function() {
             const selectedValue = $('#status').val();
@@ -652,31 +642,30 @@
         // Toggle column visibility based on the active tab
         const isFoReleasedTab = $(this).text().trim() === 'For Release Units';
         @if(auth()->user()->can('process_vehicle_release') || auth()->user()->can('cancel_vehicle_release'))
-        vehicleReleasesTable.column(12).visible(isFoReleasedTab);
+        vehicleReleasesTable.column(13).visible(isFoReleasedTab);
         @endif
 
         const isReleasedTab = $(this).text().trim() === 'Released Units';
         @if(auth()->user()->can('get_status') && auth()->user()->can('update_status'))
 
-        vehicleReleasesTable.column(11).visible(isReleasedTab);
+        vehicleReleasesTable.column(12).visible(isReleasedTab);
         @endif
 
         @if(auth()->user()->can('update_profit'))
-        vehicleReleasesTable.column(13).visible(isReleasedTab);
-        @endif
-
-        @if(auth()->user()->can('update_ltoremarks'))
         vehicleReleasesTable.column(14).visible(isReleasedTab);
         @endif
 
+        @if(auth()->user()->can('update_ltoremarks'))
         vehicleReleasesTable.column(15).visible(isReleasedTab);
+        @endif
+
+        vehicleReleasesTable.column(16).visible(isReleasedTab);
 
 
 
         var route = $(this).data('route');
         vehicleReleasesTable.ajax.url(route).load();
     });
-
 
     // datatables button tabs
     $(document).ready(function() {
@@ -793,6 +782,13 @@
         $('#profit').val(profit);
         $('#profit-id').val(id);
 
+    });
+
+    $(document).on('click', '.folder-number-btn', function() {
+        const id = $(this).data('id');
+        const folder = $(this).data('folder');
+        $('#folderNumber').val(folder);
+        $('#id').val(id);
     });
 
 
@@ -930,6 +926,39 @@
                     $("#ltoRemarksTextArea").addClass("d-none");
                     $("#saveEditLtoRemarksButton").addClass("d-none");
                     $('#LtoRemarksModal').modal('hide');
+                    vehicleReleasesTable.ajax.reload();
+                }
+            },
+            error: function(xhr) {
+                Swal.fire(
+                    'Error!',
+                    xhr.responseJSON?.message || 'Something went wrong!',
+                    'error'
+                );
+            }
+        });
+    })
+
+    $(document).on('click', '.save-folder', function() {
+        const id = $('#id').val();
+        const folderNum = $('#folderNumber').val();
+        $.ajax({
+            url: '{{ route("vehicle.releases.addFolderNumber") }}',
+
+            type: 'POST',
+            data: { id: id, folder_number: folderNum },
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            },
+            success: function(response) {
+                if (response.success) {
+                    Swal.fire(
+                        'Success!',
+                        response.message,
+                        'success'
+                    );
+
+                    $('#folderNumberModal').modal('hide');
                     vehicleReleasesTable.ajax.reload();
                 }
             },

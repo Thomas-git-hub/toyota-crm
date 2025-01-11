@@ -448,6 +448,9 @@ class VehicleReleasesController extends Controller
         ->addColumn('profit', function($data) {
             return number_format($data->profit ?? 0, 2);
         })
+        ->addColumn('folder_number', function($data) {
+            return $data->folder_number ?? '';
+        })
 
         ->make(true);
     }
@@ -576,6 +579,10 @@ class VehicleReleasesController extends Controller
             return number_format($data->profit ?? 0, 2);
         })
 
+        ->addColumn('folder_number', function($data) {
+            return $data->folder_number ?? '';
+        })
+
         ->make(true);
     }
 
@@ -684,6 +691,7 @@ class VehicleReleasesController extends Controller
             ], 500);
         }
     }
+
     public function updateReleasedRemarks(Request $request){
         try {
             // dd($request->all());
@@ -769,5 +777,26 @@ class VehicleReleasesController extends Controller
         $profit = $query->sum('profit');
 
         return number_format($profit, 2);
+    }
+
+    public function addFolderNumber(Request $request){
+        try {
+
+            $transaction = Transactions::findOrFail(decrypt($request->id));
+            $transaction->folder_number = $request->folder_number;
+            $transaction->updated_at = now();
+            $transaction->save();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Folder Number Added Sucessfully'
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Error in adding folder number: ' . $e->getMessage()
+            ], 500);
+        }
+        
     }
 }
