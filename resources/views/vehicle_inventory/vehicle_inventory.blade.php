@@ -700,9 +700,12 @@
                 orderable: false,
                 searchable: false,
                 render: function(data, type, row) {
-                    return `<button type="button" class="btn btn-icon me-2 btn-label-dark incoming-btn" data-bs-toggle="modal" data-bs-target="#incomingStatusModal" data-id="${row.id}" data-status="${row.incoming_status}">
-                                <span class="tf-icons bx bxs-truck bx-22px"></span>
-                            </button>`;
+                    return `
+                    <div class="d-flex">
+                            <button type="button" class="badge btn me-2 btn-label-dark incoming-btn" data-bs-toggle="modal" data-bs-target="#incomingStatusModal" data-id="${row.id}" data-status="${row.incoming_status}">
+                                <span > ${data}</span>
+                            </button>
+                    </div>`;
                 }
             },
             @endif

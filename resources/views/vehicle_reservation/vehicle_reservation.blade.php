@@ -28,7 +28,6 @@
         </div>
         <div class="modal-body">
           <form id="editReservationFormData">
-                
             <div class="mb-4">
                 <div class="row mb-2">
                     <div class="col-md">
@@ -53,10 +52,7 @@
                         </select>
                         <small class="text-danger" id="validateColor">Please Select Color</small>
                     </div>
-                    <div class="col-md d-none" id="editQuantityColumnField">
-                        <label for="edit_quantity" class="form-label">Quantity</label>
-                        <input type="number" class="form-control" id="edit_quantity" name="quantity" placeholder="" readonly/>
-                    </div>
+                   
                 </div>
             </div>
           
@@ -440,7 +436,7 @@
                 visible: false,
                 render: function(data, type, row) {
                     let editButton = row.trans_type === 'Individual' ? 
-                        `<button type="button" class="btn btn-icon me-2 btn-success edit-btn" data-bs-toggle="modal" data-bs-target="#editReservationFormModal"  data-id="${data}">
+                        `<button type="button" class="btn btn-icon me-2 btn-success edit-btn" data-bs-toggle="modal" data-bs-target="#editReservationFormModal"  data-id="${row.application_id}">
                             <span class="tf-icons bx bxs-show bx-22px"></span>
                         </button>` : '';
                         return `<div class="d-flex">
@@ -568,8 +564,6 @@
 
 
     });
-
-
 
 
     // datatables button tabs
@@ -723,8 +717,8 @@
         });
     });
 
-     // Edit Reservation Modal Fields disabled state -> Editable State
-     $(document).ready(function () {
+    // Edit Reservation Modal Fields disabled state -> Editable State
+    $(document).ready(function () {
         // Function to reset the modal to its initial uneditable state
         function resetModalToInitialState() {
             // Disable all input fields except the Edit button
@@ -769,98 +763,110 @@
         });
     });
 
-        $.ajax({
-            url: '{{ route('leads.getUnit') }}',
-            type: 'GET',
-            dataType: 'json',
-            success: function(data) {
-                let unitSelect = $('#edit_car_unit');
-                unitSelect.empty();
-                unitSelect.append('<option value="">Select Unit...</option>');
-                data.forEach(function(item) {
-                    unitSelect.append(`<option value="${item.unit}">${item.unit}</option>`);
-                });
-            },
-            error: function(error) {
-                console.error('Error loading unit:', error);
-            }
-        });
+    //load unit
+    $.ajax({
+        url: '{{ route('leads.getUnit') }}',
+        type: 'GET',
+        dataType: 'json',
+        success: function(data) {
+            let unitSelect = $('#edit_car_unit');
+            unitSelect.empty();
+            unitSelect.append('<option value="">Select Unit...</option>');
+            data.forEach(function(item) {
+                unitSelect.append(`<option value="${item.unit}">${item.unit}</option>`);
+            });
+        },
+        error: function(error) {
+            console.error('Error loading unit:', error);
+        }
+    });
 
-        // Load variants and colors based on selected unit
-        $('#edit_car_unit').on('change', function() {
-            const selectedUnit = $(this).val();
-            if (selectedUnit) {
-                $.ajax({
-                    url: '{{ route("leads.getVariants") }}',
-                    type: 'GET',
-                    data: { unit: selectedUnit },
-                    dataType: 'json',
-                    success: function(data) {
-                        let variantSelect = $('#edit_car_variant');
-                        variantSelect.empty();
-                        variantSelect.append('<option value="">Select Variants...</option>');
-                        // Check if data.variants is an array or a single value
-                        if (Array.isArray(data.variants)) {
-                            data.variants.forEach(function(variant) {
-                                variantSelect.append(`<option value="${variant}">${variant}</option>`);
-                            });
-                        } else {
-                            variantSelect.append(`<option value="${data.variants}">${data.variants}</option>`);
-                        }
-                    },
-                    error: function(error) {
-                        console.error('Error loading variants and colors:', error);
+    // Load variants and colors based on selected unit
+    $('#edit_car_unit').on('change', function() {
+        const selectedUnit = $(this).val();
+        if (selectedUnit) {
+            $.ajax({
+                url: '{{ route("leads.getVariants") }}',
+                type: 'GET',
+                data: { unit: selectedUnit },
+                dataType: 'json',
+                success: function(data) {
+                    let variantSelect = $('#edit_car_variant');
+                    variantSelect.empty();
+                    variantSelect.append('<option value="">Select Variants...</option>');
+                    // Check if data.variants is an array or a single value
+                    if (Array.isArray(data.variants)) {
+                        data.variants.forEach(function(variant) {
+                            variantSelect.append(`<option value="${variant}">${variant}</option>`);
+                        });
+                    } else {
+                        variantSelect.append(`<option value="${data.variants}">${data.variants}</option>`);
                     }
-                });
-            } else {
-                // Clear the selects if no unit is selected
-                $('#car_variant').empty().append('<option value="">Select Variants...</option>');
-            }
-        });
+                },
+                error: function(error) {
+                    console.error('Error loading variants and colors:', error);
+                }
+            });
+        } else {
+            // Clear the selects if no unit is selected
+            $('#car_variant').empty().append('<option value="">Select Variants...</option>');
+        }
+    });
 
 
-        $('#edit_car_variant').on('change', function() {
-            const selectedVariant = $(this).val();
-            if (selectedVariant) {
-                $.ajax({
-                    url: '{{ route("leads.getColor") }}',
-                    type: 'GET',
-                    data: { variant: selectedVariant },
-                    dataType: 'json',
-                    success: function(data) {
+    $('#edit_car_variant').on('change', function() {
+        const selectedVariant = $(this).val();
+        if (selectedVariant) {
+            $.ajax({
+                url: '{{ route("leads.getColor") }}',
+                type: 'GET',
+                data: { variant: selectedVariant },
+                dataType: 'json',
+                success: function(data) {
 
-                        let colorSelect = $('#edit_car_color');
-                        colorSelect.empty();
-                        colorSelect.append('<option value="">Select Color...</option>');
-                        // Check if data.colors is an array or a single value
-                        if (Array.isArray(data.colors)) {
-                            data.colors.forEach(function(color) {
-                                colorSelect.append(`<option value="${color}">${color}</option>`);
-                            });
-                        } else {
-                            colorSelect.append(`<option value="${data.colors}">${data.colors}</option>`);
-                        }
-
-                        if (!Array.isArray(data.colors) || !data.colors.includes('Any Color')) {
-                            colorSelect.append('<option value="Any Color">Any Color</option>');
-                        }
-
-                    },
-                    error: function(error) {
-                        console.error('Error loading variants and colors:', error);
+                    let colorSelect = $('#edit_car_color');
+                    colorSelect.empty();
+                    colorSelect.append('<option value="">Select Color...</option>');
+                    // Check if data.colors is an array or a single value
+                    if (Array.isArray(data.colors)) {
+                        data.colors.forEach(function(color) {
+                            colorSelect.append(`<option value="${color}">${color}</option>`);
+                        });
+                    } else {
+                        colorSelect.append(`<option value="${data.colors}">${data.colors}</option>`);
                     }
-                });
-            } else {
-                // Clear the selects if no unit is selected
-                $('#car_color').empty().append('<option value="">Select Color...</option>');
-            }
-        });
 
+                    if (!Array.isArray(data.colors) || !data.colors.includes('Any Color')) {
+                        colorSelect.append('<option value="Any Color">Any Color</option>');
+                    }
+
+                },
+                error: function(error) {
+                    console.error('Error loading variants and colors:', error);
+                }
+            });
+        } else {
+            // Clear the selects if no unit is selected
+            $('#car_color').empty().append('<option value="">Select Color...</option>');
+        }
+    });
+
+    function validateField(field, message) {
+        const $field = $(field);
+        const $errorMsg = $field.siblings('small');
+        if (!$field.val()) {
+            $field.addClass('is-invalid border-danger');
+            $errorMsg.show();
+            return false;
+        }
+        $field.removeClass('is-invalid border-danger');
+        $errorMsg.hide();
+        return true;
+    }
 
 
     $(document).on('click', '.edit-btn', function() {
         const applicationId = $(this).data('id');
-       
         $.ajax({
             url: `{{ url('vehicle-reservation/edit') }}/${applicationId}`,
             type: 'GET',
@@ -873,7 +879,6 @@
                 const firstTransaction = response.firstTransaction;
 
                 // Populate the form fields with the inquiry data
-               
                 $('#edit_car_unit').val(data.vehicle.unit).trigger('change');
                 
                 $.ajax({
@@ -883,6 +888,8 @@
                     dataType: 'json',
                     success: function(variantsData) {
                         $('#edit_car_variant').val(data.vehicle.variant).trigger('change'); // Trigger change to update colors
+                        // Close the loader after data is loaded
+                       
                     },
                     error: function(xhr) {
                         Swal.fire({
@@ -912,22 +919,74 @@
                             });
                         }
                     });
-                })
+                });
+
                 // Store original values
                 originalValues = {
-                    
+                    id: data.id,
                     carUnit: data.vehicle.unit,
                     carVariant: data.vehicle.variant,
                     carColor: data.vehicle.color,
-                   
                 };
-
             },
             error: function(xhr) {
                 Swal.fire({
                     icon: 'error',
                     title: 'Error',
                     text: 'Could not fetch Application data.'
+                });
+            }
+        });
+    });
+
+    // Validate form on submit
+    $("#editReservationFormData").on("submit", function (e) {
+        e.preventDefault();
+        let isValid = true;
+
+        // Validate required fields
+        isValid = validateField('#edit_car_unit', 'Please Select Unit') && isValid;
+        isValid = validateField('#edit_car_variant', 'Please Select Variant') && isValid;
+        isValid = validateField('#edit_car_color', 'Please Select Color') && isValid;
+
+    
+        // Restore original values on invalid fields
+        if (!isValid) {
+            $('#edit_id').val(originalValues.id);
+            $('#edit_car_unit').val(originalValues.carUnit);
+            $('#edit_car_variant').val(originalValues.carVariant);
+            $('#edit_car_color').val(originalValues.carColor);
+            return; // Stop execution if validation fails
+        }
+
+        // Proceed with AJAX request if the form is valid
+        const formData = $(this).serialize();
+        const inquiryId = originalValues.id; // Assuming you set data-id on the form
+
+        $.ajax({
+            url: `/vehicle-reservation/update/${inquiryId}`, // Adjust URL as needed
+            type: 'POST',
+            data: formData,
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            },
+            success: function (response) {
+                if (response.success) {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Success',
+                        text: response.message,
+                    });
+                    // Reload the DataTable or update the UI as needed
+                    vehicleReservationTable.ajax.reload();
+                    $('#editReservationFormModal').modal('hide'); // Hide the modal
+                }
+            },
+            error: function (xhr) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: xhr.responseJSON?.message || 'Something went wrong!'
                 });
             }
         });

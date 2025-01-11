@@ -597,4 +597,66 @@ class VehicleReservationController extends Controller
 
     }
 
+    public function update(Request $request, $id)
+    {
+        try {
+            $validated = $request->validate([
+                
+                'car_unit' => 'required|string',
+                'car_variant' => 'required|string',
+                'car_color' => 'required|string',
+                
+            ]);
+
+            // Find the inquiry and related customer and vehicle
+            $application = Application::findOrFail($id);
+            $transaction_id = Transactions::where('application_id', $application->id )->first();
+            $inquiry_id = Inquiry::where('id', $transaction_id->inquiry_id)->first();
+            $inquiry = Inquiry::findOrFail($inquiry_id->id);
+
+            $vehicle = Vehicle::firstOrCreate(
+                [
+                    'unit' => $validated['car_unit'],
+                    'variant' => $validated['car_variant'],
+                    'color' => $validated['car_color'],
+                ],
+                [
+                    'unit' => $validated['car_unit'],
+                    'variant' => $validated['car_variant'],
+                    'color' => $validated['car_color'],
+                    'created_by' => Auth::id(),
+                    'updated_by' => Auth::id(),
+                ]
+            );
+
+            Transactions::where('application_id', $application->id )
+                ->whereNull('deleted_at')
+                ->update([
+                    'inventory_id' => null,
+            ]);
+
+            //
+            $inquiry->vehicle_id = $vehicle->id;
+            $inquiry->updated_by = Auth::id();
+            $inquiry->updated_at = now();
+            $inquiry->save();
+
+            // Update inquiry data
+            $application->vehicle_id = $vehicle->id;
+            $application->updated_by = Auth::id();
+            $application->updated_at = now();
+            $application->save();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Reservation Unit updated successfully'
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Error updating reservation unit: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
 }
