@@ -567,14 +567,7 @@
             },
 
         ],
-        columnDefs: [
-             {
-                targets: '_all', // Apply to all columns
-                render: function (data, type, row) {
-                    return type === 'display' ? data.toUpperCase() : data;
-                }
-            }
-        ],
+        
     });
 
      // button group active tabs
