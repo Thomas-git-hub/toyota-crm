@@ -52,7 +52,7 @@ class PermissionUsertypeSeeder extends Seeder
             'view_vehicle_releases', 'released_units_list', 'process_vehicle_release', 'cancel_vehicle_release',
             'update_ltoremarks', 'get_status', 'update_status',
             'view_vehicle_inventory', 'list_inventory', 'get_total_inventory', 'store_vehicle', 'store_inventory', 'update_profit',
-            'update_incoming_status', 'update_tags_inventory', 'update_inventory', 'edit_inventory', 'update_released_remarks'
+            'update_incoming_status', 'update_tags_inventory', 'update_inventory', 'edit_inventory', 'update_released_remarks', 'add_folder_number'
 
         ];
 

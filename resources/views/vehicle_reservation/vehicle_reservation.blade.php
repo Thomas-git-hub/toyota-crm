@@ -693,6 +693,7 @@
                     type: 'POST',
                     data: {
                         id: appID,
+                        
                         _token: '{{ csrf_token() }}' // Include CSRF token
                     },
                     success: function(response) {

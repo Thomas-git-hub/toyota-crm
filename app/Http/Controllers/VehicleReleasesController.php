@@ -452,6 +452,19 @@ class VehicleReleasesController extends Controller
             return $data->folder_number ?? '';
         })
 
+        ->addColumn('source', function($data) {
+            return $data->inquiry->customer->source ?? '';
+        })
+
+        ->addColumn('address', function($data) {
+            return $data->inquiry->customer->address ?? '';
+        })
+
+        ->addColumn('gender', function($data) {
+            return $data->inquiry->customer->gender ?? '';
+        })
+
+
         ->make(true);
     }
 
@@ -583,6 +596,18 @@ class VehicleReleasesController extends Controller
             return $data->folder_number ?? '';
         })
 
+        ->addColumn('source', function($data) {
+            return $data->inquiry->customer->source ?? '';
+        })
+
+        ->addColumn('address', function($data) {
+            return $data->inquiry->customer->address ?? '';
+        })
+
+        ->addColumn('gender', function($data) {
+            return $data->inquiry->customer->gender ?? '';
+        })
+
         ->make(true);
     }
 
@@ -603,6 +628,7 @@ class VehicleReleasesController extends Controller
 
                 $transaction->status = $posted_status;
                 $transaction->reservation_transaction_status = $posted_status;
+                $transaction->folder_number = $request->folder_number;
                 $transaction->released_date = now();
                 $transaction->updated_at = now();
                 $transaction->save();
@@ -779,24 +805,5 @@ class VehicleReleasesController extends Controller
         return number_format($profit, 2);
     }
 
-    public function addFolderNumber(Request $request){
-        try {
-
-            $transaction = Transactions::findOrFail(decrypt($request->id));
-            $transaction->folder_number = $request->folder_number;
-            $transaction->updated_at = now();
-            $transaction->save();
-
-            return response()->json([
-                'success' => true,
-                'message' => 'Folder Number Added Sucessfully'
-            ]);
-        } catch (\Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Error in adding folder number: ' . $e->getMessage()
-            ], 500);
-        }
-        
-    }
+   
 }
