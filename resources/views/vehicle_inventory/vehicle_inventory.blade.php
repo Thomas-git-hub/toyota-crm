@@ -674,6 +674,7 @@
             search: "",
             searchPlaceholder: "Search..."
         },
+        order: [[8, 'desc']],
 
         columns: [
             { data: 'id', name: 'id', title: 'ID', visible: false },
@@ -684,11 +685,9 @@
             { data: 'cs_number', name: 'cs_number', title: 'CS Number' },
             { data: 'actual_invoice_date', name: 'actual_invoice_date', title: 'Actual Invoice Date' },
             { data: 'invoice_number', name: 'invoice_number', title: 'Invoice No.' },
-            { data: 'updated_at', name: 'updated_at', title: 'Created At' },
+            { data: 'updated_at', name: 'updated_at', title: 'Updated At' },
             { data: 'delivery_date', name: 'delivery_date', title: 'Delivery Date' },
             { data: 'tags', name: 'tags', title: 'TAGs' },
-            // { data: 'team', name: 'team', title: 'Team' },
-            // { data: 'date_assigned', name: 'date_assigned', title: 'Date Assigned' },
             { data: 'age', name: 'age', title: 'Age' },
             { data: 'status', name: 'status', title: 'Status' },
             { data: 'remarks', name: 'remarks', title: 'Remarks' },
@@ -742,6 +741,13 @@
             },
             @endif
         ],
+
+        rowCallback: function(row, data) {
+            // Check if the `tags` column has a value
+            if (data.tags) {
+                $(row).find('td').css('color', 'orange');
+            }
+        }
 
     });
 
