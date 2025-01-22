@@ -23,6 +23,13 @@ Route::post('/logout', [LoginController::class, 'logout'])->name("logout");
 
 //DASHBOARD
 Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard')->middleware('permission:view_dashboard');
+Route::get('/dashboard/release-stats', [DashboardController::class, 'releaseStats'])->name('dashboard.release-stats');
+Route::get('/dashboard/inquiry-analysis', [DashboardController::class, 'inquiryAnalysis'])->name('dashboard.inquiry-analysis');
+Route::get('/dashboard/sales-funnel', [DashboardController::class, 'salesFunnel'])->name('dashboard.sales-funnel');
+Route::get('/dashboard/profitability', [DashboardController::class, 'profitability'])->name('dashboard.profitability');
+Route::get('/dashboard/vehicle-to-sales', [DashboardController::class, 'vehicleToSales'])->name('dashboard.vehicle-to-sales');
+Route::get('/dashboard/ranking', [DashboardController::class, 'ranking'])->name('dashboard.ranking');
+
 
 //LEADS
 Route::get('/leads', [LeadController::class, 'index'])->name('leads')->middleware('permission:view_leads');
