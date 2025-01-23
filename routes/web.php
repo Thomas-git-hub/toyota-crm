@@ -29,6 +29,12 @@ Route::get('/dashboard/sales-funnel', [DashboardController::class, 'salesFunnel'
 Route::get('/dashboard/profitability', [DashboardController::class, 'profitability'])->name('dashboard.profitability');
 Route::get('/dashboard/vehicle-to-sales', [DashboardController::class, 'vehicleToSales'])->name('dashboard.vehicle-to-sales');
 Route::get('/dashboard/ranking', [DashboardController::class, 'ranking'])->name('dashboard.ranking');
+Route::get('/api/bar-chart-monthly-release', [DashboardController::class, 'barChartMonthlyRelease'])->name('api.bar-chart-monthly-release');
+Route::get('/api/pie-per-transaction-type', [DashboardController::class, 'getReleasedCountPerTransType'])->name('api.pie-per-transaction-type');
+Route::get('/api/released-data-by-bank', [DashboardController::class, 'getReleasedDataByBank'])->name('api.released-data-by-bank');
+Route::get('/api/released-data-by-gender', [DashboardController::class, 'getReleasedDataByGender'])->name('api.released-data-by-gender');
+Route::get('/api/released-data-by-source', [DashboardController::class, 'getReleaseDataBySource'])->name('api.released-data-by-source');
+Route::get('/api/released-data', [DashboardController::class, 'getReleasedCount'])->name('api.released-data');
 
 
 //LEADS
