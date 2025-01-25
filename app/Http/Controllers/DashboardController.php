@@ -12,56 +12,15 @@ use Illuminate\Support\Facades\DB;
 
 class DashboardController extends Controller
 {
-    public function index(){
-
+    public function index()
+    {
         if(Auth::check()){
-    
-            return view('dashboard');
+
+            return view('dashboard.dashboard');
         }else{
             return view('index');
         }
 
-    }
-
-    public function releaseStats()
-    {
-        // Fetch data for Release Stats
-        return view('dashboard.release-stats');
-    }
-
-    public function inquiryAnalysis()
-    {
-        // Fetch data for Inquiry Analysis
-        // $data = Inquiry::all();
-        return view('dashboard.inquiry-analysis', compact('data'));
-    }
-
-    public function salesFunnel()
-    {
-        // Fetch data for Sales Funnel
-        // $data = SalesFunnel::all();
-        return view('dashboard.sales-funnel', compact('data'));
-    }
-
-    public function profitability()
-    {
-        // Fetch data for Profitability
-        // $data = Profitability::all();
-        return view('dashboard.profitability', compact('data'));
-    }
-
-    public function vehicleToSales()
-    {
-        // Fetch data for Vehicle to Sales
-        // $data = VehicleToSales::all();
-        return view('dashboard.vehicle-to-sales', compact('data'));
-    }
-
-    public function ranking()
-    {
-        // Fetch data for Ranking
-        // $data = Ranking::all();
-        return view('dashboard.ranking', compact('data'));
     }
 
     public function barChartMonthlyRelease(Request $request)
@@ -116,7 +75,7 @@ class DashboardController extends Controller
                     [$startDate, $endDate] = explode(' to ', $request->date_range);
                     $startDate = Carbon::createFromFormat('m/d/Y', $startDate)->startOfDay();
                     $endDate = Carbon::createFromFormat('m/d/Y', $endDate)->endOfDay();
-        
+
                 }else {
                     $startDate = Carbon::now()->startOfMonth();
                     $endDate = Carbon::now()->endOfMonth();
@@ -125,13 +84,13 @@ class DashboardController extends Controller
 
         $financingCount = $queryFinancing->count();
 
-        $queryCash = Transactions::with(['inquiry', 'inventory', 'application'])   
+        $queryCash = Transactions::with(['inquiry', 'inventory', 'application'])
         ->whereNull('deleted_at')
         ->whereNotNull('reservation_id')
         ->whereIn('reservation_transaction_status', [$released_status->id, $posted_status->id]);
         $queryCash->whereHas('application', function($subQuery) {
                     $subQuery->where('transaction', 'like', 'cash');
-                }); 
+                });
                 if ($request->has('group') && !empty($request->group)) {
                     $queryCash->where('team_id', $request->group);
                 }
@@ -139,7 +98,7 @@ class DashboardController extends Controller
                     [$startDate, $endDate] = explode(' to ', $request->date_range);
                     $startDate = Carbon::createFromFormat('m/d/Y', $startDate)->startOfDay();
                     $endDate = Carbon::createFromFormat('m/d/Y', $endDate)->endOfDay();
-        
+
                 }else {
                     $startDate = Carbon::now()->startOfMonth();
                     $endDate = Carbon::now()->endOfMonth();
@@ -162,7 +121,7 @@ class DashboardController extends Controller
                     [$startDate, $endDate] = explode(' to ', $request->date_range);
                     $startDate = Carbon::createFromFormat('m/d/Y', $startDate)->startOfDay();
                     $endDate = Carbon::createFromFormat('m/d/Y', $endDate)->endOfDay();
-        
+
                 }else {
                     $startDate = Carbon::now()->startOfMonth();
                     $endDate = Carbon::now()->endOfMonth();
@@ -172,14 +131,14 @@ class DashboardController extends Controller
         $poCount = $queryPO->count();
 
         return response()->json(['Financing' => $financingCount, 'Cash' => $cashCount, 'PO' => $poCount]);
-        
+
 
     }
 
     public function getReleasedDataByBank(Request $request) {
         $released_status = Status::where('status', 'like', 'Released')->first();
         $posted_status = Status::where('status', 'like', 'Posted')->first();
-    
+
         $query = Transactions::whereNull('deleted_at')
             ->whereNotNull('reservation_id')
             ->whereIn('reservation_transaction_status', [$released_status->id, $posted_status->id])
@@ -194,20 +153,20 @@ class DashboardController extends Controller
                 $startDate = Carbon::now()->startOfMonth();
                 $endDate = Carbon::now()->endOfMonth();
             }
-    
+
         // Apply date range filter if provided
         if ($request->has('date_range') && !empty($request->date_range)) {
             [$startDate, $endDate] = explode(' to ', $request->date_range);
             $startDate = Carbon::createFromFormat('m/d/Y', $startDate)->startOfDay();
             $endDate = Carbon::createFromFormat('m/d/Y', $endDate)->endOfDay();
-    
+
         }else {
             $startDate = Carbon::now()->startOfMonth();
             $endDate = Carbon::now()->endOfMonth();
         }
         $query->whereBetween('updated_at', [$startDate, $endDate]);
 
-    
+
         // Group by bank_id and count released transactions per bank
         $data = $query->get()
             ->groupBy('application.bank_id') // Group by bank_id
@@ -218,7 +177,7 @@ class DashboardController extends Controller
                 ];
             })
             ->values();
-    
+
         return response()->json($data);
     }
 
@@ -230,7 +189,7 @@ class DashboardController extends Controller
         ->whereNotNull('reservation_id')
         ->whereIn('reservation_transaction_status', [$released_status->id, $posted_status->id]);
         $queryFemale->whereHas('inquiry', function($subQuery) {
-                    $subQuery->whereHas('customer', function($subQuery) {   
+                    $subQuery->whereHas('customer', function($subQuery) {
                         $subQuery->where('gender', 'like',  'Female');
                     });
                 });
@@ -243,14 +202,14 @@ class DashboardController extends Controller
                     [$startDate, $endDate] = explode(' to ', $request->date_range);
                     $startDate = Carbon::createFromFormat('m/d/Y', $startDate)->startOfDay();
                     $endDate = Carbon::createFromFormat('m/d/Y', $endDate)->endOfDay();
-        
+
                 }else {
                     $startDate = Carbon::now()->startOfMonth();
                     $endDate = Carbon::now()->endOfMonth();
                 }
                 $queryFemale->whereBetween('updated_at', [$startDate, $endDate]);
 
-                
+
         $FemaleCount = $queryFemale->count();
 
 
@@ -260,7 +219,7 @@ class DashboardController extends Controller
         ->whereIn('reservation_transaction_status', [$released_status->id, $posted_status->id]);
 
         $queryMale->whereHas('inquiry', function($subQuery) {
-            $subQuery->whereHas('customer', function($subQuery) {   
+            $subQuery->whereHas('customer', function($subQuery) {
                 $subQuery->where('gender', 'like',  'Male');
             });
         });
@@ -279,7 +238,7 @@ class DashboardController extends Controller
         }
 
         $queryMale->whereBetween('updated_at', [$startDate, $endDate]);
-        
+
         $MaleCount = $queryMale->count();
 
         return response()->json(['Female' => $FemaleCount, 'Male' => $MaleCount]);
@@ -297,7 +256,7 @@ class DashboardController extends Controller
         ->whereNotNull('reservation_id')
         ->whereIn('reservation_transaction_status', [$released_status->id, $posted_status->id]);
         $query->whereHas('inquiry', function($subQuery) use ($source) {
-            $subQuery->whereHas('customer', function($subQuery) {   
+            $subQuery->whereHas('customer', function($subQuery) {
                 $subQuery->whereIn('source', ['Social-Media', 'Referral', 'Mall Duty', 'Show Room', 'Saturation']);
             });
         });
@@ -345,7 +304,7 @@ class DashboardController extends Controller
             if ($request->has('group') && !empty($request->group)) {
                 $query->where('team_id', $request->group);
             }
-    
+
             if ($request->has('date_range') && !empty($request->date_range)) {
                 [$startDate, $endDate] = explode(' to ', $request->date_range);
                 $startDate = Carbon::createFromFormat('m/d/Y', $startDate)->startOfDay();
@@ -356,7 +315,7 @@ class DashboardController extends Controller
                 $startDate = Carbon::now()->startOfMonth();
                 $endDate = Carbon::now()->endOfMonth();
             }
-    
+
             $query->whereBetween('updated_at', [$startDate, $endDate]);
 
         $releasedCount = $query->count();

@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\InquiryDashboardController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\LeadController;
@@ -23,18 +24,22 @@ Route::post('/logout', [LoginController::class, 'logout'])->name("logout");
 
 //DASHBOARD
 Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard')->middleware('permission:view_dashboard');
-Route::get('/dashboard/release-stats', [DashboardController::class, 'releaseStats'])->name('dashboard.release-stats');
-Route::get('/dashboard/inquiry-analysis', [DashboardController::class, 'inquiryAnalysis'])->name('dashboard.inquiry-analysis');
-Route::get('/dashboard/sales-funnel', [DashboardController::class, 'salesFunnel'])->name('dashboard.sales-funnel');
-Route::get('/dashboard/profitability', [DashboardController::class, 'profitability'])->name('dashboard.profitability');
-Route::get('/dashboard/vehicle-to-sales', [DashboardController::class, 'vehicleToSales'])->name('dashboard.vehicle-to-sales');
-Route::get('/dashboard/ranking', [DashboardController::class, 'ranking'])->name('dashboard.ranking');
 Route::get('/api/bar-chart-monthly-release', [DashboardController::class, 'barChartMonthlyRelease'])->name('api.bar-chart-monthly-release');
 Route::get('/api/pie-per-transaction-type', [DashboardController::class, 'getReleasedCountPerTransType'])->name('api.pie-per-transaction-type');
 Route::get('/api/released-data-by-bank', [DashboardController::class, 'getReleasedDataByBank'])->name('api.released-data-by-bank');
 Route::get('/api/released-data-by-gender', [DashboardController::class, 'getReleasedDataByGender'])->name('api.released-data-by-gender');
 Route::get('/api/released-data-by-source', [DashboardController::class, 'getReleaseDataBySource'])->name('api.released-data-by-source');
 Route::get('/api/released-data', [DashboardController::class, 'getReleasedCount'])->name('api.released-data');
+
+//INQUIRY DASHBOARD
+Route::get('/inquiry-dashboard', [InquiryDashboardController::class, 'index'])->name('dashboard.inquiry-dashboard');
+
+
+Route::get('/dashboard/sales-funnel', [DashboardController::class, 'salesFunnel'])->name('dashboard.sales-funnel');
+Route::get('/dashboard/profitability', [DashboardController::class, 'profitability'])->name('dashboard.profitability');
+Route::get('/dashboard/vehicle-to-sales', [DashboardController::class, 'vehicleToSales'])->name('dashboard.vehicle-to-sales');
+Route::get('/dashboard/ranking', [DashboardController::class, 'ranking'])->name('dashboard.ranking');
+
 
 
 //LEADS

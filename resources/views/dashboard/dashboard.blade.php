@@ -2,21 +2,6 @@
 
 @section('content')
 
-<style>
-    .a-tag{
-        color: #282830;
-        text-decoration: none;
-    }
-    .a-tag:hover{
-        color: #ff4772;
-        border-bottom: 3px solid #ff4772;
-    }
-
-    .a-tag.active{
-        color: #ff0055;
-        border-bottom: 3px solid #ff0055;
-    }
-</style>
 
 {{-- Title Header --}}
 <div class="card bg-dark shadow-none mb-5">
@@ -44,31 +29,8 @@
     </div>
 </div>
 
-<div class="row mb-4">
-    <div class="col-md">
-        <div class="d-flex justify-content-center border-bottom">
-            <a href="{{ route('dashboard.release-stats') }}" class="text-decoration-none a-tag py-2 px-5">
-                <i class='bx bx-right-top-arrow-circle fs-4 me-2'></i>RELEASE STATS
-            </a>
-            <a href="{{ route('dashboard.inquiry-analysis') }}" class="text-decoration-none a-tag py-2 px-5">
-                <i class='bx bx-layer-plus fs-4 me-2'></i>INQUIRY ANALYSIS
-            </a>
-            <a href="{{ route('dashboard.sales-funnel') }}" class="text-decoration-none a-tag py-2 px-5">
-                <i class='bx bx-transfer-alt fs-4 me-2'></i>SALES FUNNEL MANAGEMENT
-            </a>
-            <a href="{{ route('dashboard.profitability') }}" class="text-decoration-none a-tag py-2 px-5">
-                <i class='bx bx-transfer-alt fs-4 me-2'></i>PROFITABILITY
-            </a>
-            <a href="{{ route('dashboard.vehicle-to-sales') }}" class="text-decoration-none a-tag py-2 px-5">
-                <i class='bx bx-coin fs-4 me-2'></i>VEHICLE TO SALES
-            </a>
-            <a href="{{ route('dashboard.ranking') }}" class="text-decoration-none a-tag py-2 px-5">
-                <i class='bx bx-bar-chart-alt-2 fs-4 me-2'></i>RANKING
-            </a>
-        </div>
-    </div>
-</div>
-
+{{-- Navlink Include --}}
+@include('dashboard.dashboard_navlink');
 
 {{-- Profile Name Card --}}
 <div class="row mb-3">
@@ -86,20 +48,6 @@
         </div>
     </div>
 </div>
-
-{{-- Nav Tabs --}}
-{{-- <div class="row mb-5">
-    <div class="col-md">
-        <div class="d-flex justify-content-center border-bottom">
-            <a href="" class="text-decoration-none a-tag py-2 px-5"><i class='bx bx-right-top-arrow-circle fs-4 me-2'></i>RELEASE STATS</a>
-            <a href="" class="text-decoration-none a-tag py-2 px-5"><i class='bx bx-layer-plus fs-4 me-2'></i>INQUIRY ANALYSIS</a>
-            <a href="" class="text-decoration-none a-tag py-2 px-5"><i class='bx bx-transfer-alt fs-4 me-2'></i>SALES FUNNEL MANAGEMENT</a>
-            <a href="" class="text-decoration-none a-tag py-2 px-5"><i class='bx bx-transfer-alt fs-4 me-2'></i>PROFITABILITY</a>
-            <a href="" class="text-decoration-none a-tag py-2 px-5"><i class='bx bx-coin fs-4 me-2'></i>VEHICLE TO SALES</a>
-            <a href="" class="text-decoration-none a-tag py-2 px-5"><i class='bx bx-bar-chart-alt-2 fs-4 me-2'></i>RANKING</a>
-        </div>
-    </div>
-</div> --}}
 
 {{-- Start Date - End Date Filter Group --}}
 <div class="row mb-3">
@@ -230,14 +178,13 @@
     </div>
 </div>
 
-{{-- @include('dashboard.release_dashboard'); --}}
-
 
 @endsection
 
 @section('components.specific_page_scripts')
 <script>
 
+    // Loader
     function showLoader() {
         Swal.fire({
             title: 'Loading...',
@@ -248,7 +195,6 @@
             }
         });
     }
-
     function hideLoader() {
         Swal.close();
     }
@@ -265,9 +211,8 @@
                 });
                 $('#selectGroup').html(options);
             }
-        });  
+        });
     }
-
     loadTeams();
 
 
@@ -290,7 +235,7 @@
                             text: 'Please select a valid date range.',
                         });
                     } else {
-                       
+
 
                         releasedCount();
                         fetchMonthlyReleasedCount();
@@ -298,10 +243,6 @@
                         fetchBankData();
                         fetchSourceData();
                         fetchGenderData();
-
-                       
-                        
-                        
                     }
 
                     // Update the month and year display
@@ -458,7 +399,7 @@
             type: 'GET',
             data: {
                 date_range: $('#date-range-picker').val(),
-                group: $('#selectGroup').val() 
+                group: $('#selectGroup').val()
             },
             success: function(response) {
                 renderBarChart(response.monthlyData);
@@ -579,7 +520,7 @@
 
     // Pie Chart for Transaction Type
     var transactionTypePieChart = null;
-    
+
     function fetchReleasePerTransType() {
         $.ajax({
             url: '{{ route("api.pie-per-transaction-type") }}',
@@ -658,7 +599,7 @@
     //END Pie Chart for Transaction Type
 
 
-    // Fetch the bank 
+    // Fetch the bank
     var bankPieChart = null;
     function fetchBankData() {
         $.ajax({
@@ -743,8 +684,8 @@
     fetchBankData();
 
     //End Pie Chart for Bank
-   
-    
+
+
     // Pie Graph Source
     var sourcePieChart = null;
 
@@ -754,7 +695,7 @@
             type: 'GET',
             data: {
                 date_range: $('#date-range-picker').val(),
-                group: $('#selectGroup').val() 
+                group: $('#selectGroup').val()
             },
             success: function(response) {
                 const labels = response.map(item => item.source); // Access the nested 'bank_name' field
@@ -824,7 +765,7 @@
 
     };
 
-   
+
     fetchSourceData();
 
     //End Pie Graph Source
@@ -859,7 +800,7 @@
             colors: [
                 '#282830', // Dark Gray (Toyota's professional tone)
                 '#ff0022', // Toyota Red (primary brand color)
-            ], 
+            ],
             chart: {
                 width: 400,
                 type: 'donut',
@@ -903,7 +844,7 @@
         genderPieChart = new ApexCharts(document.querySelector("#genderPieGraph"), options);
         genderPieChart.render();
     }
-    
+
     fetchGenderData();
 
 </script>
