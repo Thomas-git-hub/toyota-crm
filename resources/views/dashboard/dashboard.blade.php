@@ -76,7 +76,7 @@
                 <h5 class="fw-bold mb-0">Total Released Units</h5>
                 <div class="d-flex justify-content-between align-items-center mb-3">
                     <div class="d-flex flex-column align-items-center gap-1">
-                        <h1 class="fw-bold" id="totalRelease">0</h1>
+                        <h1 class="fw-bold" id="totalRelease" style="color: #ff0055;"></h1>
                     </div>
                 </div>
                 <ul class="p-0 m-0">
