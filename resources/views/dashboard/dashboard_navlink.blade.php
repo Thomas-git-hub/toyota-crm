@@ -5,7 +5,7 @@
     }
     .a-tag:hover{
         color: #ff4772;
-        border-bottom: 3px solid #ff4772;
+        border-bottom: 1px solid #ff4772;
     }
 
     .a-tag.active{
@@ -18,24 +18,26 @@
 {{-- Nav Tabs --}}
 <div class="row mb-4">
     <div class="col-md">
-        <div class="d-flex justify-content-center border-bottom">
-            <a href="/dashboard" class="text-decoration-none a-tag py-2 px-5">
-                <i class='bx bx-right-top-arrow-circle fs-4 me-2'></i>RELEASE STATS
+        <div class="d-flex justify-content-center border-bottom gap-5">
+            <a href="/dashboard" class="a-tag text-decoration-none d-flex align-items-center">
+                <i class='bx bx-right-top-arrow-circle fs-4'></i>
+                <label  class="py-2 px-2">RELEASE STATS</label >
             </a>
-            <a href="/inquiry-dashboard" class="text-decoration-none a-tag py-2 px-5">
-                <i class='bx bx-layer-plus fs-4 me-2'></i>INQUIRY ANALYSIS
+            <a href="/sales-funnel-management-dashboard" class="a-tag text-decoration-none d-flex align-items-center">
+                <i class='bx bx-layer-plus fs-4'></i>
+                <label class="py-2 px-2">SALES FUNNEL MANAGEMENT</label>
             </a>
-            <a href="" class="text-decoration-none a-tag py-2 px-5">
-                <i class='bx bx-transfer-alt fs-4 me-2'></i>SALES FUNNEL MANAGEMENT
+            <a href="" class="text-decoration-none a-tag d-flex align-items-center">
+                <i class='bx bx-transfer-alt fs-4'></i>
+                <label class="py-2 px-2">PROFITABILITY</label>
             </a>
-            <a href="" class="text-decoration-none a-tag py-2 px-5">
-                <i class='bx bx-transfer-alt fs-4 me-2'></i>PROFITABILITY
+            <a href="" class="text-decoration-none a-tag d-flex align-items-center">
+                <i class='bx bx-coin fs-4'></i>
+                <label class="py-2 px-2">VEHICLE TO SALES</label>
             </a>
-            <a href="" class="text-decoration-none a-tag py-2 px-5">
-                <i class='bx bx-coin fs-4 me-2'></i>VEHICLE TO SALES
-            </a>
-            <a href="" class="text-decoration-none a-tag py-2 px-5">
-                <i class='bx bx-bar-chart-alt-2 fs-4 me-2'></i>RANKING
+            <a href="" class="text-decoration-none a-tag d-flex align-items-center">
+                <i class='bx bx-bar-chart-alt-2 fs-4'></i>
+                <label class="py-2 px-2">RANKING</label>
             </a>
         </div>
     </div>

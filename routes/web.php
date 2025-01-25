@@ -1,7 +1,7 @@
 <?php
 
 use App\Http\Controllers\DashboardController;
-use App\Http\Controllers\InquiryDashboardController;
+use App\Http\Controllers\SFMDashboardController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\LeadController;
@@ -32,7 +32,7 @@ Route::get('/api/released-data-by-source', [DashboardController::class, 'getRele
 Route::get('/api/released-data', [DashboardController::class, 'getReleasedCount'])->name('api.released-data');
 
 //INQUIRY DASHBOARD
-Route::get('/inquiry-dashboard', [InquiryDashboardController::class, 'index'])->name('dashboard.inquiry-dashboard');
+Route::get('/sales-funnel-management-dashboard', [SFMDashboardController::class, 'index'])->name('dashboard.sales-funnel-management-dashboard');
 
 
 Route::get('/dashboard/sales-funnel', [DashboardController::class, 'salesFunnel'])->name('dashboard.sales-funnel');

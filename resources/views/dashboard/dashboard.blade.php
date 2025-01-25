@@ -30,10 +30,10 @@
 </div>
 
 {{-- Navlink Include --}}
-@include('dashboard.dashboard_navlink');
+@include('dashboard.dashboard_navlink')
 
 {{-- Profile Name Card --}}
-<div class="row mb-3">
+{{-- <div class="row mb-3">
     <div class="col-md">
         <div class="card">
           <div class="row d-flex align-items-start">
@@ -47,10 +47,10 @@
           </div>
         </div>
     </div>
-</div>
+</div> --}}
 
 {{-- Start Date - End Date Filter Group --}}
-<div class="row mb-3">
+<div class="row mb-4">
     <div class="col-md d-flex justify-content-end gap-4">
         <div class="form-group text-end">
             <label for="defaultFormControlInput" class="form-label"><small>Select Start to End Date</small></label>
@@ -61,14 +61,17 @@
             <select id="selectGroup" class="form-control form-select-sm">
             </select>
         </div>
-        {{-- <button type="button" class="btn btn-primary" id="filterButton">Filter</button> --}}
+        {{-- <div class="form-group text-end">
+            <label for="defaultSelect" class="form-label"><small>Reset Filter</small></label><br>
+            <button class="btn btn-sm btn-label-dark">Reset</button>
+        </div> --}}
     </div>
 </div>
 
-<div class="row mb-3">
+<div class="row mb-4">
     {{-- Total Released Units Card --}}
     <div class="col-md-4">
-        <div class="card h-100 shadow-none">
+        <div class="card h-100">
             <div class="card-body">
                 <h5 class="fw-bold mb-0">Total Released Units</h5>
                 <div class="d-flex justify-content-between align-items-center mb-3">
@@ -88,6 +91,7 @@
                             </div>
                         <div class="user-progress">
                             <h5 class="mb-0" style="color: #ff0055;" id="group">All Group</h5>
+                        </div>
                         </div>
                     </li>
                     <li class="d-flex align-items-center border-bottom mb-5">
@@ -123,7 +127,7 @@
 
     {{-- Total Releases Bar Chart --}}
     <div class="col-md-8">
-        <div class="card shadow-none h-100">
+        <div class="card h-100">
             <div class="card-body">
                 <div id="totalReleasesBarChart"></div>
             </div>
@@ -131,7 +135,7 @@
     </div>
 </div>
 
-<div class="row">
+<div class="row mb-4">
     {{-- Transaction Type Pie Graph Container --}}
     <div class="col-md-3">
         <div class="card h-100">
@@ -176,7 +180,7 @@
             </div>
         </div>
     </div>
-</div>
+</div> 
 
 
 @endsection
@@ -493,12 +497,12 @@
                 }
             },
             title: {
-                text: 'Monthly Released Units',
+                text: 'MONTHLY RELEASED UNITS',
                 floating: true,
                 offsetY: 330,
                 align: 'center',
                 style: {
-                    color: '#444'
+                    color: '#ff0055'
                 }
             }
         };
@@ -722,7 +726,7 @@
                 '#b6b4c3',  // Soft Gray (more visible than #f5f5f5)
             ],
             chart: {
-                width: 450,
+                width: 405,
                 type: 'donut',
             },
             dataLabels: {
