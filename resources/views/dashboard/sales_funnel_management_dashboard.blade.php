@@ -44,7 +44,7 @@
                                 <label class="fs-4 fw-bold" style="color: #ff0055">Total Inquiries</label><br>
                                 <small>Total number of inquiries</small>
                             </div>
-                            <h1 class="fw-bold" id="inquiriesCountCard" style="color: #ff0055">20</h1>
+                            <h1 class="fw-bold" id="inquiriesCountCard" style="color: #ff0055">0</h1>
                         </div>
                     </div>
                 </div>
@@ -55,7 +55,7 @@
                                 <label class="fs-4 fw-bold" style="color: #ff0055">Total Units Inquired</label><br>
                                 <small>Total number of units inquired</small>
                             </div>
-                            <h1 class="fw-bold" id="unitInquiredCountCard" style="color: #ff0055">20</h1>
+                            <h1 class="fw-bold" id="unitInquiredCountCard" style="color: #ff0055">0</h1>
                         </div>
                     </div>
                 </div>
@@ -142,6 +142,20 @@
 
 <script>
     document.addEventListener('DOMContentLoaded', function () {
+        // Loader
+        function showLoader() {
+            Swal.fire({
+                title: 'Loading...',
+                text: 'Please wait while we fetch the data.',
+                allowOutsideClick: false,
+                didOpen: () => {
+                    Swal.showLoading();
+                }
+            });
+        }
+        function hideLoader() {
+            Swal.close();
+        }
         // Initialize flatpickr for date range picker
         flatpickr("#date-range-picker", {
             mode: "range",
@@ -161,13 +175,11 @@
                         });
                     } else {
 
+                        fetchInquiriesData();
+                        fetchInquiriesCount();
+                        fetchReservationCount();
+                        fetchVehicleQuantity();
 
-                        releasedCount();
-                        fetchMonthlyReleasedCount();
-                        fetchReleasePerTransType();
-                        fetchBankData();
-                        fetchSourceData();
-                        fetchGenderData();
                     }
 
                     // Update the month and year display
@@ -210,12 +222,13 @@
                 // Add event listener to clear the date and reload the tables
                 clearButton.addEventListener("click", function () {
                     instance.clear(); // Clear the date range
-                    releasedCount();
-                    fetchMonthlyReleasedCount();
-                    fetchReleasePerTransType();
-                    fetchBankData();
-                    fetchSourceData();
-                    fetchGenderData();
+
+                    fetchInquiriesData();
+                    fetchInquiriesCount();
+                    fetchReservationCount();
+                    fetchVehicleQuantity();
+                    
+                    
                 });
 
                 // Add event listener to close the calendar
@@ -224,6 +237,23 @@
                 });
             }
         });
+
+
+        // Load the Groups
+        function loadTeams() {
+            $.ajax({
+                url: '{{ route("teams.list") }}',
+                type: 'GET',
+                success: function(data) {
+                    let options = '<option value="">Select Group</option>';
+                    data.forEach(function(team) {
+                        options += `<option value="${team.id}">${team.name}</option>`;
+                    });
+                    $('#selectGroup').html(options);
+                }
+            });
+        }
+        loadTeams();
 
         const currentDate = new Date();
         const currentMonth = currentDate.toLocaleString('default', { month: 'short' });
@@ -240,21 +270,57 @@
         // Event listener for group selection
         $('#selectGroup').on('change', function () {
             showLoader();
-            releasedCount();
-            fetchMonthlyReleasedCount();
-            fetchReleasePerTransType();
-            fetchBankData();
-            fetchSourceData();
-            fetchGenderData();
+
+            fetchInquiriesData();
+            fetchInquiriesCount();
+            fetchReservationCount();
+            fetchVehicleQuantity();
+
             hideLoader();
+          
         });
     });
 
+
+    function fetchInquiriesData() {
+        $.ajax({
+            url: '{{ route("dashboard.getInquiryCount") }}',
+            type: 'GET',
+            data: {
+                date_range: $('#date-range-picker').val(),
+                group: $('#selectGroup').val()
+            },
+            success: function(response) {
+                $('#inquiriesCountCard').text(response.inquiryCount);
+                $('#unitInquiredCountCard').text(response.quantityPerUnit);
+            }
+        });
+    }
+
+    fetchInquiriesData();
+
     // Total Inquiries Bar Graph
-    var options = {
+    var InquiryCount = null;
+
+    function fetchInquiriesCount() {
+        $.ajax({
+            url: '{{ route("dashboard.fetchInquiryCount") }}',
+            type: 'GET',
+            data: {
+                date_range: $('#date-range-picker').val(),
+                group: $('#selectGroup').val()
+            },
+            success: function(response) {
+                renderInquiryCount(response.monthlyData);
+            }
+        });
+    }
+
+    function renderInquiryCount(monthlyData) {
+        var options = {
           series: [{
             name: "Desktops",
-            data: [10, 41, 35, 51, 49, 62, 69, 91, 148, 172, 143, 120]
+            data: monthlyData,
         }],
           chart: {
           height: 350,
@@ -333,182 +399,255 @@
                     enabled: true,
                 }
             }
-    };
-    var chart = new ApexCharts(document.querySelector("#totalInquiriesBarGraph"), options);
-    chart.render();
+        };
+
+        if (InquiryCount) {
+            InquiryCount.destroy();
+        }
+
+        // Create a new chart instance
+        InquiryCount = new ApexCharts(document.querySelector("#totalInquiriesBarGraph"), options);
+        InquiryCount.render();
+    }
+
+    fetchInquiriesCount();
 
     // Total Reservation Bar Graph
-    var options = {
-          series: [{
-            name: "Desktops",
-            data: [10, 41, 35, 51, 49, 62, 69, 91, 148, 172, 143, 120]
-        }],
-          chart: {
-          height: 350,
-          type: 'bar',
-          zoom: {
-            enabled: false
-          }
-        },
-        plotOptions: {
-                bar: {
-                    borderRadius: 5,
-                    dataLabels: {
-                        position: 'top', // top, center, bottom
-                    },
-                }
+
+    var reservationCount = null;
+
+    function fetchReservationCount() {
+        $.ajax({
+            url: '{{ route("dashboard.fetchReservationCount") }}',
+            type: 'GET',
+            data: {
+                date_range: $('#date-range-picker').val(),
+                group: $('#selectGroup').val()
             },
-        dataLabels: {
-          enabled: true,
-          offsetY: -20,
-                style: {
-                    fontSize: '12px',
-                    colors: ["#ff0055"] // Data label color
-                },
-        },
-        colors: ['#ff0055'], // Set the base bar color
-            states: {
-                hover: {
-                    filter: {
-                        type: 'lighten', // Lighten the color on hover
-                        value: 0.2 // Adjust the amount of lightening
-                    }
-                },
-                active: {   
-                    allowMultipleDataPointsSelection: false,
-                    filter: {
-                        type: 'darken', // Darken the color on selection
-                        value: 0.3 // Adjust the amount of darkening
-                    }
-                }
-            },
-        stroke: {
-          curve: 'straight'
-        },
-        title: {
-                text: 'TOTAL RESERVATION',
-                floating: true,
-                offsetY: 330,
-                position: 'top',
-                align: 'center',
-                style: {
-                    color: '#ff0055'
-                }
-            },
-        xaxis: {
-            categories: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
-            position: 'top',
-                axisBorder: {
-                    show: false
-                },
-                axisTicks: {
-                    show: false
-                },
-                crosshairs: {
-                    fill: {
-                        type: 'gradient',
-                        gradient: {
-                            colorFrom: '#D8E3F0',
-                            colorTo: '#BED1E6',
-                            stops: [0, 100],
-                            opacityFrom: 0.4,
-                            opacityTo: 0.5,
-                        }
-                    }
-                },
-                tooltip: {
-                    enabled: true,
-                }
+            success: function(response) {
+                renderReservationCount(response.monthlyData);
             }
-    };
-    var chart = new ApexCharts(document.querySelector("#totalReservationBarGraph"), options);
-    chart.render();
-    
-    // Total Inquiries in Inquiries Bar Graph
-    var options = {
-          series: [{
-            name: "Desktops",
-            data: [10, 41, 35, 51, 49]
-        }],
-          chart: {
-          height: 350,
-          type: 'bar',
-          zoom: {
-            enabled: false
-          }
-        },
-        plotOptions: {
-                bar: {
-                    borderRadius: 5,
-                    dataLabels: {
-                        position: 'top', // top, center, bottom
+        });
+    }
+
+
+    function renderReservationCount(monthlyData){
+
+        var options = {
+            series: [{
+                name: "Desktops",
+                data: monthlyData,
+            }],
+            chart: {
+            height: 350,
+            type: 'bar',
+            zoom: {
+                enabled: false
+            }
+            },
+            plotOptions: {
+                    bar: {
+                        borderRadius: 5,
+                        dataLabels: {
+                            position: 'top', // top, center, bottom
+                        },
+                    }
+                },
+            dataLabels: {
+            enabled: true,
+            offsetY: -20,
+                    style: {
+                        fontSize: '12px',
+                        colors: ["#ff0055"] // Data label color
                     },
-                }
             },
-        dataLabels: {
-          enabled: true,
-          offsetY: -20,
-                style: {
-                    fontSize: '12px',
-                    colors: ["#ff0055"] // Data label color
-                },
-        },
-        colors: ['#8a8c8e'], // Set the base bar color
-            states: {
-                hover: {
-                    filter: {
-                        type: 'lighten', // Lighten the color on hover
-                        value: 0.2 // Adjust the amount of lightening
-                    }
-                },
-                active: {   
-                    allowMultipleDataPointsSelection: false,
-                    filter: {
-                        type: 'darken', // Darken the color on selection
-                        value: 0.3 // Adjust the amount of darkening
-                    }
-                }
-            },
-        stroke: {
-          curve: 'straight'
-        },
-        title: {
-                text: 'TOTAL UNITS INQUIRED',
-                floating: true,
-                offsetY: 330,
-                align: 'center',
-                style: {
-                    color: '#ff0055'
-                }
-            },
-        xaxis: {
-          categories: ['Wigo', 'Vios', 'Fortuner', 'Corolla', 'Prius'],
-          position: 'top',
-                axisBorder: {
-                    show: false
-                },
-                axisTicks: {
-                    show: false
-                },
-                crosshairs: {
-                    fill: {
-                        type: 'gradient',
-                        gradient: {
-                            colorFrom: '#D8E3F0',
-                            colorTo: '#BED1E6',
-                            stops: [0, 100],
-                            opacityFrom: 0.4,
-                            opacityTo: 0.5,
+            colors: ['#ff0055'], // Set the base bar color
+                states: {
+                    hover: {
+                        filter: {
+                            type: 'lighten', // Lighten the color on hover
+                            value: 0.2 // Adjust the amount of lightening
+                        }
+                    },
+                    active: {   
+                        allowMultipleDataPointsSelection: false,
+                        filter: {
+                            type: 'darken', // Darken the color on selection
+                            value: 0.3 // Adjust the amount of darkening
                         }
                     }
                 },
-                tooltip: {
-                    enabled: true,
+            stroke: {
+            curve: 'straight'
+            },
+            title: {
+                    text: 'TOTAL RESERVATION',
+                    floating: true,
+                    offsetY: 330,
+                    position: 'top',
+                    align: 'center',
+                    style: {
+                        color: '#ff0055'
+                    }
+                },
+            xaxis: {
+                categories: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
+                position: 'top',
+                    axisBorder: {
+                        show: false
+                    },
+                    axisTicks: {
+                        show: false
+                    },
+                    crosshairs: {
+                        fill: {
+                            type: 'gradient',
+                            gradient: {
+                                colorFrom: '#D8E3F0',
+                                colorTo: '#BED1E6',
+                                stops: [0, 100],
+                                opacityFrom: 0.4,
+                                opacityTo: 0.5,
+                            }
+                        }
+                    },
+                    tooltip: {
+                        enabled: true,
+                    }
                 }
+        };
+
+        
+        if (reservationCount) {
+            reservationCount.destroy();
         }
-    };
-    var chart = new ApexCharts(document.querySelector("#unitInquiredLineGraph"), options);
-    chart.render();
+
+        // Create a new chart instance
+        reservationCount = new ApexCharts(document.querySelector("#totalReservationBarGraph"), options);
+        reservationCount.render();
+
+        
+    }
+
+    fetchReservationCount();
+
+
+    // Total Inquiries in Inquiries Bar Graph
+    function fetchVehicleQuantity() {
+        $.ajax({
+            url: '{{ route("dashboard.fetchVehicleQuantity") }}',
+            type: 'GET',
+            data: {
+                date_range: $('#date-range-picker').val(),
+                group: $('#selectGroup').val()
+            },
+            success: function(response) {
+                renderVehicleQuantityChart(response.inquiryCount);
+                // console.log(response);
+            }
+        });
+    }
+        
+    var unitCount = null;
+      
+    function renderVehicleQuantityChart(data) {
+        const units = data.map(item => item.unit);
+        const quantities = data.map(item => item.total_quantity);
+
+        var options = {
+            series: [{
+                name: "Desktops",
+                data: quantities
+            }],
+            chart: {
+            height: 350,
+            type: 'bar',
+            zoom: {
+                enabled: false
+            }
+            },
+            plotOptions: {
+                    bar: {
+                        borderRadius: 5,
+                        dataLabels: {
+                            position: 'top', // top, center, bottom
+                        },
+                    }
+                },
+            dataLabels: {
+            enabled: true,
+            offsetY: -20,
+                    style: {
+                        fontSize: '12px',
+                        colors: ["#ff0055"] // Data label color
+                    },
+            },
+            colors: ['#8a8c8e'], // Set the base bar color
+                states: {
+                    hover: {
+                        filter: {
+                            type: 'lighten', // Lighten the color on hover
+                            value: 0.2 // Adjust the amount of lightening
+                        }
+                    },
+                    active: {   
+                        allowMultipleDataPointsSelection: false,
+                        filter: {
+                            type: 'darken', // Darken the color on selection
+                            value: 0.3 // Adjust the amount of darkening
+                        }
+                    }
+                },
+            stroke: {
+            curve: 'straight'
+            },
+            title: {
+                    text: 'TOTAL UNITS INQUIRED',
+                    floating: true,
+                    offsetY: 330,
+                    align: 'center',
+                    style: {
+                        color: '#ff0055'
+                    }
+                },
+            xaxis: {
+            categories: units,
+            position: 'top',
+                    axisBorder: {
+                        show: false
+                    },
+                    axisTicks: {
+                        show: false
+                    },
+                    crosshairs: {
+                        fill: {
+                            type: 'gradient',
+                            gradient: {
+                                colorFrom: '#D8E3F0',
+                                colorTo: '#BED1E6',
+                                stops: [0, 100],
+                                opacityFrom: 0.4,
+                                opacityTo: 0.5,
+                            }
+                        }
+                    },
+                    tooltip: {
+                        enabled: true,
+                    }
+            }
+        };
+
+        if (unitCount) {
+            unitCount.destroy();
+        }
+
+        // Create a new chart instance
+        unitCount = new ApexCharts(document.querySelector("#unitInquiredLineGraph"), options);
+        unitCount.render();
+    }
+
+    fetchVehicleQuantity();
+
 </script>
 
 @endsection

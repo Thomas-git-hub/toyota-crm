@@ -33,6 +33,10 @@ Route::get('/api/released-data', [DashboardController::class, 'getReleasedCount'
 
 //INQUIRY DASHBOARD
 Route::get('/sales-funnel-management-dashboard', [SFMDashboardController::class, 'index'])->name('dashboard.sales-funnel-management-dashboard');
+Route::get('/fetchInquiryCount', [SFMDashboardController::class, 'fetchInquiryCount'])->name('dashboard.fetchInquiryCount');
+Route::get('/fetchReservationCount', [SFMDashboardController::class, 'fetchReservationCount'])->name('dashboard.fetchReservationCount');
+Route::get('/fetchVehicleQuantity', [SFMDashboardController::class, 'fetchVehicleQuantity'])->name('dashboard.fetchVehicleQuantity');
+Route::get('/getInquiryCount', [SFMDashboardController::class, 'getInquiryCount'])->name('dashboard.getInquiryCount');
 
 
 Route::get('/dashboard/sales-funnel', [DashboardController::class, 'salesFunnel'])->name('dashboard.sales-funnel');
