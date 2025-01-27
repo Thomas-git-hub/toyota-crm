@@ -19,11 +19,11 @@
 <div class="row mb-4">
     <div class="col-md">
         <div class="d-flex justify-content-center border-bottom gap-5">
-            <a href="/dashboard" class="a-tag text-decoration-none d-flex align-items-center">
+            <a href="/dashboard" class="a-tag text-decoration-none d-flex align-items-center {{ request()->is('dashboard') ? 'active' : '' }}">
                 <i class='bx bx-right-top-arrow-circle fs-4'></i>
                 <label  class="py-2 px-2">RELEASE STATS</label >
             </a>
-            <a href="/sales-funnel-management-dashboard" class="a-tag text-decoration-none d-flex align-items-center">
+            <a href="/sales-funnel-management-dashboard" class="a-tag text-decoration-none d-flex align-items-center {{ request()->is('sales-funnel-management-dashboard') ? 'active' : '' }}">
                 <i class='bx bx-layer-plus fs-4'></i>
                 <label class="py-2 px-2">SALES FUNNEL MANAGEMENT</label>
             </a>
