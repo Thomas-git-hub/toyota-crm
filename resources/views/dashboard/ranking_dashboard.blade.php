@@ -37,8 +37,8 @@
 </div>
 
 <div class="row mb-4">
-    <h5>Top MP/Agent Rankings</h5>
     <div class="col-md">
+        <h5>Top MP/Agent Rankings</h5>
         <div class="row mb-2">
             <div class="col-md">
                 <div class="card">
@@ -93,44 +93,9 @@
                 </div>
             </div>
         </div>
-        {{-- <div class="row mb-2">
-            <div class="col-md">
-                <div class="card">
-                    <div class="card-body">
-                        <div class="d-flex justify-content-between align-items-center">
-                            <div class="">
-                                <div class="d-flex align-items-center gap-2">
-                                    <i class='bx bx-trophy fs-2' style="color: #ff0055"></i>
-                                    <label class="fs-4 fw-bold" style="color: #ff0055">Top 4 Agent</label><br>
-                                </div>
-                                <small>Agent with most released units</small>
-                            </div>
-                            <h3 class="fw-bold" id="deliveriesCountCard" style="color: #ff0055">Angelica Mae Bonganay</h3>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="row mb-2">
-            <div class="col-md">
-                <div class="card">
-                    <div class="card-body">
-                        <div class="d-flex justify-content-between align-items-center">
-                            <div class="">
-                                <div class="d-flex align-items-center gap-2">
-                                    <i class='bx bx-trophy fs-2' style="color: #ff0055"></i>
-                                    <label class="fs-4 fw-bold" style="color: #ff0055">Top 5 Agent</label><br>
-                                </div>
-                                <small>Agent with most released units</small>
-                            </div>
-                            <h3 class="fw-bold" id="deliveriesCountCard" style="color: #ff0055">Angelica Mae Bonganay</h3>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div> --}}
     </div>
     <div class="col-md">
+        <h5>Complete Ranking of MP/Agents</h5>
         <div class="card">
             <div class="card-body">
                 <div class="table-responsive">
@@ -231,7 +196,7 @@
 
         function fetchTopAgents() {
             let url = '{{ route("dashboard.ranking-dashboard.topAgent") }}';
-            
+
             $.ajax({
                 url: url,
                 method: 'GET',
@@ -271,23 +236,22 @@
             pageLength: 10,
             paging: true,
             responsive: true,
-            dom: '<"top"lf>rt<"bottom"ip>',
             language: {
                 search: "",
                 searchPlaceholder: "Search..."
             },
-
+            order: [[1, 'desc']], // Sort by the "total" column in descending order
             columns: [
-                { data: 'rank', title: 'Rank' },
+                // { data: 'rank', title: 'Rank' },
                 { data: 'agent', title: 'MP/Agent' },
                 { data: 'total', title: 'Number of Released Units' },
-                
+
             ],
             columnDefs: [
-                
+
             ],
         });
-    
+
 
         // Total Inquiries in Inquiries Bar Graph
         function fetchAgentData() {
@@ -417,8 +381,8 @@
         fetchAgentData();
 
 
-       
 
-        
+
+
 </script>
 @endsection
