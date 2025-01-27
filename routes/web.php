@@ -45,6 +45,9 @@ Route::get('/vehicle-to-sales-dashboard', [VehicleToSalesController::class, 'ind
 
 //RANKING DASHBOARD
 Route::get('/ranking-dashboard', [RankingDashboardController::class, 'index'])->name('dashboard.ranking-dashboard');
+Route::get('/ranking-dashboard/topAgent', [RankingDashboardController::class, 'topAgent'])->name('dashboard.ranking-dashboard.topAgent');
+Route::get('/ranking-dashboard/topAgentList', [RankingDashboardController::class, 'topAgentList'])->name('dashboard.ranking-dashboard.topAgentList');
+Route::get('/ranking-dashboard/topAgentBarChart', [RankingDashboardController::class, 'topAgentBarChart'])->name('dashboard.ranking-dashboard.topAgentBarChart');
 
 Route::get('/dashboard/sales-funnel', [DashboardController::class, 'salesFunnel'])->name('dashboard.sales-funnel');
 Route::get('/dashboard/profitability', [DashboardController::class, 'profitability'])->name('dashboard.profitability');
