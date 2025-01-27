@@ -2,6 +2,8 @@
 
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\SFMDashboardController;
+use App\Http\Controllers\VehicleToSalesController;
+use App\Http\Controllers\RankingDashboardController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\LeadController;
@@ -31,13 +33,18 @@ Route::get('/api/released-data-by-gender', [DashboardController::class, 'getRele
 Route::get('/api/released-data-by-source', [DashboardController::class, 'getReleaseDataBySource'])->name('api.released-data-by-source');
 Route::get('/api/released-data', [DashboardController::class, 'getReleasedCount'])->name('api.released-data');
 
-//INQUIRY DASHBOARD
+//SALES FUNNNEL MANAGEMENT DASHBOARD
 Route::get('/sales-funnel-management-dashboard', [SFMDashboardController::class, 'index'])->name('dashboard.sales-funnel-management-dashboard');
 Route::get('/fetchInquiryCount', [SFMDashboardController::class, 'fetchInquiryCount'])->name('dashboard.fetchInquiryCount');
 Route::get('/fetchReservationCount', [SFMDashboardController::class, 'fetchReservationCount'])->name('dashboard.fetchReservationCount');
 Route::get('/fetchVehicleQuantity', [SFMDashboardController::class, 'fetchVehicleQuantity'])->name('dashboard.fetchVehicleQuantity');
 Route::get('/getInquiryCount', [SFMDashboardController::class, 'getInquiryCount'])->name('dashboard.getInquiryCount');
 
+//VEHICLE TO SALES DASHBOARD
+Route::get('/vehicle-to-sales-dashboard', [VehicleToSalesController::class, 'index'])->name('dashboard.vehicle-to-sales-dashboard');
+
+//RANKING DASHBOARD
+Route::get('/ranking-dashboard', [RankingDashboardController::class, 'index'])->name('dashboard.ranking-dashboard');
 
 Route::get('/dashboard/sales-funnel', [DashboardController::class, 'salesFunnel'])->name('dashboard.sales-funnel');
 Route::get('/dashboard/profitability', [DashboardController::class, 'profitability'])->name('dashboard.profitability');

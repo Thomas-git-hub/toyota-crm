@@ -31,12 +31,12 @@
                 <i class='bx bx-transfer-alt fs-4'></i>
                 <label class="py-2 px-2">PROFITABILITY</label>
             </a>
-            <a href="" class="text-decoration-none a-tag d-flex align-items-center">
+            <a href="/vehicle-to-sales-dashboard" class="text-decoration-none a-tag d-flex align-items-center {{ request()->is('vehicle-to-sales-dashboard') ? 'active' : '' }}">
                 <i class='bx bx-coin fs-4'></i>
                 <label class="py-2 px-2">VEHICLE TO SALES</label>
             </a>
-            <a href="" class="text-decoration-none a-tag d-flex align-items-center">
-                <i class='bx bx-bar-chart-alt-2 fs-4'></i>
+            <a href="/ranking-dashboard" class="text-decoration-none a-tag d-flex align-items-center {{ request()->is('ranking-dashboard') ? 'active' : '' }}">
+                <i class='bx bx-coin fs-4'></i>
                 <label class="py-2 px-2">RANKING</label>
             </a>
         </div>

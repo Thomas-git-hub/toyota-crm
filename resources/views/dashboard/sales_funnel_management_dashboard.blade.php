@@ -156,6 +156,7 @@
         function hideLoader() {
             Swal.close();
         }
+
         // Initialize flatpickr for date range picker
         flatpickr("#date-range-picker", {
             mode: "range",
