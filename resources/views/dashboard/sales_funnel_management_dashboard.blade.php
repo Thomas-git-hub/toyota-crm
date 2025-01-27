@@ -106,7 +106,7 @@
 
 <div class="row mb-4">
     {{-- Total Inquiries Bar Graph --}}
-    <div class="col-md">
+    <div class="col-md-6">
         <div class="card">
             <div class="card-body">
                 <div id="totalInquiriesBarGraph"></div>
@@ -114,7 +114,7 @@
         </div>
     </div>
     {{-- Total Rservation Bar Graph --}}
-    <div class="col-md">
+    <div class="col-md-6">
         <div class="card">
             <div class="card-body">
                 <div id="totalReservationBarGraph"></div>
@@ -227,8 +227,8 @@
                     fetchInquiriesCount();
                     fetchReservationCount();
                     fetchVehicleQuantity();
-                    
-                    
+
+
                 });
 
                 // Add event listener to close the calendar
@@ -277,7 +277,7 @@
             fetchVehicleQuantity();
 
             hideLoader();
-          
+
         });
     });
 
@@ -353,7 +353,7 @@
                         value: 0.2 // Adjust the amount of lightening
                     }
                 },
-                active: {   
+                active: {
                     allowMultipleDataPointsSelection: false,
                     filter: {
                         type: 'darken', // Darken the color on selection
@@ -469,7 +469,7 @@
                             value: 0.2 // Adjust the amount of lightening
                         }
                     },
-                    active: {   
+                    active: {
                         allowMultipleDataPointsSelection: false,
                         filter: {
                             type: 'darken', // Darken the color on selection
@@ -517,7 +517,7 @@
                 }
         };
 
-        
+
         if (reservationCount) {
             reservationCount.destroy();
         }
@@ -526,7 +526,7 @@
         reservationCount = new ApexCharts(document.querySelector("#totalReservationBarGraph"), options);
         reservationCount.render();
 
-        
+
     }
 
     fetchReservationCount();
@@ -547,9 +547,9 @@
             }
         });
     }
-        
+
     var unitCount = null;
-      
+
     function renderVehicleQuantityChart(data) {
         const units = data.map(item => item.unit);
         const quantities = data.map(item => item.total_quantity);
@@ -590,7 +590,7 @@
                             value: 0.2 // Adjust the amount of lightening
                         }
                     },
-                    active: {   
+                    active: {
                         allowMultipleDataPointsSelection: false,
                         filter: {
                             type: 'darken', // Darken the color on selection
