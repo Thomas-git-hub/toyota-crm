@@ -7,7 +7,7 @@
         <div class="row mb-3">
             <div class="col-md d-flex align-items-center">
                 <i class='bx bxs-dashboard text-white' style="font-size: 24px;">&nbsp;</i>
-                <h4 class="text-white mb-0">Sales Funnel Management</h4>
+                <h4 class="text-white mb-0">MP/Agent Ranking</h4>
             </div>
         </div>
     </div>
@@ -38,9 +38,24 @@
 
 <div class="row mb-4">
     <div class="col-md">
+        <div class="card">
+            <div class="card-body">
+                <h5 style="color: #ff0055;">Top Performing MP/Agents by Units Released</h5>
+                <div id="rankingBarChart"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mb-4">
+    <div class="col-md">
         <h5>Top MP/Agent Rankings</h5>
-        <div id="topAgentsContainer">
-            <!-- Top Agents will be displayed here -->
+        <div class="card" style="max-height: 640px; overflow-y: auto;">
+            <div class="card-body">
+                <div id="topAgentsContainer">
+                    <!-- Top Agents will be displayed here -->
+                </div>
+            </div>
         </div>
     </div>
     <div class="col-md">
@@ -56,15 +71,6 @@
     </div>
 </div>
 
-<div class="row">
-    <div class="col-md">
-        <div class="card">
-            <div class="card-body">
-                <div id="rankingBarChart"></div>
-            </div>
-        </div>
-    </div>
-</div>
 @endsection
 
 
@@ -192,9 +198,9 @@
             rankList.forEach(agent => {
                 topAgentsContainer.append(`
 
-                <div class="row mb-2">
-                    <div class="col-md">
-                        <div class="card">
+                <div class="row mb-2 gy-3">
+                    <div class="col-md-12">
+                        <div class="card shadow-none border">
                             <div class="card-body">
                                 <div class="d-flex justify-content-between align-items-center">
                                     <div class="">
@@ -209,24 +215,24 @@
                             </div>
                         </div>
                     </div>
-                </div>
-                   
+
                 `);
             });
         } else {
             topAgentsContainer.append(`
-                <div class="col-md">
-                    <div class="card">
-                        <div class="card-body">
-                            <div class="d-flex justify-content-between align-items-center">
-                                <div class="">
-                                    <div class="d-flex align-items-center gap-2">
-                                        <i class='bx bx-trophy fs-2' style="color: #ff0055"></i>
-                                        <label class="fs-4 fw-bold" style="color: #ff0055">Top Agent</label><br>
+                    <div class="col-md-12">
+                        <div class="card shadow-none border">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div class="">
+                                        <div class="d-flex align-items-center gap-2">
+                                            <i class='bx bx-trophy fs-2' style="color: #ff0055"></i>
+                                            <label class="fs-4 fw-bold" style="color: #ff0055">Top Agent</label><br>
+                                        </div>
+                                        <small>Agent with most released units</small>
                                     </div>
-                                    <small>Agent with most released units</small>
+                                    <h3 class="fw-bold" id="top1Agent" style="color: #ff0055">No Data Found</h3>
                                 </div>
-                                <h3 class="fw-bold" id="top1Agent" style="color: #ff0055">No Data Found</h3>
                             </div>
                         </div>
                     </div>
@@ -373,7 +379,7 @@
                         }
                     },
                     title: {
-                        text: 'TOP PERFORMING MP/AGENTS BY UNITS RELEASED',
+                        text: '',
                         floating: true,
                         offsetY: 330,
                         align: 'center',
