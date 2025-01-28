@@ -39,59 +39,8 @@
 <div class="row mb-4">
     <div class="col-md">
         <h5>Top MP/Agent Rankings</h5>
-        <div class="row mb-2">
-            <div class="col-md">
-                <div class="card">
-                    <div class="card-body">
-                        <div class="d-flex justify-content-between align-items-center">
-                            <div class="">
-                                <div class="d-flex align-items-center gap-2">
-                                    <i class='bx bx-trophy fs-2' style="color: #ff0055"></i>
-                                    <label class="fs-4 fw-bold" style="color: #ff0055">Top 1 Agent</label><br>
-                                </div>
-                                <small>Agent with most released units</small>
-                            </div>
-                            <h3 class="fw-bold" id="top1Agent" style="color: #ff0055">Loading...</h3>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="row mb-2">
-            <div class="col-md">
-                <div class="card">
-                    <div class="card-body">
-                        <div class="d-flex justify-content-between align-items-center">
-                            <div class="">
-                                <div class="d-flex align-items-center gap-2">
-                                    <i class='bx bx-trophy fs-2' style="color: #ff0055"></i>
-                                    <label class="fs-4 fw-bold" style="color: #ff0055">Top 2 Agent</label><br>
-                                </div>
-                                <small>Agent with most released units</small>
-                            </div>
-                            <h3 class="fw-bold" id="top2Agent" style="color: #ff0055">Loading...</h3>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="row mb-2">
-            <div class="col-md">
-                <div class="card">
-                    <div class="card-body">
-                        <div class="d-flex justify-content-between align-items-center">
-                            <div class="">
-                                <div class="d-flex align-items-center gap-2">
-                                    <i class='bx bx-trophy fs-2' style="color: #ff0055"></i>
-                                    <label class="fs-4 fw-bold" style="color: #ff0055">Top 3 Agent</label><br>
-                                </div>
-                                <small>Agent with most released units</small>
-                            </div>
-                            <h3 class="fw-bold" id="top3Agent" style="color: #ff0055">Loading...</h3>
-                        </div>
-                    </div>
-                </div>
-            </div>
+        <div id="topAgentsContainer">
+            <!-- Top Agents will be displayed here -->
         </div>
     </div>
     <div class="col-md">
@@ -195,33 +144,98 @@
 
 
         function fetchTopAgents() {
-            let url = '{{ route("dashboard.ranking-dashboard.topAgent") }}';
+        let url = '{{ route("dashboard.ranking-dashboard.topAgent") }}';
 
-            $.ajax({
-                url: url,
-                method: 'GET',
-                data: {
-                    date_range: $('#date-range-picker').val()
-                },
-                success: function (response) {
-                    if (response.agents) {
-                        $('#top1Agent').text(response.agents[0] ? `${response.agents[0].agent.first_name} ${response.agents[0].agent.last_name}` : 'N/A');
-                        $('#top2Agent').text(response.agents[1] ? `${response.agents[1].agent.first_name} ${response.agents[1].agent.last_name}` : 'N/A');
-                        $('#top3Agent').text(response.agents[2] ? `${response.agents[2].agent.first_name} ${response.agents[2].agent.last_name}` : 'N/A');
-                    } else {
-                        $('#top1Agent').text('N/A');
-                        $('#top2Agent').text('N/A');
-                        $('#top3Agent').text('N/A');
-                    }
-                },
-                error: function () {
-                    $('#top1Agent').text('N/A');
-                    $('#top2Agent').text('N/A');
-                    $('#top3Agent').text('N/A');
+        $.ajax({
+            url: url,
+            method: 'GET',
+            data: {
+                date_range: $('#date-range-picker').val()
+            },
+            success: function (response) {
+                if (response.agents) {
+                    const topAgents = response.agents;
+                    let rank = 1;
+                    let previousTotal = null;
+                    let rankList = [];
+
+                    topAgents.forEach((agent, index) => {
+                        if (previousTotal !== null && agent.total !== previousTotal) {
+                            rank++;
+                        }
+                        if (rank <= 3) {
+                            rankList.push({
+                                rank: rank,
+                                agent: `${agent.agent.first_name} ${agent.agent.last_name}`,
+                                total: agent.total
+                            });
+                        }
+                        previousTotal = agent.total;
+                    });
+
+                    displayTopAgents(rankList);
+                } else {
+                    displayTopAgents([]);
                 }
+            },
+            error: function () {
+                displayTopAgents([]);
+            }
+        });
+    }
+
+    function displayTopAgents(rankList) {
+        const topAgentsContainer = $('#topAgentsContainer');
+        topAgentsContainer.empty();
+
+        if (rankList.length > 0) {
+            rankList.forEach(agent => {
+                topAgentsContainer.append(`
+
+                <div class="row mb-2">
+                    <div class="col-md">
+                        <div class="card">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div class="">
+                                        <div class="d-flex align-items-center gap-2">
+                                            <i class='bx bx-trophy fs-2' style="color: #ff0055"></i>
+                                            <label class="fs-4 fw-bold" style="color: #ff0055">Top ${agent.rank} Agent</label><br>
+                                        </div>
+                                        <small>Agent with most released units</small>
+                                    </div>
+                                    <h3 class="fw-bold" id="top1Agent" style="color: #ff0055">${agent.agent}</h3>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                   
+                `);
             });
+        } else {
+            topAgentsContainer.append(`
+                <div class="col-md">
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div class="">
+                                    <div class="d-flex align-items-center gap-2">
+                                        <i class='bx bx-trophy fs-2' style="color: #ff0055"></i>
+                                        <label class="fs-4 fw-bold" style="color: #ff0055">Top Agent</label><br>
+                                    </div>
+                                    <small>Agent with most released units</small>
+                                </div>
+                                <h3 class="fw-bold" id="top1Agent" style="color: #ff0055">No Data Found</h3>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `);
         }
-        fetchTopAgents();
+    }
+
+    fetchTopAgents();
 
         // Datatable Initilization
         const rankingTable = $('#rankingTable').DataTable({
