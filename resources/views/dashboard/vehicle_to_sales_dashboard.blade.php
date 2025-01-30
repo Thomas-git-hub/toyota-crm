@@ -104,84 +104,111 @@
 <script>
  // Initialize flatpickr for date range picker
  flatpickr("#date-range-picker", {
-            mode: "range",
-            dateFormat: "m/d/Y",
-            onChange: function (selectedDates, dateStr, instance) {
-                if (selectedDates.length === 2) {
-                    const startDate = selectedDates[0];
-                    const endDate = selectedDates[1];
+    mode: "range",
+    dateFormat: "m/d/Y",
+    onChange: function (selectedDates, dateStr, instance) {
+        if (selectedDates.length === 2) {
+            const startDate = selectedDates[0];
+            const endDate = selectedDates[1];
 
-                    showLoader();
+            if (selectedDates[1] <= selectedDates[0]) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Warning!',
+                    text: 'Please select a valid date range.',
+                });
+            } else {
 
-                    if (selectedDates[1] <= selectedDates[0]) {
-                        Swal.fire({
-                            icon: 'warning',
-                            title: 'Warning!',
-                            text: 'Please select a valid date range.',
-                        });
-                    } else {
+                getReleasedToday();
 
-                        fetchInquiriesData();
-                        fetchInquiriesCount();
-                        fetchReservationCount();
-                        fetchVehicleQuantity();
+            }
 
-                    }
+            // Update the month and year display
+            const startMonth = startDate.toLocaleString('default', { month: 'short' });
+            const endMonth = endDate.toLocaleString('default', { month: 'short' });
+            const startYear = startDate.getFullYear();
+            const endYear = endDate.getFullYear();
 
-                    // Update the month and year display
-                    const startMonth = startDate.toLocaleString('default', { month: 'short' });
-                    const endMonth = endDate.toLocaleString('default', { month: 'short' });
-                    const startYear = startDate.getFullYear();
-                    const endYear = endDate.getFullYear();
+            if (startMonth === endMonth && startYear === endYear) {
+                document.getElementById('monthRange').textContent = startMonth;
+            } else {
+                const monthRange = `${startMonth} - ${endMonth}`;
+                document.getElementById('monthRange').textContent = monthRange;
+            }
 
-                    if (startMonth === endMonth && startYear === endYear) {
-                        document.getElementById('monthRange').textContent = startMonth;
-                    } else {
-                        const monthRange = `${startMonth} - ${endMonth}`;
-                        document.getElementById('monthRange').textContent = monthRange;
-                    }
+            if (startYear === endYear) {
+                document.getElementById('year').textContent = startYear;
+            } else {
+                document.getElementById('year').textContent = `${startYear} - ${endYear}`;
+            }
+        }
+    },
+    onReady: function (selectedDates, dateStr, instance) {
+        // Create a "Clear" button
+        const clearButton = document.createElement("button");
+        clearButton.innerHTML = "Clear";
+        clearButton.classList.add("clear-btn");
 
-                    if (startYear === endYear) {
-                        document.getElementById('year').textContent = startYear;
-                    } else {
-                        document.getElementById('year').textContent = `${startYear} - ${endYear}`;
-                    }
+        // Create a "Close" button
+        const closeButton = document.createElement("button");
+        closeButton.innerHTML = "Close";
+        closeButton.classList.add("close-btn");
 
-                    hideLoader();
+        // Append the buttons to the flatpickr calendar
+        instance.calendarContainer.appendChild(clearButton);
+        instance.calendarContainer.appendChild(closeButton);
+
+        // Add event listener to clear the date and reload the tables
+        clearButton.addEventListener("click", function () {
+            instance.clear(); // Clear the date range
+
+            getReleasedToday();
+
+
+        });
+
+        // Add event listener to close the calendar
+        closeButton.addEventListener("click", function () {
+            instance.close(); // Close the flatpickr calendar
+        });
+    }
+});
+
+    function getReleasedToday() {
+        $.ajax({
+            url: '{{ route("dashboard.vehicle-to-sales-dashboard.getReleasedToday") }}', // Adjust the route as necessary
+            type: 'GET',
+           
+            success: function(response) {
+                if (response.releasedCount !== undefined) {
+                    $('#releasesCountCard').text(response.releasedCount); // Update the count in the HTML
                 }
             },
-            onReady: function (selectedDates, dateStr, instance) {
-                // Create a "Clear" button
-                const clearButton = document.createElement("button");
-                clearButton.innerHTML = "Clear";
-                clearButton.classList.add("clear-btn");
-
-                // Create a "Close" button
-                const closeButton = document.createElement("button");
-                closeButton.innerHTML = "Close";
-                closeButton.classList.add("close-btn");
-
-                // Append the buttons to the flatpickr calendar
-                instance.calendarContainer.appendChild(clearButton);
-                instance.calendarContainer.appendChild(closeButton);
-
-                // Add event listener to clear the date and reload the tables
-                clearButton.addEventListener("click", function () {
-                    instance.clear(); // Clear the date range
-
-                    fetchInquiriesData();
-                    fetchInquiriesCount();
-                    fetchReservationCount();
-                    fetchVehicleQuantity();
-
-
-                });
-
-                // Add event listener to close the calendar
-                closeButton.addEventListener("click", function () {
-                    instance.close(); // Close the flatpickr calendar
-                });
+            error: function(xhr) {
+                console.error('Error fetching transaction count:', xhr);
             }
         });
+    }
+    getReleasedToday();
+
+    function totalDeliveriesToday() {
+        $.ajax({
+            url: '{{ route("dashboard.vehicle-to-sales-dashboard.totalDeliveriesToday") }}', // Adjust the route as necessary
+            type: 'GET',
+           
+            success: function(response) {
+                if (response.deliveryCount !== undefined) {
+                    $('#deliveriesCountCard').text(response.deliveryCount); // Update the count in the HTML
+                }
+            },
+            error: function(xhr) {
+                console.error('Error fetching transaction total:', xhr);
+            }
+        });
+    }
+    totalDeliveriesToday();
+
+
+
 </script>
 @endsection
