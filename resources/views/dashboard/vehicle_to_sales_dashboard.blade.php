@@ -178,7 +178,7 @@
         $.ajax({
             url: '{{ route("dashboard.vehicle-to-sales-dashboard.getReleasedToday") }}', // Adjust the route as necessary
             type: 'GET',
-           
+
             success: function(response) {
                 if (response.releasedCount !== undefined) {
                     $('#releasesCountCard').text(response.releasedCount); // Update the count in the HTML
@@ -195,7 +195,7 @@
         $.ajax({
             url: '{{ route("dashboard.vehicle-to-sales-dashboard.totalDeliveriesToday") }}', // Adjust the route as necessary
             type: 'GET',
-           
+
             success: function(response) {
                 if (response.deliveryCount !== undefined) {
                     $('#deliveriesCountCard').text(response.deliveryCount); // Update the count in the HTML
