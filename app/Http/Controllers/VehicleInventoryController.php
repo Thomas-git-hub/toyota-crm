@@ -296,7 +296,7 @@ class VehicleInventoryController extends Controller
             'car_variant' => 'required|string|max:255',
             'car_color' => 'required|string|max:255',
             'year_model' => 'required|string|max:255',
-            'cs_number' => 'required|string|max:255',
+            'cs_number' => 'required|string|max:255|unique:inventory,CS_number',
             'actual_invoice_date' => 'required|date',
             'delivery_date' => 'nullable|date',
             'invoice_number' => 'required|string|max:255',
