@@ -15,10 +15,20 @@ class VehicleToSalesController extends Controller
         return view('dashboard.vehicle_to_sales_dashboard');
     }
 
-    public function totalDeliveriesToday(){
+    public function totalDeliveriesToday(Request $request){
 
-        $query = Inventory::whereNull('deleted_at')
-            ->whereDate('delivery_date', Carbon::today());
+        $query = Inventory::whereNull('deleted_at');
+
+            if ($request->has('date_range') && !empty($request->date_range)) {
+                [$startDate, $endDate] = explode(' to ', $request->date_range);
+                $startDate = Carbon::createFromFormat('Y-m-d', $startDate)->startOfDay();
+                $endDate = Carbon::createFromFormat('Y-m-d', $endDate)->endOfDay();
+
+            }else {
+                $startDate = Carbon::today();
+                $endDate = Carbon::today();
+            }
+            $query->whereBetween('delivery_date', [$startDate, $endDate]);
 
         $deliveryCount = $query->count();
 
@@ -33,8 +43,18 @@ class VehicleToSalesController extends Controller
             $query = Transactions::with(['inquiry', 'inventory', 'application'])
             ->whereNull('deleted_at')
             ->whereNotNull('reservation_id')
-            ->whereIn('reservation_transaction_status', [$released_status->id, $posted_status->id])
-            ->whereDate('updated_at', Carbon::today());
+            ->whereIn('reservation_transaction_status', [$released_status->id, $posted_status->id]);
+
+            if ($request->has('date_range') && !empty($request->date_range)) {
+                [$startDate, $endDate] = explode(' to ', $request->date_range);
+                $startDate = Carbon::createFromFormat('Y-m-d', $startDate)->startOfDay();
+                $endDate = Carbon::createFromFormat('Y-m-d', $endDate)->endOfDay();
+
+            }else {
+                $startDate = Carbon::today();
+                $endDate = Carbon::today();
+            }
+            $query->whereBetween('updated_at', [$startDate, $endDate]);
 
 
 

@@ -17,55 +17,14 @@
 @include('dashboard.dashboard_navlink')
 
 {{-- Start Date - End Date Filter Group --}}
-{{-- <div class="row mb-4">
+<div class="row mb-4">
     <div class="col-md d-flex justify-content-end gap-4">
         <div class="form-group text-end">
             <label for="defaultFormControlInput" class="form-label"><small>Select Start to End Date</small></label>
             <input type="text" id="date-range-picker" class="form-control form-control-sm" placeholder="Filter Date">
         </div>
     </div>
-</div> --}}
-
-{{-- Filtered Date Card --}}
-{{-- <div class="row mb-4">
-    <div class="col-md">
-        <div class="card h-100">
-            <div class="card-body">
-                <div class="mb-4">
-                    <div class="fw-bold text-secondary">Date</div>
-                </div>
-                <ul class="p-0 m-0">
-                    <li class="d-flex align-items-center border-bottom mb-5">
-                        <div class="avatar flex-shrink-0 me-3">
-                            <span class="avatar-initial rounded bg-dark"><i class="icon-base bx bx-calendar"></i></span>
-                        </div>
-                        <div class="d-flex w-100 flex-wrap align-items-center justify-content-between gap-2">
-                        <div class="me-2">
-                            <h6 class="mb-0">MONTH</h6>
-                            <small>Selected Month</small>
-                        </div>
-                        <div class="user-progress">
-                            <h5 class="mb-0" style="color: #ff0055;" id="monthRange">Present</h5>
-                        </div>
-                    </li>
-                    <li class="d-flex align-items-center border-bottom mb-5">
-                        <div class="avatar flex-shrink-0 me-3">
-                            <span class="avatar-initial rounded bg-dark"><i class="icon-base bx bx-calendar-star"></i></span>
-                        </div>
-                        <div class="d-flex w-100 flex-wrap align-items-center justify-content-between gap-2">
-                        <div class="me-2">
-                            <h6 class="mb-0">YEAR</h6>
-                            <small>Selected Year</small>
-                        </div>
-                        <div class="user-progress">
-                            <h5 class="mb-0" style="color: #ff0055;" id="year">2025</h5>
-                        </div>
-                    </li>
-                </ul>
-            </div>
-        </div>
-    </div>
-</div> --}}
+</div>
 
 {{-- Card Deliveries Releases --}}
 <div class="row mb-4">
@@ -105,7 +64,7 @@
  // Initialize flatpickr for date range picker
  flatpickr("#date-range-picker", {
     mode: "range",
-    dateFormat: "m/d/Y",
+    dateFormat: "Y-m-d",
     onChange: function (selectedDates, dateStr, instance) {
         if (selectedDates.length === 2) {
             const startDate = selectedDates[0];
@@ -118,9 +77,8 @@
                     text: 'Please select a valid date range.',
                 });
             } else {
-
                 getReleasedToday();
-
+                totalDeliveriesToday();
             }
 
             // Update the month and year display
@@ -161,10 +119,8 @@
         // Add event listener to clear the date and reload the tables
         clearButton.addEventListener("click", function () {
             instance.clear(); // Clear the date range
-
             getReleasedToday();
-
-
+            totalDeliveriesToday();
         });
 
         // Add event listener to close the calendar
@@ -178,7 +134,9 @@
         $.ajax({
             url: '{{ route("dashboard.vehicle-to-sales-dashboard.getReleasedToday") }}', // Adjust the route as necessary
             type: 'GET',
-
+            data: {
+                date_range: $('#date-range-picker').val(),
+            },
             success: function(response) {
                 if (response.releasedCount !== undefined) {
                     $('#releasesCountCard').text(response.releasedCount); // Update the count in the HTML
@@ -195,7 +153,9 @@
         $.ajax({
             url: '{{ route("dashboard.vehicle-to-sales-dashboard.totalDeliveriesToday") }}', // Adjust the route as necessary
             type: 'GET',
-
+            data: {
+                date_range: $('#date-range-picker').val(),
+            },
             success: function(response) {
                 if (response.deliveryCount !== undefined) {
                     $('#deliveriesCountCard').text(response.deliveryCount); // Update the count in the HTML
