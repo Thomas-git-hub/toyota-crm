@@ -482,13 +482,41 @@
     <div class="col">
         <div class="card custom-card">
             <div class="card-body">
-                <div class="row mb-2">
-                    <div class="d-flex w-50 gap-2">
-                        <div class="mb-3">
+                <div class="row mb-3">
+                    <div class="col-md">
+                        <div class="">
+                            <label for="exampleFormControlSelect1" class="form-label">Filter Date</label>
                             <div class="input-group">
                                 <input type="text" id="date-range-picker" class="form-control" placeholder="Select date range">
                             </div>
                         </div>
+                    </div>
+                    <div class="col-md">
+                        <label for="exampleFormControlSelect1" class="form-label">Select Group</label>
+                        <select class="form-select" id="filterGroup" aria-label="Default select example">
+                            <option selected>Filter Group</option>
+                            <option value="1">One</option>
+                            <option value="2">Two</option>
+                            <option value="3">Three</option>
+                        </select>
+                    </div>
+                    <div class="col-md">
+                        <label for="exampleFormControlSelect1" class="form-label">Select Agent</label>
+                        <select id="filterAgent" class="form-control" style="width:100%;">
+                            <option value="1">Option 1</option>
+                            <option value="2">Option 2</option>
+                            <option value="3">Option 3</option>
+                            <option value="4">Option 4</option>
+                        </select>
+                    </div>
+                    <div class="col-md">
+                        <label for="exampleFormControlSelect1" class="form-label">Select Source</label>
+                        <select class="form-select" id="filterGroup" aria-label="Default select example">
+                            <option selected>Filter Source</option>
+                            <option value="1">One</option>
+                            <option value="2">Two</option>
+                            <option value="3">Three</option>
+                        </select>
                     </div>
                 </div>
                 <div class="row mb-3">
@@ -578,6 +606,14 @@
                 instance.close(); // Close the flatpickr calendar
             });
         }
+    });
+    
+    // Select and Search Agent Filter
+    $(document).ready(function () {
+        $('#filterAgent').select2({
+            placeholder: "Select an option",
+            allowClear: true
+        });
     });
 
     // DataTable initialization
