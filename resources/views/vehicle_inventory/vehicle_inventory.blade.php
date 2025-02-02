@@ -624,7 +624,6 @@
         });
     });
 
-
     // Vehicle Form Hide Show
     $(document).ready(function() {
         // Show the #vehicleFormCard when #addVehicleButton is clicked
@@ -654,7 +653,7 @@
         });
     });
 
-    // DataTable initialization
+    // DataTable initialization Available Units
     const availableUnitsTable = $('#availableUnitsTable').DataTable({
         processing: true,
         serverSide: true, // Use client-side processing since we're providing static data
@@ -662,6 +661,7 @@
                     url: '{{ route("vehicle.reservation.units.list") }}',
 
                 },
+        lengthMenu: [ [10, 25, 50, 100, 500, -1], [10, 25, 50, 100, 500, "All"] ],
         pageLength: 10,
         paging: true,
         responsive: true,
@@ -686,12 +686,14 @@
         ],
     });
 
+    // DataTable initialization Status Table
     const statusTable = $('#statusTable').DataTable({
         processing: true,
         serverSide: true, // Use client-side processing since we're providing static data
         ajax: {
             url: '{{ route("inventory.tagsPerTeam") }}',
         },
+        lengthMenu: [ [10, 25, 50, 100, 500, -1], [10, 25, 50, 100, 500, "All"] ],
         pageLength: 10,
         paging: true,
         responsive: true,
@@ -715,12 +717,14 @@
         ],
     });
 
+    // DataTable initialization Incoming Units Table
     const incomingUnitsTable = $('#incomingUnitsTable').DataTable({
         processing: true,
         serverSide: true, // Use client-side processing since we're providing static data
         ajax: {
             url: '{{ route("inventory.incomingUnitsList") }}',
         },
+        lengthMenu: [ [10, 25, 50, 100, 500, -1], [10, 25, 50, 100, 500, "All"] ],
         pageLength: 10,
         paging: true,
         responsive: true,
@@ -745,6 +749,7 @@
         ],
     });
 
+    // DataTable initialization Vehicle Inventory Table
     const vehicleInventoryTable = $('#vehicleInventoryTable').DataTable({
         processing: true,
         serverSide: true, // Use client-side processing since we're providing static data
@@ -754,7 +759,7 @@
                 d.date_range = $('#date-range-picker').val();
             },
         },
-
+        lengthMenu: [ [10, 25, 50, 100, 500, -1], [10, 25, 50, 100, 500, "All"] ],
         pageLength: 10,
         paging: true,
         responsive: false,

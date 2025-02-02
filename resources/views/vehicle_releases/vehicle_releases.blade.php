@@ -462,9 +462,10 @@
             // Add 'active' class to the clicked button
             $(this).addClass('active');
         });
-     });
+    });
 
-    // DataTable initialization
+    
+    // DataTable initialization releasedn units table
     const releasedUnitsTable = $('#releasedUnitsTable').DataTable({
         processing: true,
         serverSide: true, // Use client-side processing since we're providing static data
@@ -474,6 +475,7 @@
                 d.date_range = $('#date-range-picker').val();
             },
         },
+        lengthMenu: [ [10, 25, 50, 100, 500, -1], [10, 25, 50, 100, 500, "All"] ],
         pageLength: 10,
         paging: true,
         responsive: true,
@@ -501,6 +503,7 @@
                 d.date_range = $('#date-range-picker').val();
             },
         },
+        lengthMenu: [ [10, 25, 50, 100, 500, -1], [10, 25, 50, 100, 500, "All"] ],
         pageLength: 10,
         paging: true,
         responsive: true,
@@ -540,6 +543,7 @@
                 d.date_range = $('#date-range-picker').val();
             },
         },
+        lengthMenu: [ [10, 25, 50, 100, 500, -1], [10, 25, 50, 100, 500, "All"] ],
         pageLength: 10,
         paging: true,
         responsive: false,

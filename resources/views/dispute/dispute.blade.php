@@ -103,6 +103,8 @@
                 d.date_range = $('#date-range-picker').val();
             },
         },
+        lengthMenu: [ [10, 25, 50, 100, 500, -1], [10, 25, 50, 100, 500, "All"] ],
+        pageLength: 10,
         columns: [
             { data: 'id', name: 'id', title: 'ID', visible: false },
             { data: 'client_name', name: 'client_name', title: 'Customer Name' },

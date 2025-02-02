@@ -333,14 +333,15 @@
             }
     });
 
-    // DataTable initialization
+    // DataTable initialization available units
     const availableUnitsTable = $('#availableUnitsTable').DataTable({
         processing: true,
         serverSide: true, // Use client-side processing since we're providing static data
         ajax: {
-                    url: '{{ route("vehicle.reservation.units.list") }}',
+                url: '{{ route("vehicle.reservation.units.list") }}',
 
-                },
+            },
+        lengthMenu: [ [10, 25, 50, 100, 500, -1], [10, 25, 50, 100, 500, "All"] ],
         pageLength: 10,
         paging: true,
         responsive: true,
@@ -365,12 +366,14 @@
         ],
     });
 
+    // DataTable initialization status table
     const statusTable = $('#statusTable').DataTable({
         processing: true,
         serverSide: true, // Use client-side processing since we're providing static data
         ajax: {
             url: '{{ route("vehicle.reservation.reservationPerTeam") }}',
         },
+        lengthMenu: [ [10, 25, 50, 100, 500, -1], [10, 25, 50, 100, 500, "All"] ],
         pageLength: 10,
         paging: true,
         responsive: false,
@@ -393,7 +396,8 @@
             }
         ],
     });
-
+    
+    // DataTable initialization Vehicle Reservation Table
     const vehicleReservationTable = $('#vehicleReservationTable').DataTable({
         processing: true,
         serverSide: true, // Use client-side processing since we're providing static data
@@ -403,6 +407,7 @@
                     d.date_range = $('#date-range-picker').val();
                 },
             },
+        lengthMenu: [ [10, 25, 50, 100, 500, -1], [10, 25, 50, 100, 500, "All"] ],
         pageLength: 10,
         paging: true,
         responsive: false,
