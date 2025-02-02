@@ -52,6 +52,19 @@
     .table-responsive::-webkit-scrollbar-horizontal {
         height: 10px; /* Horizontal scrollbar height */
     }
+
+
+    #vehicleReleasesTable {
+        text-transform: uppercase;
+    }
+
+    #releasedUnitsTable {
+        text-transform: uppercase;
+    }
+
+    #statusTable {
+        text-transform: uppercase;
+    }
 </style>
 
 {{-- Title Header --}}

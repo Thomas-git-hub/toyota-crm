@@ -1,6 +1,12 @@
 @extends('components.app')
 @section('content')
 
+<style>
+    #disputeTable {
+        text-transform: uppercase;
+    }
+</style>
+
 {{-- Page Title --}}
 <div class="card bg-dark shadow-none mb-4">
     <div class="card-body">

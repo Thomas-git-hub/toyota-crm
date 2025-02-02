@@ -52,6 +52,22 @@
     .table-responsive::-webkit-scrollbar-horizontal {
         height: 10px; /* Horizontal scrollbar height */
     }
+
+    #availableUnitsTable {
+        text-transform: uppercase;
+    }
+
+    #statusTable {
+        text-transform: uppercase;
+    }
+
+    #incomingUnitsTable {
+        text-transform: uppercase;
+    }
+
+    #vehicleInventoryTable {
+        text-transform: uppercase;
+    }
 </style>
 
 {{-- Title Header --}}
