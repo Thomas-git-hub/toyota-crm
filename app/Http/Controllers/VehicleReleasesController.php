@@ -413,6 +413,20 @@ class VehicleReleasesController extends Controller
             return $data->application->vehicle->color;
         })
 
+        ->addColumn('category', function($data) {
+            return $data->application->vehicle->category ?? '' ;
+        })
+
+        ->addColumn('insurance', function($data) {
+            return 'Insurance';
+        })
+
+        ->addColumn('other_profit', function($data) {
+            return 'other_profit';
+        })
+
+
+
         ->addColumn('cs_number', function($data) {
             return $data->inventory->CS_number ?? '';
         })
@@ -555,6 +569,19 @@ class VehicleReleasesController extends Controller
         ->addColumn('cs_number', function($data) {
             return $data->inventory->CS_number ?? '';
         })
+
+        ->addColumn('category', function($data) {
+            return $data->application->vehicle->category ?? '' ;
+        })
+
+        ->addColumn('insurance', function($data) {
+            return 'Insurance';
+        })
+
+        ->addColumn('other_profit', function($data) {
+            return 'other_profit';
+        })
+
 
         // ->addColumn('trans_type', function($data) {
         //     return $data->inquiry->inquiryType->inquiry_type;

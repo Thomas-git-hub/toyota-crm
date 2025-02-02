@@ -535,27 +535,22 @@
             search: "",
             searchPlaceholder: "Search..."
         },
+        order:false,
 
         columns: [
             { data: 'folder_number', name: 'folder_number', title: 'Folder ' }, //0
             { data: 'customer_name', name: 'customer_name', title: 'Customer Name' }, //1
-            { data: 'year_model', name: 'year_model', title: 'Year Model' }, //2
-            { data: 'unit', name: 'unit', title: 'Unit' }, //3
-            { data: 'variant', name: 'variant', title: 'Variant' }, //4
-            { data: 'color', name: 'color', title: 'Color' }, //5
-            { data: 'cs_number', name: 'cs_number', title: 'CS Number' }, //6
-            { data: 'transaction', name: 'transaction', title: 'Transaction' }, //7
-            { data: 'trans_bank', name: 'trans_bank', title: 'Trans Bank' }, //8
-            { data: 'agent', name: 'agent', title: 'Agent' }, //9
-            { data: 'team', name: 'team', title: 'Group' }, //10
-            { data: 'source', name: 'source', title: 'Source' }, //11
-            { data: 'address', name: 'address', title: 'Address' }, //12
-            { data: 'gender', name: 'gender', title: 'Gender' }, //13
-            // { data: 'date_reserved', name: 'date_reserved', title: 'Date Reserved' },
-            { data: 'date_released', name: 'date_released', title: 'Date Released' }, //14
-            { data: 'profit', name: 'profit', title: 'Profit' }, //15
-
-
+            { data: 'address', name: 'address', title: 'Address' }, //2
+            { data: 'year_model', name: 'year_model', title: 'Year Model' }, //3
+            { data: 'unit', name: 'unit', title: 'Unit' }, //4
+            { data: 'variant', name: 'variant', title: 'Variant' }, //5
+            { data: 'color', name: 'color', title: 'Color' }, //6
+            { data: 'cs_number', name: 'cs_number', title: 'CS Number' }, //7
+            { data: 'transaction', name: 'transaction', title: 'Transaction' }, //8
+            { data: 'insurance', name: 'insurance', title: 'Insurance' }, //9
+            { data: 'trans_bank', name: 'trans_bank', title: 'Bank' }, //10
+            { data: 'agent', name: 'agent', title: 'Agent' }, //11
+            { data: 'team', name: 'team', title: 'Group' }, //12
             {
                 data: 'id',
                 name: 'id',
@@ -564,13 +559,64 @@
                 render: function(data, type, row) {
                     return `
                         <div class="d-flex">
-                            <button type="button" class="btn btn-icon me-2 btn-label-dark status-btn" data-bs-toggle="modal" data-bs-target="#releaseStatus" data-id="${data}" data-status="${row.status}">
-                                <span class="tf-icons bx bx-transfer-alt bx-22px"></span>
+                            <button type="button" class="badge btn me-2 btn-label-dark status-btn" data-bs-toggle="modal" data-bs-target="#releaseStatus" data-id="${data}" data-status="${row.status}">
+                                 <span > ${row.status}</pan>
                             </button>
                         </div>
                         `;
                 }
-            }, //16
+            }, //13
+            { data: 'category', name: 'category', title: 'Unit Type' }, //14
+            {
+                data: 'profit',
+                name: 'profit',
+                title: 'Profit',
+                visible: false,
+                render: function(data, type, row) {
+                    return `
+                        <div class="d-flex">
+
+                            <button type="button" class="badge btn me-2 btn-label-dark profit-btn" data-bs-toggle="modal" data-bs-target="#addProfitModal" data-id="${row.id}" data-profit="${data}">
+                                 <span > ${data}</span>
+                            </button>
+                        </div>`;
+                }
+            }, //15
+            { data: 'other_profit', name: 'other_profit', title: 'Other Profit' }, //16
+            { data: 'gender', name: 'gender', title: 'Gender' }, //17
+            {
+                data: 'released_remarks',
+                name: 'released_remarks',
+                title: 'Remarks',
+                orderable: false,
+                searchable: false,
+                visible: false,
+                render: function(data, type, row) {
+                    return `
+                            <button type="button" class="btn btn-icon me-2 btn-label-dark released-remarks-btn" data-id="${row.id}" data-bs-toggle="modal" data-bs-target="#releasedRemarksModal" data-remarks="${data}">
+                                <span class="tf-icons bx bx-comment-detail bx-22px"></span>
+                            </button>
+                           `;
+                }
+            }, //18
+            {
+                data: 'lto_remarks',
+                name: 'lto_remarks',
+                title: 'LTO Remarks',
+                orderable: false,
+                searchable: false,
+                visible: false,
+                render: function(data, type, row) {
+                    return `@if(auth()->user()->can('update_ltoremarks'))
+                            <button type="button" class="btn btn-icon me-2 btn-label-dark lto-remarks-btn" data-id="${row.id}" data-bs-toggle="modal" data-bs-target="#LtoRemarksModal" data-remarks="${data}">
+                                <span class="tf-icons bx bx-comment-detail bx-22px"></span>
+                            </button>
+                            @endif`;
+                }
+            }, //19
+
+            { data: 'source', name: 'source', title: 'Source' }, //20
+            { data: 'date_released', name: 'date_released', title: 'Date Released' }, //2
             {
                 data: 'id',
                 name: 'id',
@@ -593,48 +639,9 @@
                                 @endif
                         </div>`;
                     }
-            }, //17
-            {
-                data: 'profit',
-                name: 'profit',
-                title: 'Profit',
-                visible: false,
-                render: function(data, type, row) {
-                    return `<button type="button" class="btn btn-icon me-2 btn-label-dark profit-btn" data-bs-toggle="modal" data-bs-target="#addProfitModal" data-id="${row.id}" data-profit="${data}">
-                                <span class="tf-icons bx bxs-calculator bx-22px"></span>
-                            </button>`;
-                }
-            }, //18
-            {
-                data: 'lto_remarks',
-                name: 'lto_remarks',
-                title: 'LTO Remarks',
-                orderable: false,
-                searchable: false,
-                visible: false,
-                render: function(data, type, row) {
-                    return `@if(auth()->user()->can('update_ltoremarks'))
-                            <button type="button" class="btn btn-icon me-2 btn-label-dark lto-remarks-btn" data-id="${row.id}" data-bs-toggle="modal" data-bs-target="#LtoRemarksModal" data-remarks="${data}">
-                                <span class="tf-icons bx bx-comment-detail bx-22px"></span>
-                            </button>
-                            @endif`;
-                }
-            }, //19
-            {
-                data: 'released_remarks',
-                name: 'released_remarks',
-                title: 'Remarks',
-                orderable: false,
-                searchable: false,
-                visible: false,
-                render: function(data, type, row) {
-                    return `
-                            <button type="button" class="btn btn-icon me-2 btn-label-dark released-remarks-btn" data-id="${row.id}" data-bs-toggle="modal" data-bs-target="#releasedRemarksModal" data-remarks="${data}">
-                                <span class="tf-icons bx bx-comment-detail bx-22px"></span>
-                            </button>
-                           `;
-                }
-            }, //20
+            }, //22
+            { data: 'status', name: 'status', title: 'status', visible:false }, //23
+
 
 
         ],
@@ -709,23 +716,23 @@
         // Toggle column visibility based on the active tab
         const isFoReleasedTab = $(this).text().trim() === 'For Release Units';
         @if(auth()->user()->can('process_vehicle_release') || auth()->user()->can('cancel_vehicle_release'))
-        vehicleReleasesTable.column(17).visible(isFoReleasedTab);
+        vehicleReleasesTable.column(22).visible(isFoReleasedTab);
         @endif
 
         const isReleasedTab = $(this).text().trim() === 'Released Units';
         @if(auth()->user()->can('get_status') && auth()->user()->can('update_status'))
-        vehicleReleasesTable.column(16).visible(isReleasedTab);
+        vehicleReleasesTable.column(13).visible(isReleasedTab);
         @endif
 
         @if(auth()->user()->can('update_profit'))
-        vehicleReleasesTable.column(18).visible(isReleasedTab);
+        vehicleReleasesTable.column(15).visible(isReleasedTab);
         @endif
 
         @if(auth()->user()->can('update_ltoremarks'))
         vehicleReleasesTable.column(19).visible(isReleasedTab);
         @endif
 
-        vehicleReleasesTable.column(20).visible(isReleasedTab);
+        vehicleReleasesTable.column(18).visible(isReleasedTab);
 
 
 
