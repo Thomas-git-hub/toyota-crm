@@ -302,6 +302,18 @@
                             <input type="text" class="form-control" id="color" name="color" required />
                         </div>
                     </div>
+                    <div class="row mb-2">
+
+                        <div class="col-md">
+                            <label for="color" class="form-label">Category</label>
+                            <select class="form-select" name="category" id="category">
+                                <option value="">Select Category</option>
+                                <option value="PC">PC</option>
+                                <option value="CV">CV</option>
+                                <option value="HAV">HAV</option>
+                            </select>
+                        </div>
+                    </div>
                     <div class="row">
                         <div class="col-md d-flex justify-content-end gap-2">
                             <button type="button" class="btn btn-label-danger" id="cancelVehicleFormButton">Cancel</button>
@@ -554,6 +566,7 @@
                 unit: $('#unit').val(),
                 variant: $('#variant').val(),
                 color: $('#color').val(),
+                category: $('#category').val(),
             };
 
             $.ajax({
@@ -725,6 +738,7 @@
                 d.date_range = $('#date-range-picker').val();
             },
         },
+
         pageLength: 10,
         paging: true,
         responsive: false,
@@ -733,23 +747,24 @@
             search: "",
             searchPlaceholder: "Search..."
         },
-        order: [[8, 'desc']],
+        order: false,
 
         columns: [
-            { data: 'id', name: 'id', title: 'ID', visible: false },
-            { data: 'unit', name: 'unit', title: 'Unit' },
-            { data: 'model', name: 'model', title: 'Variant' },
-            { data: 'color', name: 'color', title: 'Color' },
-            { data: 'year_model', name: 'year_model', title: 'Year Model' },
-            { data: 'cs_number', name: 'cs_number', title: 'CS Number' },
-            { data: 'actual_invoice_date', name: 'actual_invoice_date', title: 'Actual Invoice Date' },
-            { data: 'invoice_number', name: 'invoice_number', title: 'Invoice No.' },
-            { data: 'updated_at', name: 'updated_at', title: 'Updated At' },
-            { data: 'delivery_date', name: 'delivery_date', title: 'Delivery Date' },
-            { data: 'tags', name: 'tags', title: 'TAGs' },
-            { data: 'age', name: 'age', title: 'Age' },
-            { data: 'status', name: 'status', title: 'Status' },
-            { data: 'remarks', name: 'remarks', title: 'Remarks' },
+            { data: 'id', name: 'id', title: 'ID', visible: false },//0
+            { data: 'unit', name: 'unit', title: 'Unit' },//1
+            { data: 'model', name: 'model', title: 'Variant' },//2
+            { data: 'color', name: 'color', title: 'Color' },//3
+            { data: 'category', name: 'category', title: 'Category' },//4
+            { data: 'year_model', name: 'year_model', title: 'Year Model' },//5
+            { data: 'cs_number', name: 'cs_number', title: 'CS Number' },//6
+            { data: 'actual_invoice_date', name: 'actual_invoice_date', title: 'Actual Invoice Date' },//7
+            { data: 'invoice_number', name: 'invoice_number', title: 'Invoice No.' },//8
+            { data: 'updated_at', name: 'updated_at', title: 'Updated At' },//9
+            { data: 'delivery_date', name: 'delivery_date', title: 'Delivery Date' },//10
+            { data: 'tags', name: 'tags', title: 'TAGs' },//11
+            { data: 'age', name: 'age', title: 'Age' },//12
+            { data: 'status', name: 'status', title: 'Status' },//13
+            { data: 'remarks', name: 'remarks', title: 'Remarks' },//14
             @if(auth()->user()->can('update_incoming_status'))
             {
                 data: 'incoming_status',
@@ -765,7 +780,7 @@
                             </button>
                     </div>`;
                 }
-            },
+            },//15
             @endif
             @if(auth()->user()->can('update_tags_inventory'))
             {
@@ -781,7 +796,7 @@
                                 <span class="tf-icons bx bx-star bx-22px"></span>
                             </button>`;
                 }
-            },
+            },//16
             @endif
             @if(auth()->user()->can('edit_inventory') || auth()->user()->can('update_inventory') )
             {
@@ -797,7 +812,7 @@
                                 </button>
                                 </div>`;
                     }
-            },
+            },//17
             @endif
         ],
 
@@ -834,7 +849,7 @@
             const isIncomingTab = $(this).text().trim() === 'Incoming';
 
             const isInventoryTab = $(this).text().trim() === 'Inventory';
-            vehicleInventoryTable.column(15).visible(isInventoryTab); // year_model
+            vehicleInventoryTable.column(16).visible(isInventoryTab); // year_model
         });
 
     });

@@ -62,6 +62,10 @@ class VehicleInventoryController extends Controller
              return $data->vehicle->color;
          })
 
+         ->editColumn('category', function($data) {
+             return $data->vehicle->category ?? '';
+         })
+
          ->editColumn('cs_number', function($data) {
              return $data->CS_number;
          })
@@ -141,6 +145,10 @@ class VehicleInventoryController extends Controller
          ->editColumn('color', function($data) {
              return $data->vehicle->color;
          })
+
+        ->editColumn('category', function($data) {
+            return $data->vehicle->category ?? '';
+        })
 
          ->editColumn('cs_number', function($data) {
              return $data->CS_number;
@@ -256,12 +264,14 @@ class VehicleInventoryController extends Controller
             'unit' => 'required|string|max:255',
             'variant' => 'required|string|max:255',
             'color' => 'required|string|max:255',
+            'category' => 'required|string|max:255',
         ]);
 
         // Check for duplicate entry
         $exists = Vehicle::where('unit', $request->unit)
             ->where('variant', $request->variant)
             ->where('color', $request->color)
+            ->where('category', $request->category)
             ->exists();
 
         if ($exists) {
@@ -276,6 +286,7 @@ class VehicleInventoryController extends Controller
             'unit' => $request->unit,
             'variant' => $request->variant,
             'color' => $request->color,
+            'category' => $request->category,
             'created_by' => Auth::id(),
             'created_at' => now(),
             'updated_by' => Auth::id(),
