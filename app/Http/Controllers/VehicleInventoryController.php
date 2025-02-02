@@ -390,10 +390,23 @@ class VehicleInventoryController extends Controller
 
     public function getAgent(Request $request){
         $usertype = Usertype::where('name', 'Agent')->first()->id;
-        $agent = User::where('usertype_id', $usertype)
+
+        if(Auth::user()->usertype->name === 'Group Manager'){
+            $agent = User::where('usertype_id', $usertype)
                         ->whereNull('deleted_at')
                         ->where('status', 'Active')
-                        ->get();
+                        ->where('team_id', Auth::user()->team_id)
+                        ;
+
+        }else{
+            $agent = User::where('usertype_id', $usertype)
+            ->whereNull('deleted_at')
+            ->where('status', 'Active')
+            ->get();
+        }
+
+
+
         return response()->json($agent);
     }
 
