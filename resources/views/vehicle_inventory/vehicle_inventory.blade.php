@@ -1121,9 +1121,9 @@
             });
 
         // Real-time Uppercase Transformation
-        $("input[type='text'], textarea").on("input", function () {
-            $(this).val($(this).val().toUpperCase());
-        });
+        // $("input[type='text'], textarea").on("input", function () {
+        //     $(this).val($(this).val().toUpperCase());
+        // });
     });
 
     // Inventory Form Submission

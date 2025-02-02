@@ -135,9 +135,9 @@
                 // Add event listener to clear the date and reload the tables
                 clearButton.addEventListener("click", function () {
                     instance.clear(); // Clear the date range
+                    fetchAgentData();
                     fetchTopAgents();
                     rankingTable.ajax.reload(null, false);
-                    fetchAgentData();
 
                 });
 
@@ -272,7 +272,7 @@
             ],
         });
 
-
+        var AgentData = null;
         // Total Inquiries in Inquiries Bar Graph
         function fetchAgentData() {
             $.ajax({
@@ -282,14 +282,20 @@
                     date_range: $('#date-range-picker').val(),
                 },
                 success: function(response) {
-                    const labels = response.agents.map(item => `${item.agent.first_name} ${item.agent.last_name}`);
-                    const data = response.agents.map(item => item.total);
-                    renderAgentDataChart(labels, data);
+                    if (response.agents && response.agents.length === 0) {
+                        $('#rankingBarChart').html('<p>No transaction found</p>');
+                    } else if (response.agents) {
+                        const labels = response.agents.map(item => `${item.agent.first_name} ${item.agent.last_name}`);
+                        const data = response.agents.map(item => item.total);
+                        renderAgentDataChart(labels, data);
+                    } else {
+                        $('#rankingBarChart').html('<p>No transaction found</p>');
+                    }
                 }
             });
         }
 
-        var AgentData = null;
+
 
         function renderAgentDataChart(labels, data){
              // Render the bar chart with the fetched data
@@ -399,10 +405,6 @@
 
         }
         fetchAgentData();
-
-
-
-
 
 </script>
 @endsection
