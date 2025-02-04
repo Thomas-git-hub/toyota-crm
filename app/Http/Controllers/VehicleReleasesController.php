@@ -418,13 +418,12 @@ class VehicleReleasesController extends Controller
         })
 
         ->addColumn('insurance', function($data) {
-            return 'Insurance';
+            return $data->insurance ?? '';
         })
 
         ->addColumn('other_profit', function($data) {
             return 'other_profit';
         })
-
 
 
         ->addColumn('cs_number', function($data) {
@@ -463,7 +462,7 @@ class VehicleReleasesController extends Controller
             return number_format($data->profit ?? 0, 2);
         })
         ->addColumn('folder_number', function($data) {
-            return $data->folder_number ?? '';
+            return $data->folder_number ?? 'Select Insurance';
         })
 
         ->addColumn('source', function($data) {
@@ -575,7 +574,7 @@ class VehicleReleasesController extends Controller
         })
 
         ->addColumn('insurance', function($data) {
-            return 'Insurance';
+            return $data->insurance ?? 'Select Insurance';
         })
 
         ->addColumn('other_profit', function($data) {
@@ -711,6 +710,7 @@ class VehicleReleasesController extends Controller
 
             $transaction = Transactions::findOrFail(decrypt($request->id));
             $transaction->profit = $request->profit;
+            $transaction->timestamps = false;
             $transaction->save();
 
             return response()->json([
@@ -731,6 +731,7 @@ class VehicleReleasesController extends Controller
             // dd($request->all());
             $transaction = Transactions::findOrFail(decrypt($request->id));
             $transaction->lto_remarks = $request->remarks;
+            $transaction->timestamps = false;
             $transaction->save();
 
             return response()->json([
@@ -750,6 +751,7 @@ class VehicleReleasesController extends Controller
             // dd($request->all());
             $transaction = Transactions::findOrFail(decrypt($request->id));
             $transaction->released_remarks = $request->remarks;
+            $transaction->timestamps = false;
             $transaction->save();
 
             return response()->json([
@@ -841,6 +843,30 @@ class VehicleReleasesController extends Controller
         $profit = $query->sum('profit');
 
         return number_format($profit, 2);
+    }
+
+    public function addInsurance(Request $request){
+        try {
+            $request->validate([
+                'insurance' => 'required',
+            ]);
+
+            $transaction = Transactions::findOrFail(decrypt($request->id));
+            $transaction->insurance = $request->insurance;
+            $transaction->timestamps = false;
+            $transaction->save();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Transaction insurance updated successfully'
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Error updating transaction insurance: ' . $e->getMessage()
+            ], 500);
+        }
+
     }
 
 

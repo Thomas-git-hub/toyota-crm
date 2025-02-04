@@ -108,6 +108,41 @@
     </div>
 </div>
 
+<!-- Insurance Modal -->
+<div class="modal fade" id="insuranceModal" tabindex="-1" aria-labelledby="releaseStatusLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel">Insurance</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+            </button>
+        </div>
+        <div class="modal-body">
+          <div class="form-group">
+            <div class="row">
+                <div class="col-md">
+                    <input type="hidden" name="id", id="statusTransactionID">
+                    <select class="form-control" id="insurance" name="insurance">
+                        <option value="" selected>Select Insurance</option>
+                        <option value="FI">FI</option>
+                        <option value="CI">CI</option>
+                        <option value="POI">POI</option>
+                    </select>
+                    <div id="insuranceError" style="color: red; display: none;"></div>
+                </div>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-label-danger" data-bs-dismiss="modal">Close</button>
+          @if(auth()->user()->can('add_insurance'))
+          <button type="button" class="btn btn-dark" id="saveInsuranceButton">Update</button>
+          @endif
+        </div>
+      </div>
+    </div>
+</div>
+
 {{-- Add Profit Modal --}}
 <div class="modal fade" id="addProfitModal" tabindex="-1" aria-labelledby="addProfitModalLabel" aria-hidden="true">
     <div class="modal-dialog" role="document">
@@ -564,7 +599,22 @@
             { data: 'color', name: 'color', title: 'Color' }, //6
             { data: 'cs_number', name: 'cs_number', title: 'CS Number' }, //7
             { data: 'transaction', name: 'transaction', title: 'Transaction' }, //8
-            { data: 'insurance', name: 'insurance', title: 'Insurance' }, //9
+            {   
+                data: 'insurance', 
+                name: 'insurance', 
+                title: 'Insurance',
+                render: function(data, type, row) {
+                    return `
+                        <div class="d-flex">
+                            <button type="button" class="badge btn me-2 btn-label-dark insurance-btn" data-bs-toggle="modal" data-bs-target="#insuranceModal" data-insurance="${data}" data-id="${row.id}">
+                                 <span >${data}</pan>
+                            </button>
+                        </div>
+                        `;
+                }
+
+
+             }, //9
             { data: 'trans_bank', name: 'trans_bank', title: 'Bank' }, //10
             { data: 'agent', name: 'agent', title: 'Agent' }, //11
             { data: 'team', name: 'team', title: 'Group' }, //12
@@ -1069,6 +1119,56 @@
         });
     })
 
+    $(document).on('click', '.insurance-btn', function() {
+        const id = $(this).data('id');
+        const insurance = $(this).data('insurance');
+        $('#statusTransactionID').val(id);
+        $('#insurance').val(insurance);
+
+
+        $('#saveInsuranceButton').off('click').on('click', function() {
+            const selectedValue = $('#insurance').val();
+
+            if (selectedValue) {
+                $.ajax({
+                    url: '{{ route("vehicle.releases.addInsurance") }}', // Define this route in your controller
+                    type: 'POST',
+                    data: {
+                        id: $('#statusTransactionID').val(),
+                        insurance: selectedValue,
+                        _token: '{{ csrf_token() }}' // Include CSRF token
+                    },
+                    success: function(response) {
+                        if (response.success) {
+                            $('#insuranceModal').modal('hide');
+                            Swal.fire('Updated!', response.message, 'success');
+                            vehicleReleasesTable.ajax.reload();
+                            // Optionally reload the DataTable or update the UI
+                        }
+                    },
+                    error: function(xhr) {
+                        Swal.fire('Error!', xhr.responseJSON?.message || 'Something went wrong!', 'error');
+                    }
+                });
+            }
+            else {
+                $('#insurance').css('border', '1px solid red');
+                $('#insuranceError').text('Please select an insurance option.').show();
+            }
+        });
+
+        // Remove red border when the user selects a value
+        $('#insurance').on('change', function() {
+            if ($(this).val()) {
+                $(this).css('border', '');
+                $('#insuranceError').hide();
+            }
+        });
+        $('#insuranceModal').on('hide.bs.modal', function () {
+            $('#insurance').css('border', '');
+            $('#insuranceError').hide();
+        });
+    });
 
 
 
