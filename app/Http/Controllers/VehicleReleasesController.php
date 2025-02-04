@@ -418,7 +418,7 @@ class VehicleReleasesController extends Controller
         })
 
         ->addColumn('insurance', function($data) {
-            return $data->insurance ?? '';
+            return $data->insurance ?? 'Select Insurance';
         })
 
         ->addColumn('other_profit', function($data) {
@@ -462,7 +462,7 @@ class VehicleReleasesController extends Controller
             return number_format($data->profit ?? 0, 2);
         })
         ->addColumn('folder_number', function($data) {
-            return $data->folder_number ?? 'Select Insurance';
+            return $data->folder_number ?? '';
         })
 
         ->addColumn('source', function($data) {
@@ -639,11 +639,20 @@ class VehicleReleasesController extends Controller
 
     public function processing(Request $request){
         try {
+        
 
             $posted_status = Status::where('status', 'like', 'Posted')->first()->id;
             $pending_for_release_status = Status::where('status', 'like', 'Pending For Release')->first()->id;
 
             $transaction = Transactions::findOrFail(decrypt($request->id));
+
+            if (is_null($transaction->insurance)) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Insurance is required.'
+                ], 400);
+            }
+
 
             if($transaction->reservation_transaction_status == $pending_for_release_status){
 
@@ -692,11 +701,16 @@ class VehicleReleasesController extends Controller
             }
             return response()->json([
                 'success' => true,
-                'message' => 'Vehicle release request successfully processed'
+                'message' => 'Vehicle release request has been canceled'
             ]);
 
 
         } catch (\Exception $e) {
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Error updating: ' . $e->getMessage()
+            ], 500);
 
         }
 

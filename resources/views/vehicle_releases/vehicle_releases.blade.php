@@ -123,7 +123,7 @@
                 <div class="col-md">
                     <input type="hidden" name="id", id="statusTransactionID">
                     <select class="form-control" id="insurance" name="insurance">
-                        <option value="" selected>Select Insurance</option>
+                        <option value="">Select Insurance</option>
                         <option value="FI">FI</option>
                         <option value="CI">CI</option>
                         <option value="POI">POI</option>
@@ -899,7 +899,7 @@
                     success: function(response) {
                         if (response.success) {
                             Swal.fire(
-                                'Deleted!',
+                                'Canceled!',
                                 response.message,
                                 'success'
                             );
