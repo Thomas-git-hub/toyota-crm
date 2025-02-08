@@ -57,12 +57,14 @@ class SFMDashboardController extends Controller
     public function fetchReservationCount(Request $request)
     {
         $reserved_status = Status::where('status', 'like', 'Reserved')->first();
+        $released_status = Status::where('status', 'like', 'Released')->first();
+        $posted_status = Status::where('status', 'like', 'Posted')->first();
 
         $query = Transactions::with(['inquiry', 'inventory', 'application'])
             ->whereNull('deleted_at')
             ->whereNotNull('inventory_id')
             ->whereNotNull('reservation_id')
-            ->where('reservation_transaction_status', $reserved_status->id);
+            ->whereIn('reservation_transaction_status', [$reserved_status->id, $released_status->id, $posted_status->id]);
 
             if ($request->has('group') && !empty($request->group)) {
                 $query->where('team_id', $request->group);
@@ -93,9 +95,9 @@ class SFMDashboardController extends Controller
         DB::statement("SET SQL_MODE=''");
 
         $status = Status::where('status', 'like', 'Processed')->first()->id;
-        
+
         $query = Inquiry::with([ 'user', 'customer', 'vehicle', 'status', 'inquiryType']);
-       
+
 
         if ($request->has('group') && !empty($request->group)) {
 
@@ -111,7 +113,7 @@ class SFMDashboardController extends Controller
 
             $query->whereBetween('inquiry.updated_at', [$startDate, $endDate]);
         }
-        
+
         $query->join('vehicle', 'inquiry.vehicle_id', '=', 'vehicle.id')
         ->whereNull('inquiry.deleted_at')
         ->where('inquiry.is_dispute', '0')
@@ -145,7 +147,7 @@ class SFMDashboardController extends Controller
 
             $query->whereBetween('inquiry.updated_at', [$startDate, $endDate]);
         }
-        
+
         $Quantity = $query->join('vehicle', 'inquiry.vehicle_id', '=', 'vehicle.id')
         ->whereNull('inquiry.deleted_at')
         ->where('inquiry.is_dispute', '0')
