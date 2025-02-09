@@ -422,7 +422,7 @@ class VehicleReleasesController extends Controller
         })
 
         ->addColumn('other_profit', function($data) {
-            return 'other_profit';
+            return '0.00';
         })
 
 
@@ -578,7 +578,7 @@ class VehicleReleasesController extends Controller
         })
 
         ->addColumn('other_profit', function($data) {
-            return 'other_profit';
+            return '0.00';
         })
 
 

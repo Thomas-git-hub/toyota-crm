@@ -33,6 +33,11 @@ class SFMDashboardController extends Controller
             });
         }
 
+        if ($request->has('agent') && !empty($request->agent)) {
+
+            $query->where('created_by', $request->agent);
+        }
+
         if ($request->has('date_range') && !empty($request->date_range)) {
             [$startDate, $endDate] = explode(' to ', $request->date_range);
             $startDate = Carbon::createFromFormat('m/d/Y', $startDate)->startOfDay();
@@ -64,10 +69,17 @@ class SFMDashboardController extends Controller
             ->whereNull('deleted_at')
             ->whereNotNull('inventory_id')
             ->whereNotNull('reservation_id')
-            ->whereIn('reservation_transaction_status', [$reserved_status->id, $released_status->id, $posted_status->id]);
+            ->whereIn('reservation_transaction_status', [$reserved_status->id,  $released_status->id, $posted_status->id]);
 
             if ($request->has('group') && !empty($request->group)) {
                 $query->where('team_id', $request->group);
+            }
+
+            if ($request->has('agent') && !empty($request->agent)) {
+
+                $query->whereHas('application', function($subQuery)  use ($request) {
+                    $subQuery->where('created_by', $request->agent);
+                });
             }
 
         if ($request->has('date_range') && !empty($request->date_range)) {
@@ -95,15 +107,20 @@ class SFMDashboardController extends Controller
         DB::statement("SET SQL_MODE=''");
 
         $status = Status::where('status', 'like', 'Processed')->first()->id;
-
+        
         $query = Inquiry::with([ 'user', 'customer', 'vehicle', 'status', 'inquiryType']);
-
+       
 
         if ($request->has('group') && !empty($request->group)) {
 
             $query->whereHas('user', function ($q) use ($request) {
                 $q->where('team_id', $request->group);
             });
+        }
+
+        if ($request->has('agent') && !empty($request->agent)) {
+
+            $query->where('inquiry.created_by', $request->agent);
         }
 
         if ($request->has('date_range') && !empty($request->date_range)) {
@@ -113,7 +130,7 @@ class SFMDashboardController extends Controller
 
             $query->whereBetween('inquiry.updated_at', [$startDate, $endDate]);
         }
-
+        
         $query->join('vehicle', 'inquiry.vehicle_id', '=', 'vehicle.id')
         ->whereNull('inquiry.deleted_at')
         ->where('inquiry.is_dispute', '0')
@@ -140,6 +157,11 @@ class SFMDashboardController extends Controller
             });
         }
 
+        if ($request->has('agent') && !empty($request->agent)) {
+
+            $query->where('inquiry.created_by', $request->agent);
+        }
+
         if ($request->has('date_range') && !empty($request->date_range)) {
             [$startDate, $endDate] = explode(' to ', $request->date_range);
             $startDate = Carbon::createFromFormat('m/d/Y', $startDate)->startOfDay();
@@ -147,7 +169,7 @@ class SFMDashboardController extends Controller
 
             $query->whereBetween('inquiry.updated_at', [$startDate, $endDate]);
         }
-
+        
         $Quantity = $query->join('vehicle', 'inquiry.vehicle_id', '=', 'vehicle.id')
         ->whereNull('inquiry.deleted_at')
         ->where('inquiry.is_dispute', '0')
