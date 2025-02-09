@@ -29,18 +29,34 @@
 {{-- Card Deliveries Releases --}}
 <div class="row mb-4">
     <div class="col-md">
-        <div class="card mb-3">
-            <div class="card-body">
-                <div class="d-flex justify-content-between align-items-center">
-                    <div class="">
-                        <label class="fs-4 fw-bold" style="color: #ff0055">Total Deliveries</label><br>
-                        <small>Total number of Deliveries</small>
+        <div class="row">
+            <div class="col-md">
+                <div class="card mb-3">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div class="">
+                                <label class="fs-4 fw-bold" style="color: #ff0055">Total Deliveries</label><br>
+                                <small>Total number of Deliveries</small>
+                            </div>
+                            <h1 class="fw-bold" id="deliveriesCountCard" style="color: #ff0055">0</h1>
+                        </div>
                     </div>
-                    <h1 class="fw-bold" id="deliveriesCountCard" style="color: #ff0055">0</h1>
                 </div>
             </div>
         </div>
+
+       <div class="row">
+        <div class="col-md">
+            <div class="card">
+                <div class="card-body">
+                    <div id="chart-timeline"></div>
+                </div>
+            </div>
+        </div>
+       </div>
+       
     </div>
+
     <div class="col-md">
         <div class="card">
             <div class="card-body">
@@ -61,74 +77,74 @@
 
 @section('components.specific_page_scripts')
 <script>
- // Initialize flatpickr for date range picker
- flatpickr("#date-range-picker", {
-    mode: "range",
-    dateFormat: "Y-m-d",
-    onChange: function (selectedDates, dateStr, instance) {
-        if (selectedDates.length === 2) {
-            const startDate = selectedDates[0];
-            const endDate = selectedDates[1];
+    // Initialize flatpickr for date range picker
+    flatpickr("#date-range-picker", {
+        mode: "range",
+        dateFormat: "Y-m-d",
+        onChange: function (selectedDates, dateStr, instance) {
+            if (selectedDates.length === 2) {
+                const startDate = selectedDates[0];
+                const endDate = selectedDates[1];
 
-            if (selectedDates[1] <= selectedDates[0]) {
-                Swal.fire({
-                    icon: 'warning',
-                    title: 'Warning!',
-                    text: 'Please select a valid date range.',
-                });
-            } else {
+                if (selectedDates[1] <= selectedDates[0]) {
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'Warning!',
+                        text: 'Please select a valid date range.',
+                    });
+                } else {
+                    getReleasedToday();
+                    totalDeliveriesToday();
+                }
+
+                // Update the month and year display
+                const startMonth = startDate.toLocaleString('default', { month: 'short' });
+                const endMonth = endDate.toLocaleString('default', { month: 'short' });
+                const startYear = startDate.getFullYear();
+                const endYear = endDate.getFullYear();
+
+                if (startMonth === endMonth && startYear === endYear) {
+                    document.getElementById('monthRange').textContent = startMonth;
+                } else {
+                    const monthRange = `${startMonth} - ${endMonth}`;
+                    document.getElementById('monthRange').textContent = monthRange;
+                }
+
+                if (startYear === endYear) {
+                    document.getElementById('year').textContent = startYear;
+                } else {
+                    document.getElementById('year').textContent = `${startYear} - ${endYear}`;
+                }
+            }
+        },
+        onReady: function (selectedDates, dateStr, instance) {
+            // Create a "Clear" button
+            const clearButton = document.createElement("button");
+            clearButton.innerHTML = "Clear";
+            clearButton.classList.add("clear-btn");
+
+            // Create a "Close" button
+            const closeButton = document.createElement("button");
+            closeButton.innerHTML = "Close";
+            closeButton.classList.add("close-btn");
+
+            // Append the buttons to the flatpickr calendar
+            instance.calendarContainer.appendChild(clearButton);
+            instance.calendarContainer.appendChild(closeButton);
+
+            // Add event listener to clear the date and reload the tables
+            clearButton.addEventListener("click", function () {
+                instance.clear(); // Clear the date range
                 getReleasedToday();
                 totalDeliveriesToday();
-            }
+            });
 
-            // Update the month and year display
-            const startMonth = startDate.toLocaleString('default', { month: 'short' });
-            const endMonth = endDate.toLocaleString('default', { month: 'short' });
-            const startYear = startDate.getFullYear();
-            const endYear = endDate.getFullYear();
-
-            if (startMonth === endMonth && startYear === endYear) {
-                document.getElementById('monthRange').textContent = startMonth;
-            } else {
-                const monthRange = `${startMonth} - ${endMonth}`;
-                document.getElementById('monthRange').textContent = monthRange;
-            }
-
-            if (startYear === endYear) {
-                document.getElementById('year').textContent = startYear;
-            } else {
-                document.getElementById('year').textContent = `${startYear} - ${endYear}`;
-            }
+            // Add event listener to close the calendar
+            closeButton.addEventListener("click", function () {
+                instance.close(); // Close the flatpickr calendar
+            });
         }
-    },
-    onReady: function (selectedDates, dateStr, instance) {
-        // Create a "Clear" button
-        const clearButton = document.createElement("button");
-        clearButton.innerHTML = "Clear";
-        clearButton.classList.add("clear-btn");
-
-        // Create a "Close" button
-        const closeButton = document.createElement("button");
-        closeButton.innerHTML = "Close";
-        closeButton.classList.add("close-btn");
-
-        // Append the buttons to the flatpickr calendar
-        instance.calendarContainer.appendChild(clearButton);
-        instance.calendarContainer.appendChild(closeButton);
-
-        // Add event listener to clear the date and reload the tables
-        clearButton.addEventListener("click", function () {
-            instance.clear(); // Clear the date range
-            getReleasedToday();
-            totalDeliveriesToday();
-        });
-
-        // Add event listener to close the calendar
-        closeButton.addEventListener("click", function () {
-            instance.close(); // Close the flatpickr calendar
-        });
-    }
-});
+    });
 
     function getReleasedToday() {
         $.ajax({
@@ -168,7 +184,7 @@
     }
     totalDeliveriesToday();
 
-
+    
 
 </script>
 @endsection
