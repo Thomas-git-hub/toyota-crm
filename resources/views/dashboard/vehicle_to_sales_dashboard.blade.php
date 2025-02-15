@@ -26,12 +26,12 @@
     </div>
 </div>
 
-{{-- Card Deliveries Releases --}}
+{{-- Card Deliveriesx Releases --}}
 <div class="row mb-4">
     <div class="col-md">
         <div class="row">
             <div class="col-md">
-                <div class="card mb-3">
+                <div class="card">
                     <div class="card-body">
                         <div class="d-flex justify-content-between align-items-center">
                             <div class="">
@@ -44,19 +44,26 @@
                 </div>
             </div>
         </div>
+    </div>
+</div>
 
-       <div class="row">
-        <div class="col-md">
-            <div class="card">
-                <div class="card-body">
-                    <div id="chart-timeline"></div>
-                </div>
+<div class="row mb-2">
+    <div class="col-md">
+        <div class="card">
+            <div class="card-body">
+                {{-- <h5 class="" style="color: #ff0055;">Daily Deliveries</h5> --}}
+                <h6 class="">Month of: &nbsp; <b style="color: #ff0055;">February</b></h6>
+                <div id="dailyDeliveriesChart"></div>
             </div>
         </div>
-       </div>
-       
     </div>
+</div>
 
+<div class="divider">
+    <div class="divider-text"><i class='bx bxs-car'></i></div>
+</div>
+
+<div class="row mb-4 mt-2">
     <div class="col-md">
         <div class="card">
             <div class="card-body">
@@ -67,6 +74,18 @@
                     </div>
                     <h1 class="fw-bold" id="releasesCountCard" style="color: #ff0055">0</h1>
                 </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mb-2">
+    <div class="col-md">
+        <div class="card">
+            <div class="card-body">
+                {{-- <h5 class="" style="color: #ff0055;">Daily Deliveries</h5> --}}
+                <h6 class="">Month of: &nbsp; <b style="color: #ff0055;">February</b></h6>
+                <div id="dailyReleasesChart"></div>
             </div>
         </div>
     </div>
@@ -184,7 +203,196 @@
     }
     totalDeliveriesToday();
 
-    
+
+    // Bar Chart Deliveries
+    var options = {
+        series: [{
+            name: 'Inflation',
+            data: [2.3, 3.1, 4.0, 10.1, 4.0, 3.6, 3.2, 2.3, 1.4, 0.8, 0.5, 0.2,
+                1.9, 2.8, 3.5, 4.1, 2.0, 2.7, 3.3, 3.9, 2.6, 1.8, 1.5, 0.9,
+                0.4, 0.3, 0.7, 1.2, 1.5, 1.8] // Adjust data length to 30 days
+        }],
+        chart: {
+            height: 350,
+            type: 'bar',
+        },
+        plotOptions: {
+            bar: {
+                borderRadius: 10,
+                dataLabels: {
+                    position: 'top', // top, center, bottom
+                },
+            }
+        },
+        dataLabels: {
+            enabled: true,
+            formatter: function (val) {
+                return val;
+            },
+            offsetY: -20,
+            style: {
+                fontSize: '12px',
+                colors: ["#ff0055"]
+            }
+        },
+        colors: ['#282830'], // Set the base bar color
+
+        xaxis: {
+            categories: Array.from({ length: 30 }, (_, i) => `D-${i + 1}`), // Generates numbers 1-30
+            title: {
+                text: "DAILY DELIVERIES",
+                style: { fontSize: '14px', fontWeight: 'bold' }
+            },
+            position: 'bottom',
+            axisBorder: {
+                show: false
+            },
+            axisTicks: {
+                show: false
+            },
+            crosshairs: {
+                fill: {
+                    type: 'gradient',
+                    gradient: {
+                        colorFrom: '#D8E3F0',
+                        colorTo: '#BED1E6',
+                        stops: [0, 100],
+                        opacityFrom: 0.4,
+                        opacityTo: 0.5,
+                    }
+                }
+            },
+            tooltip: {
+                enabled: true,
+            }
+        },
+        yaxis: {
+            axisBorder: {
+                show: false
+            },
+            axisTicks: {
+                show: false,
+            },
+            labels: {
+                show: true,
+                formatter: function (val) {
+                    return val;
+                }
+            }
+        },
+        title: {
+                text: '',
+                floating: true,
+                offsetY: 330,
+                align: 'center',
+                style: {
+                    color: '#ff0055'
+                }
+            },
+        labels: {
+            style: {
+                    colors: '#ff0055', // Set x-axis labels color
+                    fontSize: '12px',
+                    fontWeight: 'bold'
+                }
+            },
+    };
+    var chart = new ApexCharts(document.querySelector("#dailyDeliveriesChart"), options);
+    chart.render();
+
+
+    // Bar Chart Releases
+    var options = {
+        series: [{
+            name: 'Inflation',
+            data: [2.3, 3.1, 4.0, 10.1, 4.0, 3.6, 3.2, 2.3, 1.4, 0.8, 0.5, 0.2,
+                1.9, 2.8, 3.5, 4.1, 2.0, 2.7, 3.3, 3.9, 2.6, 1.8, 1.5, 0.9,
+                0.4, 0.3, 0.7, 1.2, 1.5, 1.8] // Adjust data length to 30 days
+        }],
+        chart: {
+            height: 350,
+            type: 'bar',
+        },
+        plotOptions: {
+            bar: {
+                borderRadius: 10,
+                dataLabels: {
+                    position: 'top', // top, center, bottom
+                },
+            }
+        },
+        dataLabels: {
+            enabled: true,
+            formatter: function (val) {
+                return val;
+            },
+            offsetY: -20,
+            style: {
+                fontSize: '12px',
+                colors: ["#FF0055"]
+            }
+        },
+        colors: ['#282830'], // Set the base bar color
+        xaxis: {
+            categories: Array.from({ length: 30 }, (_, i) => `D-${i + 1}`), // Generates numbers 1-30
+            title: {
+                text: "DAILY DELIVERIES",
+                style: { fontSize: '14px', fontWeight: 'bold' }
+            },
+            position: 'bottom',
+            axisBorder: {
+                show: false
+            },
+            axisTicks: {
+                show: false
+            },
+            crosshairs: {
+                fill: {
+                    type: 'gradient',
+                    gradient: {
+                        colorFrom: '#D8E3F0',
+                        colorTo: '#BED1E6',
+                        stops: [0, 100],
+                        opacityFrom: 0.4,
+                        opacityTo: 0.5,
+                    }
+                }
+            },
+            tooltip: {
+                enabled: true,
+            }
+        },
+        yaxis: {
+            axisBorder: {
+                show: false
+            },
+            axisTicks: {
+                show: false,
+            },
+            labels: {
+                show: true,
+                formatter: function (val) {
+                    return val;
+                }
+            }
+        },
+        title: {
+                text: '',
+                floating: true,
+                offsetY: 330,
+                align: 'center',
+                style: {
+                    color: '#ff0055'
+                }
+            }
+    };
+    var chart = new ApexCharts(document.querySelector("#dailyReleasesChart"), options);
+    chart.render();
+
+
+
+
+
 
 </script>
 @endsection

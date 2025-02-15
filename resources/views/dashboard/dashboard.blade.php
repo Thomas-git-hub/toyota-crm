@@ -245,7 +245,7 @@
                     placeholder: "Select an option",
                     allowClear: true
                 });
-            
+
             },
             error: function(error) {
                 console.error('Error loading team:', error);
@@ -253,7 +253,7 @@
         });
     }
 
-    
+
     $(document).ready(function () {
       // Event listeners for filter dropdowns
         $('#selectGroup').on('change', function() {
