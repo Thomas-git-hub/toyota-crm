@@ -44,6 +44,8 @@ Route::get('/getInquiryCount', [SFMDashboardController::class, 'getInquiryCount'
 Route::get('/vehicle-to-sales-dashboard', [VehicleToSalesController::class, 'index'])->name('dashboard.vehicle-to-sales-dashboard');
 Route::get('/vehicle-to-sales-dashboard/getReleasedToday', [VehicleToSalesController::class, 'getReleasedToday'])->name('dashboard.vehicle-to-sales-dashboard.getReleasedToday');
 Route::get('/vehicle-to-sales-dashboard/totalDeliveriesToday', [VehicleToSalesController::class, 'totalDeliveriesToday'])->name('dashboard.vehicle-to-sales-dashboard.totalDeliveriesToday');
+Route::get('/vehicle-to-sales-dashboard/getDailyDeliveries', [VehicleToSalesController::class, 'getDailyDeliveries'])->name('dashboard.vehicle-to-sales-dashboard.getDailyDeliveries');
+Route::get('/vehicle-to-sales-dashboard/getDailyReservation', [VehicleToSalesController::class, 'getDailyReservation'])->name('dashboard.vehicle-to-sales-dashboard.getDailyReservation');
 
 //RANKING DASHBOARD
 Route::get('/ranking-dashboard', [RankingDashboardController::class, 'index'])->name('dashboard.ranking-dashboard');
