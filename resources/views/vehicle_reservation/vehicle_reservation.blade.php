@@ -225,8 +225,14 @@
                 <div class="row mb-3">
                     <div class="col-md">
                         <div class="btn-group w-100" role="group" aria-label="Basic example">
-                            <button type="button" class="btn btn-label-dark active" data-route="{{ route("vehicle.reservation.pending.list") }}">Pending</button>
-                            <button type="button" class="btn btn-label-dark" data-route="{{ route("vehicle.reservation.list") }}">Reservation</button>
+                            <button type="button" class="btn btn-label-dark active" data-route="{{ route("vehicle.reservation.pending.list") }}">
+                                Pending
+                                <span id="pendingTabBadge" class="badge bg-danger rounded-circle ms-2" style="display:;">1</span>
+                            </button>
+                            <button type="button" class="btn btn-label-dark" data-route="{{ route("vehicle.reservation.list") }}">
+                                Reservation
+                                <span id="reservationTabBadge" class="badge bg-danger rounded-circle ms-2" style="display:;">1</span>
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -396,7 +402,7 @@
             }
         ],
     });
-    
+
     // DataTable initialization Vehicle Reservation Table
     const vehicleReservationTable = $('#vehicleReservationTable').DataTable({
         processing: true,

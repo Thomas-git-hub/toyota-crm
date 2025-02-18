@@ -523,10 +523,22 @@
                 <div class="row mb-3">
                     <div class="col-md">
                         <div class="btn-group d-flex flex-wrap w-100" role="group" aria-label="Basic example">
-                            <button type="button" class="btn btn-label-dark active" data-route="{{ route('leads.individual.list') }}">Individual</button>
-                            <button type="button" class="btn btn-label-dark" data-route="{{ route('leads.fleet.list') }}">Fleet</button>
-                            <button type="button" class="btn btn-label-dark" data-route="{{ route('leads.company.list') }}">Company</button>
-                            <button type="button" class="btn btn-label-dark" data-route="{{ route('leads.government.list') }}">Government</button>
+                            <button type="button" class="btn btn-label-dark active" data-route="{{ route('leads.individual.list') }}">
+                                Individual
+                                <span id="leadsIndividualTabBadge" class="badge bg-danger rounded-circle ms-2" style="display:;">1</span>
+                            </button>
+                            <button type="button" class="btn btn-label-dark" data-route="{{ route('leads.fleet.list') }}">
+                                Fleet
+                                <span id="leadsFleetTabBadge" class="badge bg-danger rounded-circle ms-2" style="display:;">1</span>
+                            </button>
+                            <button type="button" class="btn btn-label-dark" data-route="{{ route('leads.company.list') }}">
+                                Company
+                                <span id="leadsCompanyTabBadge" class="badge bg-danger rounded-circle ms-2" style="display:;">1</span>
+                            </button>
+                            <button type="button" class="btn btn-label-dark" data-route="{{ route('leads.government.list') }}">
+                                Government
+                                <span id="leadsGovernmentTabBadge" class="badge bg-danger rounded-circle ms-2" style="display:;">1</span>
+                            </button>
                         </div>
                     </div>
                 </div>

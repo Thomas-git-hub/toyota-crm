@@ -16,7 +16,6 @@
     // <script src="assets/vendor/libs/apex-charts/apexcharts.js"><script>
 
 
-
     <!-- CDN -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
@@ -28,6 +27,24 @@
 
     <!-- Main JS -->
     <script src="assets/js/main.js"></script>
+
+
+    <!-- Custom JS -->
+    // <script>
+    //     function updateLeadsBadge(count) {
+    //         let badge = $("#leads-badge");
+
+    //         if (count > 0) {
+    //             badge.text(count).show();  // Show badge with count
+    //         } else {
+    //             badge.hide();  // Hide badge if count is 0
+    //         }
+    //     }
+
+    //     // Example Test Cases:
+    //     updateLeadsBadge(4);  // Should show badge with "5"
+    //     setTimeout(() => updateLeadsBadge(0), 3000);  // Hide badge after 3 seconds
+    // </script>
 
 
 

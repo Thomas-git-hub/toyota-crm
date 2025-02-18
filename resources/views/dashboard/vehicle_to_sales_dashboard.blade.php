@@ -99,7 +99,7 @@
     // Add this function to get current month and year
     function setCurrentMonthYear() {
         const currentDate = new Date();
-        const monthYear = currentDate.toLocaleDateString('en-US', { 
+        const monthYear = currentDate.toLocaleDateString('en-US', {
             month: 'long',
             year: 'numeric'
         });
@@ -124,13 +124,13 @@
                     });
                 } else {
                     // Update month labels
-                    const monthName = startDate.toLocaleDateString('en-US', { 
+                    const monthName = startDate.toLocaleDateString('en-US', {
                         month: 'long',
                         year: 'numeric'
                     });
                     $('#deliveriesMonthLabel').text(monthName);
                     $('#releasesMonthLabel').text(monthName);
-                    
+
                     getReleasedToday();
                     totalDeliveriesToday();
                     getDailyDeliveries();
@@ -157,7 +157,7 @@
             clearButton.addEventListener("click", function () {
                 instance.clear(); // Clear the date range
                 setCurrentMonthYear(); // Show current month and year instead of "Current"
-                
+
                 getReleasedToday();
                 totalDeliveriesToday();
                 getDailyDeliveries();

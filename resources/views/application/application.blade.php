@@ -426,16 +426,28 @@
                     <div class="col-md">
                         <div class="btn-group w-100" role="group" aria-label="Basic example">
                             @if(auth()->user()->can('list_pending_applications'))
-                            <button id="pending-tab" type="button" class="btn btn-label-dark" data-route="{{ route('application.pending') }}">Pending Applications</button>
+                            <button id="pending-tab" type="button" class="btn btn-label-dark" data-route="{{ route('application.pending') }}">
+                                Pending Applications
+                                <span id="applicationPendingTabBadge" class="badge bg-danger rounded-circle ms-2" style="display:;">1</span>
+                            </button>
                             @endif
                             @if(auth()->user()->can('list_cash_applications'))
-                            <button id="cash-tab" type="button" class="btn btn-label-dark" data-route="{{ route('application.cash') }}">Cash/PO Applications</button>
+                            <button id="cash-tab" type="button" class="btn btn-label-dark" data-route="{{ route('application.cash') }}">
+                                Cash/PO Applications
+                                <span id="applicationCashPOTabBadge" class="badge bg-danger rounded-circle ms-2" style="display:;">1</span>
+                            </button>
                             @endif
                             @if(auth()->user()->can('list_approved_applications'))
-                            <button id="approved-tab" type="button" class="btn btn-label-dark" data-route="{{ route('application.approved') }}">Approved Applications</button>
+                            <button id="approved-tab" type="button" class="btn btn-label-dark" data-route="{{ route('application.approved') }}">
+                                Approved Applications
+                                <span id="applicationApprovedTabBadge" class="badge bg-danger rounded-circle ms-2" style="display:;">1</span>
+                            </button>
                             @endif
                             @if(auth()->user()->can('list_cancelled_applications'))
-                            <button id="canceled-tab" type="button" class="btn btn-label-dark" data-route="{{ route('application.cancel') }}">Denied/Canceled Applications</button>
+                            <button id="canceled-tab" type="button" class="btn btn-label-dark" data-route="{{ route('application.cancel') }}">
+                                Denied/Canceled Applications
+                                <span id="applicationDeniedTabBadge" class="badge bg-danger rounded-circle ms-2" style="display:;">1</span>
+                            </button>
                             @endif
                         </div>
                     </div>

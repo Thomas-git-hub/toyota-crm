@@ -356,8 +356,14 @@
                 <div class="row">
                     <div class="col-md">
                         <div class="btn-group w-100" role="group" aria-label="Basic example">
-                            <button id="forRelease" type="button" class="btn btn-label-dark active" data-route="{{ route("vehicle.releases.pending.list") }}">For Release Units</button>
-                            <button id="released" type="button" class="btn btn-label-dark" data-route="{{ route("vehicle.releases.list") }}">Released Units</button>
+                            <button id="forRelease" type="button" class="btn btn-label-dark active" data-route="{{ route("vehicle.releases.pending.list") }}">
+                                For Release Units
+                                <span id="forReleaseTabBadge" class="badge bg-danger rounded-circle ms-2" style="display:;">1</span>
+                            </button>
+                            <button id="released" type="button" class="btn btn-label-dark" data-route="{{ route("vehicle.releases.list") }}">
+                                Released Units
+                                <span id="releasedTabBadge" class="badge bg-danger rounded-circle ms-2" style="display:;">1</span>
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -499,7 +505,7 @@
         });
     });
 
-    
+
     // DataTable initialization releasedn units table
     const releasedUnitsTable = $('#releasedUnitsTable').DataTable({
         processing: true,
@@ -599,9 +605,9 @@
             { data: 'color', name: 'color', title: 'Color' }, //6
             { data: 'cs_number', name: 'cs_number', title: 'CS Number' }, //7
             { data: 'transaction', name: 'transaction', title: 'Transaction' }, //8
-            {   
-                data: 'insurance', 
-                name: 'insurance', 
+            {
+                data: 'insurance',
+                name: 'insurance',
                 title: 'Insurance',
                 render: function(data, type, row) {
                     return `
