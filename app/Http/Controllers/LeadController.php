@@ -1072,4 +1072,68 @@ class LeadController extends Controller
         $agent = $agent->get();
         return response()->json($agent);
     }
+
+    public function CountInquiry(){
+        $inquiry_type_individual = InquryType::where('inquiry_type', 'Individual')->first()->id;
+        $inquiry_type_fleet = InquryType::where('inquiry_type', 'Fleet')->first()->id;
+        $inquiry_type_government = InquryType::where('inquiry_type', 'Government')->first()->id;
+        $inquiry_type_company = InquryType::where('inquiry_type', 'Company')->first()->id;
+
+        $processed_status = Status::where('status', 'Processed')->first()->id;
+
+        $inquiryIndividual = Inquiry::where('inquiry_type_id', $inquiry_type_individual)
+            ->whereNull('deleted_at')
+            ->where('is_dispute', '0')
+            ->where('notif_status', 'open')
+            ->whereNotIn('status_id', [$processed_status])
+            ->count();    
+        $inquiryFleet = Inquiry::where('inquiry_type_id', $inquiry_type_fleet)
+            ->whereNull('deleted_at')
+            ->where('is_dispute', '0')
+            ->where('notif_status', 'open')
+            ->whereNotIn('status_id', [$processed_status])
+            ->count();
+        $inquiryGovernment = Inquiry::where('inquiry_type_id', $inquiry_type_government)
+            ->whereNull('deleted_at')
+            ->where('is_dispute', '0')
+            ->where('notif_status', 'open')
+            ->whereNotIn('status_id', [$processed_status])
+            ->count();
+        $inquiryCompany = Inquiry::where('inquiry_type_id', $inquiry_type_company)
+            ->whereNull('deleted_at')
+            ->where('is_dispute', '0')
+            ->where('notif_status', 'open')
+            ->whereNotIn('status_id', [$processed_status])
+            ->count();
+
+        return response()->json([
+            'inquiryIndividual' => $inquiryIndividual,
+            'inquiryFleet' => $inquiryFleet,
+            'inquiryGovernment' => $inquiryGovernment,
+            'inquiryCompany' => $inquiryCompany
+        ]);
+    }
+
+    public function updateNotifStatus(Request $request){
+        $processed_status = Status::where('status', 'Processed')->first()->id;
+        $inquiry_type = InquryType::where('inquiry_type', $request->inquiry_type)->first()->id;
+
+        $inquiry =  Inquiry::where('inquiry_type_id', $inquiry_type)
+        ->whereNull('deleted_at')
+        ->where('is_dispute', '0')
+        ->where('notif_status', 'open')
+        ->whereNotIn('status_id', [$processed_status])
+        ->get();
+
+        foreach ($inquiry as $item) {
+            $item->notif_status = 'closed';
+            $item->save();
+        }        
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Notification status updated successfully'
+        ]);
+    }
+
 }

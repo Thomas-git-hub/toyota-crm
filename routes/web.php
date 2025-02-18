@@ -79,6 +79,8 @@ Route::get('leads/edit/{id}', [LeadController::class, 'edit'])->name('leads.edit
 Route::post('/leads/update/{id}', [LeadController::class, 'update'])->name('leads.update')->middleware('permission:update_lead');
 Route::post('/leads/updateRemarks/', [LeadController::class, 'updateRemarks'])->name('leads.updateRemarks')->middleware('permission:update_remarks');
 Route::get('/leads/getAgent/', [LeadController::class, 'getAgent'])->name('leads.getAgent');
+Route::get('/leads/count-inquiry', [LeadController::class, 'CountInquiry'])->name('leads.countInquiry');
+Route::post('/leads/updateNotifStatus', [LeadController::class, 'updateNotifStatus'])->name('leads.updateNotifStatus');
 
 
 // APPLICATION

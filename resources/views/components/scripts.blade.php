@@ -47,5 +47,50 @@
     // </script>
 
 
+<script>
+        function updateLeadsBadge() {
+            $.ajax({
+                url: "{{ route('leads.countInquiry') }}",
+                type: "GET",
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                },
+                success: function(response) {
+                    let individualBadge = $("#leadsIndividualTabBadge");
+                    if (response.inquiryIndividual > 0) {
+                        individualBadge.text(response.inquiryIndividual).show();
+                    } else {
+                        individualBadge.hide();
+                    }
+
+                    let fleetBadge = $("#leadsFleetTabBadge");
+                    if (response.inquiryFleet > 0) {
+                        fleetBadge.text(response.inquiryFleet).show();
+                    } else {
+                        fleetBadge.hide();
+                    }
+
+                    let governmentBadge = $("#leadsGovernmentTabBadge");
+                    if (response.inquiryGovernment > 0) {
+                        governmentBadge.text(response.inquiryGovernment).show();
+                    } else {
+                        governmentBadge.hide();
+                    }
+
+                    let companyBadge = $("#leadsCompanyTabBadge");
+                    if (response.inquiryCompany > 0) {
+                        companyBadge.text(response.inquiryCompany).show();
+                    } else {
+                        companyBadge.hide();
+                    }
+                    
+                }
+            });
+        }
+
+
+</script>
+
+
 
 
