@@ -483,6 +483,7 @@
 
 <script>
 
+
     //Date filter
     flatpickr("#date-range-picker", {
         mode: "range",
@@ -704,6 +705,9 @@
 
     // Automatically trigger the tab based on user access and remove active from the default active tab
     $(document).ready(function() {
+        updateApplicationBadge();
+        setInterval(updateApplicationBadge, 1000);
+        
         @if(auth()->user()->can('list_pending_applications'))
         $('.btn-group #pending-tab').addClass('active');
         @elseif(auth()->user()->can('list_cash_applications'))
@@ -723,6 +727,36 @@
     // Change DataTable route based on button click
     $('.btn-group .btn').on('click', function(e) {
         e.preventDefault();
+
+        const buttonTitle = $(this).clone()    // Clone the button
+        .children()                        // Get all child elements
+        .remove()                          // Remove all child elements (including badge)
+        .end()                            // Go back to original element
+        .text()                           // Get remaining text
+        .trim();          
+        console.log(buttonTitle); // For debugging
+
+
+        // Update the notification status
+        $.ajax({
+            url: '{{ route("application.notif.status") }}',
+            type: 'POST',
+            data: { tab_title: buttonTitle },
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            },
+            dataType: 'json',
+            success: function(response) {
+                console.log(response);
+                updateApplicationBadge();
+            },
+            error: function(error) {
+                console.error('Error updating notification status:', error);
+            }
+            
+        });
+
+
          // Clear the date range picker
         $('#date-range-picker').val(''); // Clear the date range input
         applicationTable.ajax.reload(null, false); // Reload the table without resetting the paging

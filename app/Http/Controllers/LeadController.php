@@ -1081,30 +1081,111 @@ class LeadController extends Controller
 
         $processed_status = Status::where('status', 'Processed')->first()->id;
 
-        $inquiryIndividual = Inquiry::where('inquiry_type_id', $inquiry_type_individual)
-            ->whereNull('deleted_at')
-            ->where('is_dispute', '0')
-            ->where('notif_status', 'open')
-            ->whereNotIn('status_id', [$processed_status])
-            ->count();    
-        $inquiryFleet = Inquiry::where('inquiry_type_id', $inquiry_type_fleet)
-            ->whereNull('deleted_at')
-            ->where('is_dispute', '0')
-            ->where('notif_status', 'open')
-            ->whereNotIn('status_id', [$processed_status])
+        if(Auth::user()->usertype->name === 'SuperAdmin'){
+
+            $inquiryIndividual = Inquiry::where('inquiry_type_id', $inquiry_type_individual)
+                ->whereNull('deleted_at')
+                ->where('is_dispute', '0')
+                ->where('notif_status', 'open')
+                ->whereNotIn('status_id', [$processed_status])
+                ->count();    
+            $inquiryFleet = Inquiry::where('inquiry_type_id', $inquiry_type_fleet)
+                ->whereNull('deleted_at')
+                ->where('is_dispute', '0')
+                ->where('notif_status', 'open')
+                ->whereNotIn('status_id', [$processed_status])
+                ->count();
+            $inquiryGovernment = Inquiry::where('inquiry_type_id', $inquiry_type_government)
+                ->whereNull('deleted_at')
+                ->where('is_dispute', '0')
+                ->where('notif_status', 'open')
+                ->whereNotIn('status_id', [$processed_status])
+                ->count();
+            $inquiryCompany = Inquiry::where('inquiry_type_id', $inquiry_type_company)
+                ->whereNull('deleted_at')
+                ->where('is_dispute', '0')
+                ->where('notif_status', 'open')
+                ->whereNotIn('status_id', [$processed_status])
             ->count();
-        $inquiryGovernment = Inquiry::where('inquiry_type_id', $inquiry_type_government)
-            ->whereNull('deleted_at')
-            ->where('is_dispute', '0')
-            ->where('notif_status', 'open')
-            ->whereNotIn('status_id', [$processed_status])
-            ->count();
-        $inquiryCompany = Inquiry::where('inquiry_type_id', $inquiry_type_company)
-            ->whereNull('deleted_at')
-            ->where('is_dispute', '0')
-            ->where('notif_status', 'open')
-            ->whereNotIn('status_id', [$processed_status])
-            ->count();
+          
+    
+            }elseif(Auth::user()->usertype->name === 'Group Manager'){
+                $inquiryIndividual = Inquiry::with([ 'user', 'customer', 'vehicle', 'status', 'inquiryType'])
+                    ->where('inquiry_type_id', $inquiry_type_individual)
+                    ->whereNull('deleted_at')
+                    ->where('is_dispute', '0')
+                    ->where('notif_status', 'open')
+                    ->whereNotIn('status_id', [$processed_status])
+                    ->whereHas('user', function($subQuery) {
+                        $subQuery->where('team_id', Auth::user()->team_id);
+                    })
+                    ->count();    
+                $inquiryFleet = Inquiry::with([ 'user', 'customer', 'vehicle', 'status', 'inquiryType'])
+                    ->where('inquiry_type_id', $inquiry_type_fleet)
+                    ->whereNull('deleted_at')
+                    ->where('is_dispute', '0')
+                    ->where('notif_status', 'open')
+                    ->whereNotIn('status_id', [$processed_status])
+                    ->whereHas('user', function($subQuery) {
+                        $subQuery->where('team_id', Auth::user()->team_id);
+                    })
+                    ->count();
+                $inquiryGovernment = Inquiry::with([ 'user', 'customer', 'vehicle', 'status', 'inquiryType'])
+                    ->where('inquiry_type_id', $inquiry_type_government)
+                    ->whereNull('deleted_at')
+                    ->where('is_dispute', '0')
+                    ->where('notif_status', 'open')
+                    ->whereNotIn('status_id', [$processed_status])
+                    ->whereHas('user', function($subQuery) {
+                        $subQuery->where('team_id', Auth::user()->team_id);
+                    })
+                    ->count();
+                $inquiryCompany = Inquiry::with([ 'user', 'customer', 'vehicle', 'status', 'inquiryType'])
+                    ->where('inquiry_type_id', $inquiry_type_company)
+                    ->whereNull('deleted_at')
+                    ->where('is_dispute', '0')
+                    ->where('notif_status', 'open')
+                    ->whereNotIn('status_id', [$processed_status])
+                    ->whereHas('user', function($subQuery) {
+                        $subQuery->where('team_id', Auth::user()->team_id);
+                    })
+                    ->count();
+                }
+            else{
+
+                $inquiryIndividual = Inquiry::with([ 'user', 'customer', 'vehicle', 'status', 'inquiryType'])
+                    ->where('inquiry_type_id', $inquiry_type_individual)
+                    ->whereNull('deleted_at')
+                    ->where('is_dispute', '0')
+                    ->where('notif_status', 'open')
+                    ->whereNotIn('status_id', [$processed_status])
+                    ->where('created_by', Auth::user()->id)
+                    ->count();    
+                $inquiryFleet = Inquiry::with([ 'user', 'customer', 'vehicle', 'status', 'inquiryType'])
+                    ->where('inquiry_type_id', $inquiry_type_fleet)
+                    ->whereNull('deleted_at')
+                    ->where('is_dispute', '0')
+                    ->where('notif_status', 'open')
+                    ->whereNotIn('status_id', [$processed_status])
+                    ->where('created_by', Auth::user()->id)
+                    ->count();
+                $inquiryGovernment = Inquiry::with([ 'user', 'customer', 'vehicle', 'status', 'inquiryType'])
+                    ->where('inquiry_type_id', $inquiry_type_government)
+                    ->whereNull('deleted_at')
+                    ->where('is_dispute', '0')
+                    ->where('notif_status', 'open')
+                    ->whereNotIn('status_id', [$processed_status])
+                    ->where('created_by', Auth::user()->id)
+                    ->count();
+                $inquiryCompany = Inquiry::with([ 'user', 'customer', 'vehicle', 'status', 'inquiryType'])
+                    ->where('inquiry_type_id', $inquiry_type_company)
+                    ->whereNull('deleted_at')
+                    ->where('is_dispute', '0')
+                    ->where('notif_status', 'open')
+                    ->whereNotIn('status_id', [$processed_status])
+                    ->where('created_by', Auth::user()->id)
+                    ->count();
+            }
 
         return response()->json([
             'inquiryIndividual' => $inquiryIndividual,
@@ -1122,6 +1203,7 @@ class LeadController extends Controller
         ->whereNull('deleted_at')
         ->where('is_dispute', '0')
         ->where('notif_status', 'open')
+        ->where('created_by', Auth::user()->id)
         ->whereNotIn('status_id', [$processed_status])
         ->get();
 

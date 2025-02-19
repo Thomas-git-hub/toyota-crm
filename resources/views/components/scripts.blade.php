@@ -88,6 +88,110 @@
             });
         }
 
+        function updateApplicationBadge(){
+            $.ajax({
+                url: "{{ route('application.count') }}",
+                type: "GET",
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                },
+                success: function(response){
+                    console.log(response);
+                    let pendingBadge = $("#applicationPendingTabBadge");
+                    if(response.pending_application > 0){
+                        pendingBadge.text(response.pending_application).show();
+                    }else{
+                        pendingBadge.hide();
+                    }
+                    let cashPOTabBadge = $("#applicationCashPOTabBadge");
+                    if(response.poOrCash_application > 0){
+                        cashPOTabBadge.text(response.poOrCash_application).show();
+                    }else{
+                        cashPOTabBadge.hide();
+                    }
+
+                    let approvedBadge = $("#applicationApprovedTabBadge");
+                    if(response.approved_application > 0){
+                        approvedBadge.text(response.approved_application).show();
+                    }else{
+                        approvedBadge.hide();
+                    }   
+
+                    let canceledBadge = $("#applicationDeniedTabBadge");
+                    if(response.cancel_application > 0){
+                        canceledBadge.text(response.cancel_application).show();
+                    }else{
+                        canceledBadge.hide();
+                    }
+                    
+                    
+                    
+                },
+                error: function(xhr, status, error){
+                    console.log(xhr);
+                    console.log(status);
+                    console.log(error);
+                }
+            });
+        }
+
+       function updateVehicleReservationBadge(){
+        $.ajax({
+            url: "{{ route('vehicle.reservation.getVehicleReservationCount') }}",
+            type: "GET",
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            },
+            success: function(response){
+                console.log(response);
+                let pendingBadge = $("#pendingTabBadge");
+                if(response.pending_count > 0){
+                    pendingBadge.text(response.pending_count).show();
+                }else{
+                    pendingBadge.hide();
+                }
+                let reservedBadge = $("#reservationTabBadge");
+                if(response.reserved_count > 0){
+                    reservedBadge.text(response.reserved_count).show();
+                }else{
+                    reservedBadge.hide();
+                }
+            },
+            error: function(xhr, status, error){
+                console.log(xhr);
+            }
+        });
+       }
+
+       function updateVehicleReleaseBadge(){
+        $.ajax({
+            url: "{{ route('vehicle.releases.getVehicleReleaseCount') }}",
+            type: "GET",
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            },
+            success: function(response){
+                console.log(response);
+                let pendingBadge = $("#forReleaseTabBadge");
+                if(response.pending_count > 0){
+                    pendingBadge.text(response.pending_count).show();
+                }else{
+                    pendingBadge.hide();
+                }
+
+                let releasedBadge = $("#releasedTabBadge");
+                if(response.released_count > 0){
+                    releasedBadge.text(response.released_count).show();
+                }else{
+                    releasedBadge.hide();
+                }
+                
+            },
+            error: function(xhr, status, error){
+                console.log(xhr);
+            }
+        });
+       }
 
 </script>
 

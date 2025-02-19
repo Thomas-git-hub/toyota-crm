@@ -398,6 +398,8 @@
 
 <script>
      $(document).ready(function() {
+        updateVehicleReleaseBadge();
+        setInterval(updateVehicleReleaseBadge, 1000);
         $('.btn-group .btn.active').click();
     });
 
@@ -784,15 +786,42 @@
     // button group active tabs
     $('.btn-group .btn').on('click', function(e) {
         e.preventDefault();
+
+        const buttonTitle = $(this).clone()    // Clone the button
+        .children()                        // Get all child elements
+        .remove()                          // Remove all child elements (including badge)
+        .end()                            // Go back to original element
+        .text()                           // Get remaining text
+        .trim();          
+        console.log(buttonTitle); // For debugging
+
+        // Update Notification Status
+        $.ajax({
+            url: '{{ route("vehicle.releases.updateNotifStatus") }}',
+            type: 'POST',
+            data: { buttonTitle: buttonTitle },
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            },
+            success: function(response){
+                console.log(response);
+                updateVehicleReleaseBadge();
+            },
+            error: function(xhr){
+                console.log(xhr);
+            }
+        });
+
+
         $('#date-range-picker').val('');
 
         // Toggle column visibility based on the active tab
-        const isFoReleasedTab = $(this).text().trim() === 'For Release Units';
+        const isFoReleasedTab = buttonTitle === 'For Release Units';
         @if(auth()->user()->can('process_vehicle_release') || auth()->user()->can('cancel_vehicle_release'))
         vehicleReleasesTable.column(22).visible(isFoReleasedTab);
         @endif
 
-        const isReleasedTab = $(this).text().trim() === 'Released Units';
+        const isReleasedTab = buttonTitle === 'Released Units';
         @if(auth()->user()->can('get_status') && auth()->user()->can('update_status'))
         vehicleReleasesTable.column(13).visible(isReleasedTab);
         @endif
