@@ -182,5 +182,56 @@ class DisputeController extends Controller
         }
     }
 
+    public function getDisputeCount(){
+
+        $status = Status::where('status', 'like', 'Processed')->first()->id;
+
+            if(Auth::user()->usertype->name === 'SuperAdmin'){
+                $query = Inquiry::with([ 'user', 'customer', 'vehicle', 'status', 'inquiryType', 'updateBy'])
+                            ->where('notif_status', 'open')
+                            ->whereNull('deleted_at')
+                            ->where('is_dispute', '1')
+                            ->where('status_id', '<>', $status)
+                            ->orderBy('updated_at', 'desc');
+    
+            }elseif(Auth::user()->usertype->name === 'Group Manager'){
+                $query = Inquiry::with([ 'user', 'customer', 'vehicle', 'status', 'inquiryType', 'updateBy'])
+                            ->where('notif_status', 'open')
+                            ->whereNull('deleted_at')
+                            ->where('is_dispute', '1')
+                            ->whereHas('user', function($subQuery) {
+                                $subQuery->where('team_id', Auth::user()->team_id);
+                            })
+                            ->where('status_id', '<>', $status)
+                            ->orderBy('updated_at', 'desc');
+    
+            }
+            else{
+                $query = Inquiry::with([ 'user', 'customer', 'vehicle', 'status', 'inquiryType', 'updateBy'])
+                            ->where('notif_status', 'open')
+                            ->whereNull('deleted_at')
+                            ->where('is_dispute', '1')
+                            ->where(function($subQuery) {
+                                $subQuery->where('created_by', Auth::user()->id)
+                                         ->orWhereHas('customer', function($customerQuery) {
+                                             $customerQuery->whereHas('inquiry', function($inquiryQuery) {
+                                                 $inquiryQuery->where('is_dispute', '0')
+                                                              ->where('created_by', Auth::user()->id);
+                                             });
+                                         });
+                            })
+                            ->where('status_id', '<>', $status)
+                            ->orderBy('updated_at', 'desc');
+    
+            }
+
+            $count = $query->count();
+
+            return response()->json([
+                'count' => $count
+            ]);
+    }
+
+
 
 }

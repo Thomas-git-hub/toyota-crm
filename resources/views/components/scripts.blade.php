@@ -83,10 +83,21 @@
                     } else {
                         companyBadge.hide();
                     }
+
+                    let totalBadge = $("#sideNavLeadsBadge");
+                    if (response.inquiryIndividual + response.inquiryFleet + response.inquiryGovernment + response.inquiryCompany > 0) {
+                        totalBadge.show();
+                    } else {
+                        totalBadge.hide();
+                    }
                     
                 }
             });
         }
+
+        updateLeadsBadge();
+        setInterval(updateLeadsBadge, 1000);
+
 
         function updateApplicationBadge(){
             $.ajax({
@@ -123,6 +134,14 @@
                     }else{
                         canceledBadge.hide();
                     }
+
+                    let totalBadge = $("#sideNavApplicationBadge");
+                    if(response.pending_application + response.poOrCash_application + response.approved_application + response.cancel_application > 0){
+                        totalBadge.show();
+                    }else{
+                        totalBadge.hide();
+                    }
+                    
                     
                     
                     
@@ -134,6 +153,9 @@
                 }
             });
         }
+
+        updateApplicationBadge();
+        setInterval(updateApplicationBadge, 1000);
 
        function updateVehicleReservationBadge(){
         $.ajax({
@@ -156,12 +178,22 @@
                 }else{
                     reservedBadge.hide();
                 }
+
+                let totalBadge = $("#sideNavReservationBadge");
+                if(response.pending_count + response.reserved_count > 0){
+                    totalBadge.show();
+                }else{
+                    totalBadge.hide();
+                }
             },
             error: function(xhr, status, error){
                 console.log(xhr);
             }
         });
        }
+
+       updateVehicleReservationBadge();
+       setInterval(updateVehicleReservationBadge, 1000);
 
        function updateVehicleReleaseBadge(){
         $.ajax({
@@ -185,6 +217,13 @@
                 }else{
                     releasedBadge.hide();
                 }
+
+                let totalBadge = $("#sideNavReleasesBadge");
+                if(response.pending_count + response.released_count > 0){
+                    totalBadge.show();
+                }else{
+                    totalBadge.hide();
+                }
                 
             },
             error: function(xhr, status, error){
@@ -192,6 +231,34 @@
             }
         });
        }
+
+       updateVehicleReleaseBadge();
+       setInterval(updateVehicleReleaseBadge, 1000);
+
+       function updateDisputeBadge(){
+        $.ajax({
+            url: "{{ route('dispute.getDisputeCount') }}",
+            type: "GET",
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            },
+            success: function(response){
+                console.log(response);
+                let totalBadge = $("#sideNavDisputeTabBadge");
+                if(response.count > 0){
+                    totalBadge.show();
+                }else{
+                    totalBadge.hide();
+                }
+            },
+            error: function(xhr, status, error){
+                console.log(xhr);
+            }
+        });
+       }
+
+       updateDisputeBadge();
+       setInterval(updateDisputeBadge, 1000);
 
 </script>
 
