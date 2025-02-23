@@ -232,6 +232,31 @@ class DisputeController extends Controller
             ]);
     }
 
+    public function updateDisputeStatus(){
+        $inquiry = Inquiry::with([ 'user', 'customer', 'vehicle', 'status', 'inquiryType', 'updateBy'])
+        ->where('notif_status', 'open')
+        ->whereNull('deleted_at')
+        ->where('is_dispute', '1')
+        ->where(function($subQuery) {
+            $subQuery->where('created_by', Auth::user()->id)
+                     ->orWhereHas('customer', function($customerQuery) {
+                         $customerQuery->whereHas('inquiry', function($inquiryQuery) {
+                             $inquiryQuery->where('is_dispute', '0')
+                                          ->where('created_by', Auth::user()->id);
+                         });
+                     });
+        })
+        ->get();
 
+        foreach($inquiry as $inq){
+            $inq->notif_status = 'closed';
+            $inq->save();
+        }
+
+        return response()->json([
+            'success' => true,
+            'message' => 'The dispute status has been updated.'
+        ]);
+    }
 
 }

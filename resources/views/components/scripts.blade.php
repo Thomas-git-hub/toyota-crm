@@ -260,6 +260,26 @@
        updateDisputeBadge();
        setInterval(updateDisputeBadge, 1000);
 
+
+       function updateDisputeStatus(){
+        $.ajax({
+            url: "{{ route('dispute.updateDisputeStatus') }}",
+            type: "POST",
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            },
+            success: function(response){
+                console.log(response);
+            },
+            error: function(xhr, status, error){
+                console.log(xhr);
+                console.log(status);
+                console.log(error);
+            }
+        });
+       }
+
+
 </script>
 
 

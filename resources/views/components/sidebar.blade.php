@@ -84,7 +84,7 @@
         </li>
 
         <li class="menu-item {{ request()->is('dispute') ? 'active' : '' }}">
-            <a href="/dispute" class="menu-link">
+            <a href="/dispute" class="menu-link" onclick="updateDisputeStatus()">
                 <i class='menu-icon tf-icons bx bxs-x-square'></i>
               <div class="text-truncate" data-i18n="Page 2">Disputes</div>
               {{-- <span id="sideNavDisputeTabBadge" class="badge bg-danger ms-2" style="display:;">1</span> --}}

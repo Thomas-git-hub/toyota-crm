@@ -209,5 +209,6 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/dispute/cancel', [DisputeController::class, 'cancel'])->name('dispute.cancel');
     Route::post('/dispute/approved', [DisputeController::class, 'approved'])->name('dispute.approved');
     Route::get('/dispute/getDisputeCount', [DisputeController::class, 'getDisputeCount'])->name('dispute.getDisputeCount');
+    Route::post('/dispute/updateDisputeStatus', [DisputeController::class, 'updateDisputeStatus'])->name('dispute.updateDisputeStatus');
 
 
