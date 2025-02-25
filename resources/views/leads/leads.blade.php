@@ -712,7 +712,6 @@
                     d.agent = $('#filterAgent').val();
                     d.source = $('#filterSource').val();
                 },
-                
             },
             lengthMenu: [ [10, 25, 50, 100, 500, -1], [10, 25, 50, 100, 500, "All"] ],
             pageLength: 10,
