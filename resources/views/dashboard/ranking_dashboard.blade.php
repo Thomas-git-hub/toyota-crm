@@ -494,11 +494,13 @@
                     name: 'Released Units',
                     data: data,
                 }]);
-            } else {
-                // Create a new chart instance
+                AgentData.destroy();
+            }
+            // } else {
+            //     // Create a new chart instance
                 AgentData = new ApexCharts(document.querySelector("#rankingBarChart"), options);
                 AgentData.render();
-            }
+            // }
 
         }
         fetchAgentData();
