@@ -127,6 +127,7 @@
                         <option value="FI">FI</option>
                         <option value="CI">CI</option>
                         <option value="POI">POI</option>
+                        <option value="Others">Others</option>
                     </select>
                     <div id="insuranceError" style="color: red; display: none;"></div>
                 </div>
@@ -792,7 +793,7 @@
         .remove()                          // Remove all child elements (including badge)
         .end()                            // Go back to original element
         .text()                           // Get remaining text
-        .trim();          
+        .trim();
         console.log(buttonTitle); // For debugging
 
         // Update Notification Status

@@ -189,6 +189,7 @@ Route::post('user-management/update', [UserManagementController::class, 'update'
 Route::delete('user-management/{id}/destroy', [UserManagementController::class, 'destroy'])->name('user.management.destroy')->middleware('permission:delete_user');
 Route::get('user-management/{id}/edit', [UserManagementController::class, 'edit'])->name('user.management.edit')->middleware('permission:edit_user');
 Route::get('user-management/{id}/send-temporary-password', [UserManagementController::class, 'sendTemporaryPassword'])->name('user.management.sendTemporaryPassword')->middleware('permission:manage_passwords');
+Route::post('user-management/change-all-password', [UserManagementController::class, 'changePasswordAll'])->name('user.managemen.changePasswordAll')->middleware('permission:manage_passwords');
 
 // USER MANAGEMENT
 Route::middleware(['auth'])->group(function () {
