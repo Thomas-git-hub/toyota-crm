@@ -390,7 +390,6 @@
             });
         }
 
-
         function renderAgentDataChart(labels, data){
              // Render the bar chart with the fetched data
             var options = {
@@ -504,6 +503,5 @@
 
         }
         fetchAgentData();
-
 </script>
 @endsection
