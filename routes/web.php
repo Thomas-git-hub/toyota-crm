@@ -17,6 +17,7 @@ use App\Http\Controllers\UserManagementController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\TeamController;
 use App\Http\Controllers\DisputeController;
+use App\Http\Controllers\InventoryBacklogsController;
 
 
 //LOGIN
@@ -213,3 +214,5 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/dispute/updateDisputeStatus', [DisputeController::class, 'updateDisputeStatus'])->name('dispute.updateDisputeStatus');
 
 
+//UPLOAD BACKLOGS
+    Route::get('/inventory_backlogs', [InventoryBacklogsController::class, 'index'])->name('inventorybacklogs.index');
