@@ -31,30 +31,30 @@ class InventoryBacklogsController extends Controller
             'file' => 'required|mimes:csv,xlsx,xls',
         ]);
             DB::beginTransaction();
-            
+
             // Get the uploaded file
             $file = $request->file('file');
-            
+
             // Get the original file name
             $originalName = $file->getClientOriginalName();
-            
+
             // Move the file to a temporary location with its original name
             $tempPath = sys_get_temp_dir() . '/' . $originalName;
             $file->move(sys_get_temp_dir(), $originalName);
-            
+
             // Create reader with the original file
             $reader = SimpleExcelReader::create($tempPath);
             $rows = $reader->getRows();
-            
+
             // Process the data
             $data = [];
-            
+
             foreach ($rows as $row) {
                 // Skip header row if it exists
                 if (isset($row['unit']) && $row['unit'] === 'Unit') {
                     continue;
-                }                
-                
+                }
+
                 // Create inventory backlog record
 
                 $vehicle = Vehicle::whereRaw('LOWER(unit) = LOWER(?)', [$row['UNIT']])
@@ -104,27 +104,28 @@ class InventoryBacklogsController extends Controller
                     'tag' => $tag->id ?? null,
                     'team_id' => $team->id ?? null,
                 ]);
-                
+
                 // Add to response data
                 $data[] = $inventoryBacklog;
+                // dd($inventoryBacklog);
             }
-            
+
             // Close the reader to release the file
             $reader = null;
-            
+
             // Clean up the temporary file
             if (file_exists($tempPath)) {
                 @unlink($tempPath);
             }
-            
+
             DB::commit();
-            
+
             return response()->json([
-                'success' => true, 
-                'message' => 'File uploaded successfully', 
+                'success' => true,
+                'message' => 'File uploaded successfully',
                 'data' => $data
             ]);
-            
+
     }
 
     public function inventoryBacklogsList(Request $request){
@@ -219,7 +220,7 @@ class InventoryBacklogsController extends Controller
         foreach($inventoryBacklogs as $inventoryBacklog){
             // Check if inventory with same CS_number already exists
             $exists = Inventory::where('CS_number', $inventoryBacklog->CS_number)->exists();
-            
+
             if (!$exists) {
                 $inventory = Inventory::create([
                     'vehicle_id' => $inventoryBacklog->vehicle_id,
@@ -238,7 +239,7 @@ class InventoryBacklogsController extends Controller
                     'created_at' => now(),
                     'updated_at' => now(),
                     'backlogs_status' => 1,
-                
+
                 ]);
 
                 $inventoryBacklog->delete();

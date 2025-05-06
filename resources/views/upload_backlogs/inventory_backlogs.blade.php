@@ -1,6 +1,13 @@
 @extends('components.app')
 
 @section('content')
+
+<style>
+    #inventoryBacklogsTable td{
+        white-space: nowrap;
+    }
+</style>
+
 {{-- Title Header --}}
 <div class="card bg-dark shadow-none mb-4">
     <div class="card-body">
@@ -22,7 +29,7 @@
                 <button type="submit" class="btn btn-primary">Upload File</button>
                 <button type="button" id="transferToInventory" class="btn btn-danger d-none">Transfer to Inventory</button>
             </div>
-            
+
         </div>
     </div>
 </form>
@@ -114,7 +121,7 @@
                 { data: 'action', name: 'action', title: 'Action',
                     render: function(data, type, row) {
                         return `
-                            <button class="btn btn-danger" onclick="deleteInventoryBacklog('${row.id}')">Delete</button>
+                            <button class="btn btn-label-danger btn-sm" onclick="deleteInventoryBacklog('${row.id}')">Remove</button>
                         `;
                     }
                 },
@@ -129,14 +136,14 @@
                 }
             }
         });
-        
+
         // Handle form submission
         $('#uploadForm').on('submit', function(e) {
             e.preventDefault();
-            
+
             // Create FormData object from the form
             var formData = new FormData(this);
-            
+
             $.ajax({
                 url: '{{ route("inventory.backlogs.upload") }}',
                 type: 'POST',
@@ -151,7 +158,7 @@
                         text: 'File uploaded successfully',
                         icon: 'success'
                     });
-                    
+
                 },
                 error: function(xhr) {
                     // Show error message

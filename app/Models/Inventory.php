@@ -22,11 +22,17 @@ class Inventory extends Model
         'age',
         'status',
         'CS_number_status',
+        'incoming_status',
         'remarks',
         'created_at',
         'updated_at',
         'remarks',
-    ];
+        'tag',
+        'team_id',
+        'created_by',
+        'updated_by',
+        'backlogs_status'
+,    ];
 
     public function vehicle(){
         return $this->belongsTo(Vehicle::class, 'vehicle_id', 'id');

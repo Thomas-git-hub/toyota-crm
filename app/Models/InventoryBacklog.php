@@ -22,6 +22,7 @@ class InventoryBacklog extends Model
         'age',
         'status',
         'CS_number_status',
+        'incoming_status',
         'remarks',
         'created_at',
         'updated_at',
@@ -55,4 +56,4 @@ class InventoryBacklog extends Model
         return $this->belongsTo(Team::class, 'team_id', 'id');
 
     }
-} 
+}
