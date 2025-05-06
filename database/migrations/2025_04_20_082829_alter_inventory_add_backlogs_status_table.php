@@ -11,8 +11,8 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('inquiry', function (Blueprint $table) {
-            $table->string('notif_status')->default('open')->after('status_id');
+        Schema::table('inventory', function (Blueprint $table) {
+            $table->tinyInteger('backlogs_status')->default(0);
         });
     }
 
@@ -21,8 +21,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('inquiry', function (Blueprint $table) {
-            $table->dropColumn('notif_status');
+        Schema::table('inventory', function (Blueprint $table) {
+            $table->dropColumn('backlogs_status');
         });
     }
-}; 
+};

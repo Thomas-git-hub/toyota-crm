@@ -6,7 +6,7 @@
     <div class="card-body">
         <div class="d-flex align-items-center">
             <i class='bx bxs-spreadsheet text-white' style="font-size: 24px;">&nbsp;</i>
-            <h4 class="text-white mb-0">Upload Inventory Backlogs</h4>
+            <h4 class="text-white mb-0">Upload Releases Backlogs</h4>
         </div>
     </div>
 </div>
@@ -20,7 +20,7 @@
             </div>
             <div>
                 <button type="submit" class="btn btn-primary">Upload File</button>
-                <button type="button" id="transferToInventory" class="btn btn-danger d-none">Transfer to Inventory</button>
+                <button type="button" id="transferToReleases" class="btn btn-danger d-none">Transfer to Releases</button>
             </div>
             
         </div>
@@ -35,7 +35,7 @@
                 <div class="table-responsive-wrapper">
                     <div class="fixed-header-scroll">
                       <div class="table-responsive">
-                        <table id="inventoryBacklogsTable" class="table table-bordered table-hover" style="width:100%">
+                        <table id="releasesBacklogsTable" class="table table-bordered table-hover" style="width:100%">
                           <tbody>
                           </tbody>
                         </table>
@@ -53,7 +53,7 @@
 @section('components.specific_page_scripts')
 <script>
     // Define the deleteInventoryBacklog function in the global scope
-    function deleteInventoryBacklog(id) {
+    function deleteReleasesBacklog(id) {
         Swal.fire({
             title: 'Are you sure?',
             text: 'You won\'t be able to revert this!',
@@ -93,28 +93,39 @@
     }
 
     $(document).ready(function() {
-        var table = $('#inventoryBacklogsTable').DataTable({
+        var table = $('#releasesBacklogsTable').DataTable({
             processing: true,
             serverSide: true,
-            ajax: '{{ route("inventory.backlogs.list") }}',
+            ajax: '{{ route("releases.backlogs.list") }}',
             columns: [
                 { data: 'id', name: 'id', title: 'id', visible: false },
-                { data: 'unit', name: 'unit', title: 'unit' },
-                { data: 'variant', name: 'variant', title: 'variant' },
-                { data: 'category', name: 'category', title: 'category' },
-                { data: 'color', name: 'color', title: 'color' },
+                { data: 'folder_number', name: 'folder_number', title: 'Folder Number' },
+                { data: 'customer_name', name: 'customer_name', title: 'Customer Name' },
+                { data: 'address', name: 'address', title: 'Address' },
                 { data: 'year_model', name: 'year_model', title: 'Year Model' },
-                { data: 'CS_number', name: 'CS_number', title: 'CS#' },
-                { data: 'actual_invoice_date', name: 'actual_invoice_date', title: 'Actual Invoice Date' },
-                { data: 'delivery_date', name: 'delivery_date', title: 'Delivery Date' },
-                { data: 'invoice_number', name: 'invoice_number', title: 'Invoice Number' },
+                { data: 'unit', name: 'unit', title: 'Unit' },
+                { data: 'variant', name: 'variant', title: 'Variant' },
+                { data: 'color', name: 'color', title: 'Color' },
+                { data: 'cs_number', name: 'cs_number', title: 'CS#' },
+                { data: 'transaction', name: 'transaction', title: 'Transaction' },
+                { data: 'insurance', name: 'insurance', title: 'Insurance' },
+                { data: 'other_profit', name: 'other_profit', title: 'Other Profit' },
+                { data: 'trans_bank', name: 'trans_bank', title: 'Trans Bank' },
+                { data: 'agent', name: 'agent', title: 'Agent' },
+                { data: 'team', name: 'team', title: 'Team' },
                 { data: 'status', name: 'status', title: 'Status' },
-                { data: 'incoming_status', name: 'incoming_status', title: 'Incoming Status' },
+                { data: 'unit_type', name: 'unit_type', title: 'Unit Type' },
+                { data: 'profit', name: 'profit', title: 'Profit' },
+                { data: 'other_profit', name: 'other_profit', title: 'Other Profit' },
+                { data: 'gender', name: 'gender', title: 'Gender' },
                 { data: 'remarks', name: 'remarks', title: 'Remarks' },
+                { data: 'lto_remarks', name: 'lto_remarks', title: 'LTO Remarks' },
+                { data: 'source', name: 'source', title: 'Source' },
+                { data: 'date_reserved', name: 'date_reserved', title: 'Date Reserved' },
                 { data: 'action', name: 'action', title: 'Action',
                     render: function(data, type, row) {
                         return `
-                            <button class="btn btn-danger" onclick="deleteInventoryBacklog('${row.id}')">Delete</button>
+                            <button class="btn btn-danger" onclick="deleteReleasesBacklog('${row.id}')">Delete</button>
                         `;
                     }
                 },
@@ -123,75 +134,14 @@
             drawCallback: function(settings) {
                 // Check if there is data in the table
                 if (settings.json && settings.json.data && settings.json.data.length > 0) {
-                    $('#transferToInventory').removeClass('d-none');
+                    $('#transferToReleases').removeClass('d-none');
                 } else {
-                    $('#transferToInventory').addClass('d-none');
+                    $('#transferToReleases').addClass('d-none');
                 }
             }
         });
         
-        // Handle form submission
-        $('#uploadForm').on('submit', function(e) {
-            e.preventDefault();
-            
-            // Create FormData object from the form
-            var formData = new FormData(this);
-            
-            $.ajax({
-                url: '{{ route("inventory.backlogs.upload") }}',
-                type: 'POST',
-                data: formData,
-                processData: false,
-                contentType: false,
-                success: function(response) {
-                    $('#inventoryBacklogsTable').DataTable().ajax.reload();
-
-                    Swal.fire({
-                        title: 'Success',
-                        text: 'File uploaded successfully',
-                        icon: 'success'
-                    });
-                    
-                },
-                error: function(xhr) {
-                    // Show error message
-                    Swal.fire({
-                        title: 'Error',
-                        text: 'Error uploading file: ' + xhr.responseJSON.message,
-                        icon: 'error'
-                    });
-                }
-            });
-        });
-
-        $('#transferToInventory').on('click', function(e) {
-            e.preventDefault();
-
-            $.ajax({
-                url: '{{ route("inventory.backlogs.transfer") }}',
-                type: 'POST',
-                data: {
-                    _token: '{{ csrf_token() }}'
-                },
-                success: function(response) {
-                    $('#inventoryBacklogsTable').DataTable().ajax.reload();
-
-                    Swal.fire({
-                        title: 'Success',
-                        text: response.message,
-                        icon: 'success'
-                    });
-                },
-                error: function(xhr) {
-                    Swal.fire({
-                        title: 'Error',
-                        text: 'Error transferring inventory: ' + xhr.responseJSON.message,
-                        icon: 'error'
-                    });
-                }
-            });
-
-        });
+        
 
 
     });
