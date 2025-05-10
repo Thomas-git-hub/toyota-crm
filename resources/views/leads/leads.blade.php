@@ -727,7 +727,7 @@
                 @if(auth()->user()->usertype->name === 'SuperAdmin' || auth()->user()->usertype->name === 'General Manager')
                 { data: 'team', name: 'team', title: 'Group' },
                 @endif
-                @if(auth()->user()->usertype->name === 'SuperAdmin' || auth()->user()->usertype->name === 'Group Manager')
+                @if(auth()->user()->usertype->name === 'SuperAdmin' || auth()->user()->usertype->name === 'Group Manager' || auth()->user()->usertype->name === 'General Manager')
                 { data: 'agent', name: 'agent', title: 'Agent' },
                 @endif
                 { data: 'client_name', name: 'client_name', title: 'Client Name' },
